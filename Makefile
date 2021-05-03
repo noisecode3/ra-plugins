@@ -45,18 +45,18 @@ clean:
 
 install:
 	install -d $(DESTDIR)$(PREFIX)/.ladspa/
-	install -d $(DESTDIR)$(PREFIX)/.dssi/
+	#install -d $(DESTDIR)$(PREFIX)/.dssi/
 	install -d $(DESTDIR)$(PREFIX)/.lv2/
 	install -d $(DESTDIR)$(PREFIX)/.vst/
-	install -d $(DESTDIR)$(PREFIX)/.local/bin/
+	#install -d $(DESTDIR)$(PREFIX)/.local/bin/
 
 	install -m 644 bin/*-ladspa.* $(DESTDIR)$(PREFIX)/.ladspa/
-	install -m 644 bin/*-dssi.*   $(DESTDIR)$(PREFIX)/.dssi/
+	#install -m 644 bin/*-dssi.*   $(DESTDIR)$(PREFIX)/.dssi/
 	install -m 644 bin/*-vst.*    $(DESTDIR)$(PREFIX)/.vst/
 	cp -r bin/*.lv2   $(DESTDIR)$(PREFIX)/.lv2/
 
 ifeq ($(HAVE_JACK),true)
-	install -m 755 bin/RobotFilter$(APP_EXT)       $(DESTDIR)$(PREFIX)/.local/bin/
+	#install -m 755 bin/RobotFilter$(APP_EXT)       $(DESTDIR)$(PREFIX)/.local/bin/
 endif # HAVE_JACK
 
 # --------------------------------------------------------------
