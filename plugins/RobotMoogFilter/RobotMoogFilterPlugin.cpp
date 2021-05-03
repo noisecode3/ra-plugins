@@ -38,7 +38,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "CutOffFreq";
         parameter.symbol     = "freq";
         parameter.unit       = "Hz";
-        parameter.ranges.def = 1000.0f;
+        parameter.ranges.def = 20000.0f;
         parameter.ranges.min = 20.0f;
         parameter.ranges.max = 20000.0f;
         break;
@@ -50,7 +50,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.unit       = "L";
         parameter.ranges.def = 0.4f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 1.0f;
+        parameter.ranges.max = 0.98f;
         break;
 
     }
@@ -134,8 +134,8 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         return;
 
     // Default values
-    fFreq = 0.0f;
-    fRes = 0.0f;
+    fFreq = 20000.0f;
+    fRes = 0.4f;
 
     // reset filter values
     activate();

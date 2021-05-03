@@ -98,7 +98,7 @@ private:
     //MoogLadder
 
     //Parameters
-    float fFreq = 1000.0f;
+    float fFreq = 20000.0f;
     float fRes  = 0.4f;
     float fSampleRate, fAcr, fTune;
 
