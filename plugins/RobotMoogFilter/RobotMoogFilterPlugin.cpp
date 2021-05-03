@@ -50,7 +50,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.unit       = "L";
         parameter.ranges.def = 0.4f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 0.98f;
+        parameter.ranges.max = 0.95f;
         break;
 
     }
