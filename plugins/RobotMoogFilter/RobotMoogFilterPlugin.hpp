@@ -102,6 +102,14 @@ private:
     float fRes  = 0.0f;
     float fSampleRate, fAcr, fTune;
 
+    uint8_t msToSamples= 48; /* tru support samplerates 44,1 48 96 and 192
+                                samplerate 44,1 have an uneven amount of
+                                samples to represent 1 milliseceond. it will
+                                get rounded down. this is meant to create
+                                kind of like an impulse respons but from
+                                a too sudden parameter change. to avoid
+                                clipping the signal */
+
     float fDelay[2][6], fTanhstg[2][3]; // stereo tmp
     
     float moog_tanh(float x);
