@@ -94,47 +94,24 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
             float change = fabs(fFreq/fFreqOld);
 
             if (change > 1){
-                //printf("hey easy on that knob!!\n");//dont print anything
+                //printf("hey easy on that knob!!\n");
             }
-
             fFreqOld = fFreq;
-
-            float f, fc, fc2, fc3, fcr;
-
-            fc        = (fFreq / fSampleRate);
-            f         = 0.5f * fc;
-            fc2       = fc * fc;
-            fc3       = fc2 * fc2;
-
-            fcr   = 1.8730f * fc3 + 0.4955f * fc2 - 0.6490f * fc + 0.9988f;
-            fAcr  = -3.9364f * fc2 + 1.8409f * fc + 0.9968f;
-            fTune = (1.0f - expf(-((2 * PI_F) * f * fcr))) / 0.000025; // 0.000025 = THERMAL
+            moog_ladder_tune();
         }
-        break;
-
+    break;
+        
     case paramRes:
         {
             fRes   = value;
             float change = fabs(fRes/fResOld);
 
             if (change > 0.01){
-                //printf("hey easy on that knob!!\n");//dont print anything
+                //printf("hey easy on that knob!!\n");
             }
-
             fResOld = fRes;
-
-            float f, fc, fc2, fc3, fcr;
-
-            fc        = (fFreq / fSampleRate);
-            f         = 0.5f * fc;
-            fc2       = fc * fc;
-            fc3       = fc2 * fc2;
-
-            fcr   = 1.8730f * fc3 + 0.4955f * fc2 - 0.6490f * fc + 0.9988f;
-            fAcr  = -3.9364f * fc2 + 1.8409f * fc + 0.9968f;
-            fTune = (1.0f - expf(-((2 * PI_F) * f * fcr))) / 0.000025; // 0.000025 = THERMAL
         }
-        break;
+    break;
     }
 }
 
@@ -165,18 +142,7 @@ void RobotMoogFilterPlugin::activate()
         fDelay[1][i]        = 0.0;
         fTanhstg[1][i % 3]  = 0.0;
     }
-    
-    float f, fc, fc2, fc3, fcr;
-    
-    fc        = (fFreq / fSampleRate);
-    f         = 0.5f * fc;
-    fc2       = fc * fc;
-    fc3       = fc2 * fc2;
-
-    fcr   = 1.8730f * fc3 + 0.4955f * fc2 - 0.6490f * fc + 0.9988f;
-    fAcr  = -3.9364f * fc2 + 1.8409f * fc + 0.9968f;
-    fTune = (1.0f - expf(-((2 * PI_F) * f * fcr))) / 0.000025; // 0.000025 = THERMAL
-
+    moog_ladder_tune();
 }
 
 void RobotMoogFilterPlugin::deactivate()
