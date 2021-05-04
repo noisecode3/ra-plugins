@@ -100,21 +100,18 @@ private:
     //Parameters
     float fFreq = 20000.0f;
     float fRes  = 0.0f;
+ 
+    uint8_t msToSamples= 48; // could be needed later
+
+
     float fSampleRate, fAcr, fTune, fFreqOld, fResOld;
 
-    uint8_t msToSamples= 48; /* tru support samplerates 44,1 48 96 and 192
-                                samplerate 44,1 have an uneven amount of
-                                samples to represent 1 milliseceond. it will
-                                get rounded down. this is meant to create
-                                kind of like an impulse respons but from
-                                a too sudden parameter change. to avoid
-                                clipping the signal */
 
     float fDelay[2][6];
-    float fTanhstg[2][3]; // first dimension means channel for true stereo
+    float fTanhstg[2][3];
     
     float moog_tanh(float x);
-    float moog_process(float in, bool chan);
+    float moog_ladder_process(float in, bool chan);
     //
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotMoogFilterPlugin)

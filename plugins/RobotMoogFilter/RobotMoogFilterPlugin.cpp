@@ -203,7 +203,7 @@ float RobotMoogFilterPlugin::moog_tanh(float x)
     return sign * tanhf(x);
 }
 
-float RobotMoogFilterPlugin::moog_process(float in, bool chan)
+float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 {
     float  res4;
     float  stg[4];
@@ -241,8 +241,8 @@ void RobotMoogFilterPlugin::run(const float** inputs, float** outputs, uint32_t 
 
     for (uint32_t i=0; i < frames; ++i)
     {
-        out1[i] = moog_process(in1[i], 0);
-        out2[i] = moog_process(in2[i], 1);
+        out1[i] = moog_ladder_process(in1[i], 0);
+        out2[i] = moog_ladder_process(in2[i], 1);
     }
 }
 
