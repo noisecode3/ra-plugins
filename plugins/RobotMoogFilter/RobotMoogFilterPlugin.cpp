@@ -93,7 +93,7 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
             float change = fabs(fFreq/fFreqOld);
 
             if (change > 1){
-                printf("hey easy on that knob!!\n");
+                //printf("hey easy on that knob!!\n");//dont print anything
             }
 
             fFreqOld = fFreq;
@@ -117,7 +117,7 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
             float change = fabs(fRes/fResOld);
 
             if (change > 0.01){
-                printf("hey easy on that knob!!\n");
+                //printf("hey easy on that knob!!\n");//dont print anything
             }
 
             fResOld = fRes;
