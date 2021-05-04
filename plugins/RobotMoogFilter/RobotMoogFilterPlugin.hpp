@@ -111,6 +111,7 @@ private:
     float fTanhstg[2][3];
     
     float moog_tanh(float x);
+    void  moog_ladder_tune();
     float moog_ladder_process(float in, bool chan);
     //
 

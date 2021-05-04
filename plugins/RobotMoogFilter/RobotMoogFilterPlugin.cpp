@@ -14,6 +14,7 @@
 #include "RobotMoogFilterPlugin.hpp"
 
 #define PI_F 3.1415927410125732421875f
+#define THERMAL 0.000025f
 
 START_NAMESPACE_DISTRHO
 
@@ -203,11 +204,25 @@ float RobotMoogFilterPlugin::moog_tanh(float x)
     return sign * tanhf(x);
 }
 
+void RobotMoogFilterPlugin::moog_ladder_tune()
+{
+    float f, fc, fc2, fc3, fcr;
+
+    fc        = (fFreq / fSampleRate);
+    f         = 0.5f * fc;
+    fc2       = fc * fc;
+    fc3       = fc2 * fc2;
+
+    fcr   = 1.8730f * fc3 + 0.4955f * fc2 - 0.6490f * fc + 0.9988f;
+    fAcr  = -3.9364f * fc2 + 1.8409f * fc + 0.9968f;
+    fTune = (1.0f - expf(-((2 * PI_F) * f * fcr))) / 0.000025; // 0.000025 = THERMAL
+}
+
 float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 {
     float  res4;
     float  stg[4];
-    float  THERMAL = 0.000025;
+    //float  THERMAL = 0.000025f;
 
     res4 = 4.0f * fRes * fAcr;
 
