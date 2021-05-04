@@ -90,6 +90,13 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramFreq:
         {
             fFreq  = value;
+            float change = fabs(fFreq/fFreqOld);
+
+            if (change > 1){
+                printf("hey easy on that knob!!\n");
+            }
+
+            fFreqOld = fFreq;
 
             float f, fc, fc2, fc3, fcr;
 
@@ -107,11 +114,13 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramRes:
         {
             fRes   = value;
+            float change = fabs(fRes/fResOld);
 
-            if(fRes < 0)
-            {
-                fRes = 0;
+            if (change > 0.01){
+                printf("hey easy on that knob!!\n");
             }
+
+            fResOld = fRes;
 
             float f, fc, fc2, fc3, fcr;
 

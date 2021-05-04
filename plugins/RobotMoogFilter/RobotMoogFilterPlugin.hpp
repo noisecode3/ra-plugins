@@ -100,7 +100,7 @@ private:
     //Parameters
     float fFreq = 20000.0f;
     float fRes  = 0.0f;
-    float fSampleRate, fAcr, fTune;
+    float fSampleRate, fAcr, fTune, fFreqOld, fResOld;
 
     uint8_t msToSamples= 48; /* tru support samplerates 44,1 48 96 and 192
                                 samplerate 44,1 have an uneven amount of
@@ -110,7 +110,8 @@ private:
                                 a too sudden parameter change. to avoid
                                 clipping the signal */
 
-    float fDelay[2][6], fTanhstg[2][3]; // stereo tmp
+    float fDelay[2][6];
+    float fTanhstg[2][3]; // first dimension means channel for true stereo
     
     float moog_tanh(float x);
     float moog_process(float in, bool chan);
