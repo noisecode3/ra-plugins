@@ -99,7 +99,7 @@ private:
 
     //Parameters
     float fFreq = 20000.0f;
-    float fRes  = 0.4f;
+    float fRes  = 0.0f;
     float fSampleRate, fAcr, fTune;
 
     float fDelay[2][6], fTanhstg[2][3]; // stereo tmp

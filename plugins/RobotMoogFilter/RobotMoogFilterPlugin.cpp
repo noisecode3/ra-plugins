@@ -48,7 +48,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Resonance";
         parameter.symbol     = "res";
         parameter.unit       = "L";
-        parameter.ranges.def = 0.4f;
+        parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 0.95f;
         break;
@@ -135,7 +135,7 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
 
     // Default values
     fFreq = 20000.0f;
-    fRes = 0.4f;
+    fRes = 0.0f;
 
     // reset filter values
     activate();
