@@ -15,8 +15,8 @@
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
 #define DISTRHO_PLUGIN_BRAND "Robot Audio"
-#define DISTRHO_PLUGIN_NAME  "Robot Filter"
-#define DISTRHO_PLUGIN_URI   "Robot Filter"
+#define DISTRHO_PLUGIN_NAME  "Robot Moog Filter"
+#define DISTRHO_PLUGIN_URI   "robotaudio.site.non"
 
 #define DISTRHO_PLUGIN_HAS_UI        0
 #define DISTRHO_PLUGIN_IS_RT_SAFE    1
