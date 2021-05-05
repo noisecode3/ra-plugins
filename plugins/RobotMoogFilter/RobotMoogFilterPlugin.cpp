@@ -54,6 +54,16 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 0.95f;
         break;
 
+    case paramWet:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Wet";
+        parameter.symbol     = "percent";
+        parameter.unit       = "%";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 100.0f;
+        break;
+
     }
 }
 
@@ -76,6 +86,8 @@ float RobotMoogFilterPlugin::getParameterValue(uint32_t index) const
         return fFreq;
     case paramRes:
         return fRes;
+    case paramWet:
+        return fWet;
     default:
         return 0.0f;
     }
@@ -90,26 +102,35 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     {
     case paramFreq:
         {
-            fFreq  = value;
+            fFreq        = value;
             float change = fabs(fFreqOld/fFreq);
 
             if (change > 1){
                 //printf("hey easy on that knob!! change value:%f\n", change);
             }
-            fFreqOld = fFreq;
+            fFreqOld     = fFreq;
             moog_ladder_tune();
         }
     break;
  
     case paramRes:
         {
-            fRes   = value;
+            fRes         = value;
             float change = fabs(fResOld/fRes);
 
             if (change > 0.01){
                 //printf("hey easy on that knob!! change value:%f\n", change);
             }
-            fResOld = fRes;
+            fResOld      = fRes;
+        }
+    break;
+
+    case paramWet:
+        {
+            fWet         = value;
+            fWetVol      = 1.0f - exp(-0.01f*fWet);
+            fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
+            //printf("fWetVol:%f\n", fWetVol);
         }
     break;
     }
@@ -143,6 +164,8 @@ void RobotMoogFilterPlugin::activate()
         fTanhstg[1][i % 3]  = 0.0;
     }
     moog_ladder_tune();
+    fWetVol      = 1.0f - exp(-0.01f*fWet);
+    fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
 }
 
 void RobotMoogFilterPlugin::deactivate()
@@ -221,8 +244,8 @@ void RobotMoogFilterPlugin::run(const float** inputs, float** outputs, uint32_t 
 
     for (uint32_t i=0; i < frames; ++i)
     {
-        out1[i] = moog_ladder_process(in1[i], 0);
-        out2[i] = moog_ladder_process(in2[i], 1);
+        out1[i] = (in1[i]*(1.0f-fWetVol)) + (moog_ladder_process(in1[i], 0)*fWetVol);
+        out2[i] = (in2[i]*(1.0f-fWetVol)) + (moog_ladder_process(in2[i], 1)*fWetVol);
     }
 }
 

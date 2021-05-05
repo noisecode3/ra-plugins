@@ -27,6 +27,7 @@ public:
     {
         paramFreq = 0,
         paramRes,
+        paramWet,
         paramCount
     };
 
@@ -94,22 +95,21 @@ protected:
     // -------------------------------------------------------------------
 
 private:
-    
+
     //MoogLadder
 
     //Parameters
     float fFreq = 22000.0f;
     float fRes  = 0.0f;
- 
-    uint8_t msToSamples= 48; // could be needed later
+    float fWet  = 0.0f;
 
+    uint8_t fSamplesFall = 0; // will be needed later
 
-    float fSampleRate, fAcr, fTune, fFreqOld, fResOld;
-
+    float fSampleRate, fAcr, fTune, fFreqOld, fResOld, fWetVol;
 
     float fDelay[2][6];
     float fTanhstg[2][3];
-    
+
     float moog_tanh(float x);
     void  moog_ladder_tune();
     float moog_ladder_process(float in, bool chan);
