@@ -98,7 +98,7 @@ private:
     //MoogLadder
 
     //Parameters
-    float fFreq = 20000.0f;
+    float fFreq = 22000.0f;
     float fRes  = 0.0f;
  
     uint8_t msToSamples= 48; // could be needed later

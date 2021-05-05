@@ -39,9 +39,9 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "CutOffFreq";
         parameter.symbol     = "freq";
         parameter.unit       = "Hz";
-        parameter.ranges.def = 20000.0f;
+        parameter.ranges.def = 22000.0f;
         parameter.ranges.min = 20.0f;
-        parameter.ranges.max = 20000.0f;
+        parameter.ranges.max = 22000.0f;
         break;
 
     case paramRes:
@@ -91,10 +91,10 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramFreq:
         {
             fFreq  = value;
-            float change = fabs(fFreq/fFreqOld);
+            float change = fabs(fFreqOld/fFreq);
 
             if (change > 1){
-                //printf("hey easy on that knob!!\n");
+                //printf("hey easy on that knob!! change value:%f\n", change);
             }
             fFreqOld = fFreq;
             moog_ladder_tune();
@@ -104,10 +104,10 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramRes:
         {
             fRes   = value;
-            float change = fabs(fRes/fResOld);
+            float change = fabs(fResOld/fRes);
 
             if (change > 0.01){
-                //printf("hey easy on that knob!!\n");
+                //printf("hey easy on that knob!! change value:%f\n", change);
             }
             fResOld = fRes;
         }
@@ -121,7 +121,7 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         return;
 
     // Default values
-    fFreq = 20000.0f;
+    fFreq = 22000.0f;
     fRes = 0.0f;
 
     // reset filter values
