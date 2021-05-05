@@ -38,12 +38,12 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "RobotMoogFilterExperimental";
+        return "Robot Moog Filter";
     }
 
     const char* getDescription() const override
     {
-        return "Moog filter for reptiles";
+        return "Moog filter";
     }
 
     const char* getMaker() const noexcept override
@@ -53,7 +53,7 @@ protected:
 
     const char* getHomePage() const override
     {
-        return "Robot.home.page.missing";
+        return "robotaudio.site.non";
     }
 
     const char* getLicense() const noexcept override
@@ -63,12 +63,12 @@ protected:
 
     uint32_t getVersion() const noexcept override
     {
-        return d_version(0, 0, 1);
+        return d_version(1, 0, 0);
     }
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('R', 'b', 'F', 'l');
+        return d_cconst('R', '3', 'M', 'f');
     }
 
     // -------------------------------------------------------------------

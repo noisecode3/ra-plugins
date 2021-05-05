@@ -100,7 +100,7 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
             moog_ladder_tune();
         }
     break;
-        
+ 
     case paramRes:
         {
             fRes   = value;
@@ -188,7 +188,6 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 {
     float  res4;
     float  stg[4];
-    //float  THERMAL = 0.000025f;
 
     res4 = 4.0f * fRes * fAcr;
 
