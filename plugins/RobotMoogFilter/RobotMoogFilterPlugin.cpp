@@ -103,11 +103,14 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramFreq:
         {
             fFreq        = value;
-            float change = fabs(fFreqOld/fFreq);
-
-            if (change > 1){
-                //printf("hey easy on that knob!! change value:%f\n", change);
-            }
+            float change = fabs(fFreqOld-fFreq);
+            float oneMs  = change/21980.0f; //bigges smoothing is over 1 ms
+            float sm     = (fSampleRate/1000)*oneMs;
+            fSamplesFall = (uint8_t)sm;
+            //printf("Freq change value:%f Hz\n", change);
+            //printf("SamplesFall value:%d\n", fSamplesFall);
+            //printf("sm:%f\n", sm);
+            //printf("oneMs:%f\n", oneMs);
             fFreqOld     = fFreq;
             moog_ladder_tune();
         }
@@ -116,10 +119,10 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramRes:
         {
             fRes         = value;
-            float change = fabs(fResOld/fRes);
+            float change = fabs(fResOld-fRes);
 
             if (change > 0.01){
-                //printf("hey easy on that knob!! change value:%f\n", change);
+                //printf("hey easy on that knob!! change value:%f Res\n", change);
             }
             fResOld      = fRes;
         }
@@ -166,6 +169,8 @@ void RobotMoogFilterPlugin::activate()
     moog_ladder_tune();
     fWetVol      = 1.0f - exp(-0.01f*fWet);
     fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
+    fFreqOld     = fFreq;
+    fResOld      = fRes;
 }
 
 void RobotMoogFilterPlugin::deactivate()
