@@ -235,16 +235,12 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 
     if (fSamplesFall > 0)
     {
-        for (uint8_t i = fSamplesFall; i > 0; i--)
-        {
-            moog_ladder_tune(fFreq);
-            fSamplesFall--;
-            //printf("moog_ladder_process fSamplesFall:%d\n", fSamplesFall);
-        }
-    fSamplesFall = 0;
+        moog_ladder_tune(fFreq); // for now at where the parameter was left 
+        fSamplesFall--;
+        //printf("moog_ladder_process fSamplesFall:%d\n", fSamplesFall);
+    }    
     double_trouble = false;
-    fFreqOld = fFreq;
-    }
+    if (fSamplesFall == 0) fFreqOld = fFreq;
 
     res4 = 4.0f * fRes * fAcr;
 
