@@ -105,7 +105,9 @@ private:
 
     void  parameterSurge();
 
-    uint8_t fSamplesFall = 0; // will be needed later
+    uint8_t fSamplesFall = 0;
+
+    bool double_trouble = false;
 
     float fSampleRate, fAcr, fTune, fFreqOld, fResOld, fWetVol, fSteps;
 

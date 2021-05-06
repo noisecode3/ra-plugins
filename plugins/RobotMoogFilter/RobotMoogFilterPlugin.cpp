@@ -101,7 +101,8 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     switch (index)
     {
     case paramFreq:
-        {
+        { 
+            if (double_trouble) fFreqOld = fFreq; // if moog_ladder_process was never run inbetween, uppdate
             fFreq        = value;
             float change = fabs(fFreq-fFreqOld);
             float range  = change/21980.0f;
@@ -109,6 +110,7 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
             fSamplesFall = (uint8_t)fabs(rMs);
             if (fSamplesFall > 195) fSamplesFall = 195;
             if (fSamplesFall != 0)  fSteps = 1.0f/fSamplesFall;
+            double_trouble    = true;
             //printf("change:%f Hz\n", change);
             //printf("SamplesFall:%d\n", fSamplesFall);
             //printf("rMs:%f\n", rMs);
@@ -132,11 +134,7 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramRes:
         {
             fRes         = value;
-            float change = fabs(fResOld-fRes);
-
-            if (change > 0.01){
-                //printf("hey easy on that knob!! change value:%f Res\n", change);
-            }
+            float change = fabs(fRes-fResOld);
             fResOld      = fRes;
         }
     break;
@@ -239,10 +237,12 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     {
         for (uint8_t i = fSamplesFall; i > 0; i--)
         {
+            moog_ladder_tune(fFreq);
             fSamplesFall--;
             //printf("moog_ladder_process fSamplesFall:%d\n", fSamplesFall);
         }
     fSamplesFall = 0;
+    double_trouble = false;
     fFreqOld = fFreq;
     }
 
