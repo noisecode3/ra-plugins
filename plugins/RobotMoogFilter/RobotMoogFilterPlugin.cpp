@@ -111,6 +111,13 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
             //printf("SamplesFall value:%d\n", fSamplesFall);
             //printf("sm:%f\n", sm);
             //printf("oneMs:%f\n", oneMs);
+
+            /* If I use all numbers from x^e*n (inverse flipped form of exp() but not log)
+             * then n will allway hitt the next parameter value perfect in y
+             * but smooth and sexy but from 0 to 1 in x. the nummbers from 0 to 1 will be devided
+             * out by how manny samples is needed. If a -(x^e*n) is used the function will
+             * descend to the negative value and agin devided by n between 0 to 1*/
+
             fFreqOld     = fFreq;
             moog_ladder_tune();
         }
