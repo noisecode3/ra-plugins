@@ -103,14 +103,17 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramFreq:
         {
             fFreq        = value;
-            float change = fabs(fFreqOld-fFreq);
-            float oneMs  = change/21980.0f; //bigges smoothing is over 1 ms
-            float sm     = (fSampleRate/1000)*oneMs;
-            fSamplesFall = (uint8_t)sm;
-            //printf("Freq change value:%f Hz\n", change);
-            //printf("SamplesFall value:%d\n", fSamplesFall);
-            //printf("sm:%f\n", sm);
-            //printf("oneMs:%f\n", oneMs);
+            float change = fabs(fFreq-fFreqOld);
+            float range  = change/21980.0f;
+            float rMs    = (fSampleRate/1000)*range;
+            fSamplesFall = (uint8_t)fabs(rMs);
+            if (fSamplesFall > 195) fSamplesFall = 195;
+            if (fSamplesFall != 0)  fSteps = 1.0f/fSamplesFall;
+            //printf("change:%f Hz\n", change);
+            //printf("SamplesFall:%d\n", fSamplesFall);
+            //printf("rMs:%f\n", rMs);
+            //printf("range:%f\n", range);
+            //printf("fSteps:%f\n", fSteps);
 
             /* If I use all numbers from x^e*n (inverse flipped form of exp() but not log)
              * then n will allway hitt the next parameter value perfect in y
@@ -118,8 +121,11 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
              * out by how manny samples is needed. If a -(x^e*n) is used the function will
              * descend to the negative value and agin devided by n between 0 to 1*/
 
-            fFreqOld     = fFreq;
-            moog_ladder_tune();
+            if (fSamplesFall == 0)
+                {
+                    fFreqOld = fFreq;
+                    moog_ladder_tune(fFreq);
+                }
         }
     break;
  
@@ -173,7 +179,7 @@ void RobotMoogFilterPlugin::activate()
         fDelay[1][i]        = 0.0;
         fTanhstg[1][i % 3]  = 0.0;
     }
-    moog_ladder_tune();
+    moog_ladder_tune(fFreq);
     fWetVol      = 1.0f - exp(-0.01f*fWet);
     fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
     fFreqOld     = fFreq;
@@ -183,6 +189,11 @@ void RobotMoogFilterPlugin::activate()
 void RobotMoogFilterPlugin::deactivate()
 {
     // not sure if something needs to be done here
+}
+
+void RobotMoogFilterPlugin::parameterSurge()
+{
+    
 }
 
 float RobotMoogFilterPlugin::moog_tanh(float x)
@@ -205,11 +216,11 @@ float RobotMoogFilterPlugin::moog_tanh(float x)
     return sign * tanhf(x);
 }
 
-void RobotMoogFilterPlugin::moog_ladder_tune()
+void RobotMoogFilterPlugin::moog_ladder_tune(float freq)
 {
     float f, fc, fc2, fc3, fcr;
 
-    fc        = (fFreq / fSampleRate);
+    fc        = (freq / fSampleRate);
     f         = 0.5f * fc;
     fc2       = fc * fc;
     fc3       = fc2 * fc2;
@@ -223,6 +234,17 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 {
     float  res4;
     float  stg[4];
+
+    if (fSamplesFall > 0)
+    {
+        for (uint8_t i = fSamplesFall; i > 0; i--)
+        {
+            fSamplesFall--;
+            //printf("moog_ladder_process fSamplesFall:%d\n", fSamplesFall);
+        }
+    fSamplesFall = 0;
+    fFreqOld = fFreq;
+    }
 
     res4 = 4.0f * fRes * fAcr;
 

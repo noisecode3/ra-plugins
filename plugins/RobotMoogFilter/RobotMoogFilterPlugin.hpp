@@ -103,15 +103,17 @@ private:
     float fRes  = 0.0f;
     float fWet  = 0.0f;
 
+    void  parameterSurge();
+
     uint8_t fSamplesFall = 0; // will be needed later
 
-    float fSampleRate, fAcr, fTune, fFreqOld, fResOld, fWetVol;
+    float fSampleRate, fAcr, fTune, fFreqOld, fResOld, fWetVol, fSteps;
 
     float fDelay[2][6];
     float fTanhstg[2][3];
 
     float moog_tanh(float x);
-    void  moog_ladder_tune();
+    void  moog_ladder_tune(float freq);
     float moog_ladder_process(float in, bool chan);
     //
 
