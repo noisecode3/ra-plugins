@@ -106,6 +106,7 @@ private:
     void  parameterSurge();
 
     uint8_t fSamplesFall = 0;
+    float fChange;
 
     bool double_trouble = false;
 
