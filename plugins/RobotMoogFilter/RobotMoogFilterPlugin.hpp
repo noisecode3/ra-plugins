@@ -103,9 +103,10 @@ private:
     float fRes  = 0.0f;
     float fWet  = 0.0f;
 
-    void  parameterSurge();
+    float parameterSurge(float x, float n);
 
     uint8_t fSamplesFall = 0;
+    uint8_t fSamplesFallStart = 0;
     float fChange;
 
     bool double_trouble = false;

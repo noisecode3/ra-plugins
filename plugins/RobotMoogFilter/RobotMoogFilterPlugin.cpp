@@ -14,6 +14,7 @@
 #include "RobotMoogFilterPlugin.hpp"
 
 #define PI_F 3.1415927410125732421875f
+#define E_F  2.7182818284590452353602f
 #define THERMAL 0.000025f
 
 START_NAMESPACE_DISTRHO
@@ -104,11 +105,12 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
         { 
             if (double_trouble) fFreqOld = fFreq; // if moog_ladder_process was never run inbetween, uppdate
             fFreq        = value;
-            fChange      = fabs(fFreq-fFreqOld); // the n value
-            float range  = fChange/21980.0f;
-            float rMs    = (fSampleRate/1000)*range;
-            fSamplesFall = (uint8_t)fabs(rMs);
-            if (fSamplesFall > 195) fSamplesFall = 195;
+            fChange      = fFreq-fFreqOld; // the n value
+            float change = fabs(fChange)/21980.0f;
+            float ch2Ms  = (fSampleRate/1000)*change; //sampels of 1ms times the change(0-1) of parameter
+            fSamplesFall = (uint8_t)fabs(ch2Ms)*8;
+            fSamplesFallStart = fSamplesFall;
+            if (fSamplesFall > 212) fSamplesFall = 212;
             if (fSamplesFall != 0)  fSteps = 1.0f/fSamplesFall;
             double_trouble    = true;
             //printf("change:%f Hz\n", change);
@@ -189,9 +191,9 @@ void RobotMoogFilterPlugin::deactivate()
     // not sure if something needs to be done here
 }
 
-void RobotMoogFilterPlugin::parameterSurge()
+float RobotMoogFilterPlugin::parameterSurge(float x, float n)
 {
-    
+    return pow(x,(E_F/1.3))*n;
 }
 
 float RobotMoogFilterPlugin::moog_tanh(float x)
@@ -235,12 +237,14 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 
     if (fSamplesFall > 0)
     {
-        moog_ladder_tune(fFreq); // for now at where the parameter was left 
+        float freqAdd = parameterSurge((fSamplesFallStart-fSamplesFall)*fSteps, fChange);
+        moog_ladder_tune(fFreqOld+freqAdd);
         fSamplesFall--;
         //printf("moog_ladder_process fSamplesFall:%d\n", fSamplesFall);
+        //printf("moog_ladder_process fFreqOld+FreqAdd:%f\n", fFreqOld+freqAdd);
     }
     double_trouble = false;
-    if (fSamplesFall == 0) fFreqOld = fFreq;
+    if (fSamplesFall == 0) moog_ladder_tune(fFreqOld = fFreq);
 
     res4 = 4.0f * fRes * fAcr;
 
