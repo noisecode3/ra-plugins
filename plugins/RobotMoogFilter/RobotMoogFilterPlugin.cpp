@@ -15,7 +15,7 @@
 
 #define PI_F 3.1415927410125732421875f
 #define E_F  2.7182818284590452353602f
-#define THERMAL 0.000025f
+#define THERMAL 0.000026f
 
 START_NAMESPACE_DISTRHO
 
@@ -103,50 +103,27 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     {
     case paramFreq:
         { 
-            if (double_trouble) fFreqOld = fFreq; // if moog_ladder_process was never run inbetween, uppdate
             fFreq        = value;
-            fChange      = fFreq-fFreqOld; // the n value
-            float change = fabs(fChange)/21980.0f;
-            float ch2Ms  = (fSampleRate/1000)*change; //sampels of 1ms times the change(0-1) of parameter
-            fSamplesFall = (uint8_t)fabs(ch2Ms)*8;
-            fSamplesFallStart = fSamplesFall;
-            if (fSamplesFall > 212) fSamplesFall = 212;
-            if (fSamplesFall != 0)  fSteps = 1.0f/fSamplesFall;
-            double_trouble    = true;
-            //printf("change:%f Hz\n", change);
-            //printf("SamplesFall:%d\n", fSamplesFall);
-            //printf("rMs:%f\n", rMs);
-            //printf("range:%f\n", range);
-            //printf("fSteps:%f\n", fSteps);
-
-            /* If I use all numbers from x^e*n then n will allways hitt the next parameter value perfect in y
-             * (between fFreqOld and fFreq in y) but from 0 to 1 in x. The nummbers from 0 to 1 will be devided
-             * out by how many samples is needed. If a -(x^e*n) is used the function will descend to the negative value
-             * (if fFreq < fFreqOld) and agin devided by fSamplesFall and recalculate from FfreqOld to fFreq between 0 to 1
-             * in the form of steps in x*/
-
-            if (fSamplesFall == 0)
-                {
-                    fFreqOld = fFreq;
-                    moog_ladder_tune(fFreq);
-                }
+            fChangeFreq  = fFreq-fFreqOld; // the n value
+            fFreqFall    = true;
         }
     break;
  
     case paramRes:
         {
             fRes         = value;
-            float change = fabs(fRes-fResOld);
-            fResOld      = fRes;
+            fChangeRes   = fRes-fResOld;
+            fResFall     = true;
         }
     break;
 
     case paramWet:
         {
             fWet         = value;
-            fWetVol      = 1.0f - exp(-0.01f*fWet);
-            fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
-            //printf("fWetVol:%f\n", fWetVol);
+            fChangeWet   = fWet-fWetOld;
+            fWetFall     = true;
+            //fWetVol      = 1.0f - exp(-0.01f*fWet);
+            //fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
         }
     break;
     }
@@ -193,7 +170,7 @@ void RobotMoogFilterPlugin::deactivate()
 
 float RobotMoogFilterPlugin::parameterSurge(float x, float n)
 {
-    return pow(x,(E_F/1.3))*n;
+    return x*n;
 }
 
 float RobotMoogFilterPlugin::moog_tanh(float x)
@@ -235,18 +212,39 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     float  res4;
     float  stg[4];
 
-    if (fSamplesFall > 0)
+    if (fSamplesFallFreq > 1)
     {
-        float freqAdd = parameterSurge((fSamplesFallStart-fSamplesFall)*fSteps, fChange);
+        float steps   = 1.0f/fFrames;
+        float freqAdd = parameterSurge((fFrames-fSamplesFallFreq+1)*steps, fChangeFreq);
         moog_ladder_tune(fFreqOld+freqAdd);
-        fSamplesFall--;
-        //printf("moog_ladder_process fSamplesFall:%d\n", fSamplesFall);
-        //printf("moog_ladder_process fFreqOld+FreqAdd:%f\n", fFreqOld+freqAdd);
+        fSamplesFallFreq--;
     }
-    double_trouble = false;
-    if (fSamplesFall == 0) moog_ladder_tune(fFreqOld = fFreq);
+    else { moog_ladder_tune(fFreqOld = fFreq); fFreqFall = false;}
 
-    res4 = 4.0f * fRes * fAcr;
+    if (fSamplesFallRes > 1)
+    {
+        float steps  = 1.0f/fFrames;
+        float resAdd = parameterSurge((fFrames-fSamplesFallRes+1)*steps, fChangeRes);
+        res4         = 4.0f * (fResOld+resAdd) * fAcr;
+        fSamplesFallRes--;
+    }
+    else { fResOld = fRes; res4 = 4.0f * fRes * fAcr; fResFall = false; }
+
+    if (fSamplesFallWet > 1)
+    {
+        float steps  = 1.0f/fFrames;
+        float wetAdd = parameterSurge((fFrames-fSamplesFallWet+1)*steps, fChangeWet);
+        fWetVol      = 1.0f - exp(-0.01f*(fWetOld+wetAdd));
+        fWetVol      = fWetVol + 0.367878*(0.01f*(fWetOld+wetAdd));
+        fSamplesFallWet--;
+    }
+    else
+    {
+        fWetOld      = fWet;
+        fWetVol      = 1.0f - exp(-0.01f*fWet);
+        fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
+        fWetFall     = false;
+    }
 
     for(int j = 0; j < 2; j++)
     {
@@ -275,6 +273,11 @@ void RobotMoogFilterPlugin::run(const float** inputs, float** outputs, uint32_t 
     const float* in2  = inputs[1];
     float*       out1 = outputs[0];
     float*       out2 = outputs[1];
+
+    fFrames = frames;
+    if (fFreqFall) fSamplesFallFreq = frames;
+    if (fResFall)  fSamplesFallRes  = frames;
+    if (fWetFall)  fSamplesFallWet  = frames;
 
     for (uint32_t i=0; i < frames; ++i)
     {

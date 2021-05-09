@@ -105,13 +105,21 @@ private:
 
     float parameterSurge(float x, float n);
 
-    uint8_t fSamplesFall = 0;
-    uint8_t fSamplesFallStart = 0;
-    float fChange;
+    uint32_t fSamplesFallFreq;
+    bool     fFreqFall;
+    float    fChangeFreq;
 
-    bool double_trouble = false;
+    uint32_t fSamplesFallRes;
+    bool     fResFall;
+    float    fChangeRes;
 
-    float fSampleRate, fAcr, fTune, fFreqOld, fResOld, fWetVol, fSteps;
+    uint32_t fSamplesFallWet;
+    bool     fWetFall;
+    float    fChangeWet;
+
+    uint32_t fFrames;
+
+    float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld;
 
     float fDelay[2][6];
     float fTanhstg[2][3];
