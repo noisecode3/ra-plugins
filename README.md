@@ -1,6 +1,17 @@
 # Robot Audio Plugins
-
-I'm right now porting some filters here to linux dpf-plugins from synths/dsp-libs or other rt plugins/code that have license that allow me to do so. I also have some of my own "home brewed/half made" plugins that I'm gonna push here when they are whole and finished with no wild experimental parts and dirty code left in them.
+This is a work in progress!
 
 ## Moog filter
 This is a classic filter. It can be used to boost frequencies with the resonance knob and wet knob to blend it in and more like a low pass or base boost filter with only the wet and frequency knob.
+
+# Prepare
+You need to have mesa headers and basic build tools from you're distribution. make install will install in you home folder, in the future I will make root installation.
+
+installation:
+=============
+
+    git clone https://github.com/noisecode3/ra-plugins
+    cd ra-plugins
+    git submodule update --init
+    make
+    make install
