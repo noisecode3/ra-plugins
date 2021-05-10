@@ -102,9 +102,9 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     switch (index)
     {
     case paramFreq:
-        { 
+        {
             fFreq        = value;
-            fChangeFreq  = fFreq-fFreqOld; // the n value
+            fChangeFreq  = fFreq-fFreqOld;
             fFreqFall    = true;
         }
     break;
@@ -122,8 +122,6 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
             fWet         = value;
             fChangeWet   = fWet-fWetOld;
             fWetFall     = true;
-            //fWetVol      = 1.0f - exp(-0.01f*fWet);
-            //fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
         }
     break;
     }
@@ -136,7 +134,8 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
 
     // Default values
     fFreq = 22000.0f;
-    fRes = 0.0f;
+    fRes  = 0.0f;
+    fWet  = 0.0f;
 
     // reset filter values
     activate();
@@ -156,16 +155,25 @@ void RobotMoogFilterPlugin::activate()
         fDelay[1][i]        = 0.0;
         fTanhstg[1][i % 3]  = 0.0;
     }
+
     moog_ladder_tune(fFreq);
     fWetVol      = 1.0f - exp(-0.01f*fWet);
     fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
     fFreqOld     = fFreq;
     fResOld      = fRes;
+    fWetOld      = fWet;
+    //printf("fWetVol%f\n", fWetVol);
 }
 
 void RobotMoogFilterPlugin::deactivate()
 {
-    // not sure if something needs to be done here
+    /*for(int i = 0; i < 6; i++)
+    {
+        fDelay[0][i]        = 0.0;
+        fTanhstg[0][i % 3]  = 0.0;
+        fDelay[1][i]        = 0.0;
+        fTanhstg[1][i % 3]  = 0.0;
+    }*/
 }
 
 float RobotMoogFilterPlugin::parameterSurge(float x, float n)
@@ -212,6 +220,9 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     float  res4;
     float  stg[4];
 
+// -----------------------------------------------------------------------
+// Parameters
+
     if (fSamplesFallFreq > 1)
     {
         float steps   = 1.0f/fFrames;
@@ -245,6 +256,9 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
         fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
         fWetFall     = false;
     }
+
+// -----------------------------------------------------------------------
+// Filter
 
     for(int j = 0; j < 2; j++)
     {
@@ -281,8 +295,18 @@ void RobotMoogFilterPlugin::run(const float** inputs, float** outputs, uint32_t 
 
     for (uint32_t i=0; i < frames; ++i)
     {
-        out1[i] = (in1[i]*(1.0f-fWetVol)) + (moog_ladder_process(in1[i], 0)*fWetVol);
-        out2[i] = (in2[i]*(1.0f-fWetVol)) + (moog_ladder_process(in2[i], 1)*fWetVol);
+        float fout1, fout2;
+
+        fout1   = (in1[i]*(1.0f-fWetVol)) + (moog_ladder_process(in1[i], 0)*fWetVol);
+        fout2   = (in2[i]*(1.0f-fWetVol)) + (moog_ladder_process(in2[i], 1)*fWetVol);
+
+        if (fout1 >  1.0f) fout1 =  1.0f;
+        if (fout1 < -1.0f) fout1 = -1.0f;
+        if (fout2 >  1.0f) fout2 =  1.0f;
+        if (fout2 < -1.0f) fout2 = -1.0f;
+
+        out1[i] = fout1;
+        out2[i] = fout2;
     }
 }
 

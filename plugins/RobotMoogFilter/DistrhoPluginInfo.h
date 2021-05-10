@@ -16,7 +16,7 @@
 
 #define DISTRHO_PLUGIN_BRAND "Robot Audio"
 #define DISTRHO_PLUGIN_NAME  "Robot Moog Filter"
-#define DISTRHO_PLUGIN_URI   "robotaudio.site.non"
+#define DISTRHO_PLUGIN_URI   "https://github.com/noisecode3/ra-plugins"
 
 #define DISTRHO_PLUGIN_HAS_UI        0
 #define DISTRHO_PLUGIN_IS_RT_SAFE    1

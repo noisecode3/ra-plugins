@@ -40,11 +40,11 @@ ifeq ($(HAVE_DGL),true)
 #endif
 endif
 
-ifeq ($(HAVE_DGL),true)
-TARGETS += lv2_sep
-else
+#ifeq ($(HAVE_DGL),true)
+#TARGETS += lv2_sep
+#else
 TARGETS += lv2_dsp
-endif
+#endif
 
 all: $(TARGETS)
 

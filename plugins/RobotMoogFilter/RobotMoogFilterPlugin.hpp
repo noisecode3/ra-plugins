@@ -49,12 +49,12 @@ protected:
 
     const char* getMaker() const noexcept override
     {
-        return "noisecode3";
+        return "Robot Audio";
     }
 
     const char* getHomePage() const override
     {
-        return "robotaudio.site.non";
+        return "https://github.com/noisecode3/ra-plugins";
     }
 
     const char* getLicense() const noexcept override
@@ -121,8 +121,8 @@ private:
 
     float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld;
 
-    float fDelay[2][6];
-    float fTanhstg[2][3];
+    float fDelay[2][6]   = { 0 };
+    float fTanhstg[2][3] = { 0 };
 
     float moog_tanh(float x);
     void  moog_ladder_tune(float freq);
