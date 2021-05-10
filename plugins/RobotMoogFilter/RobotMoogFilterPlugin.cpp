@@ -158,7 +158,7 @@ void RobotMoogFilterPlugin::activate()
     }
     moog_ladder_tune(fFreq);
     fWetVol      = 1.0f - exp(-0.01f*fWet);
-    fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
+    fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
     fFreqOld     = fFreq;
     fResOld      = fRes;
 }
@@ -235,14 +235,14 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
         float steps  = 1.0f/fFrames;
         float wetAdd = parameterSurge((fFrames-fSamplesFallWet+1)*steps, fChangeWet);
         fWetVol      = 1.0f - exp(-0.01f*(fWetOld+wetAdd));
-        fWetVol      = fWetVol + 0.367878*(0.01f*(fWetOld+wetAdd));
+        fWetVol      = fWetVol + 0.367879*(0.01f*(fWetOld+wetAdd));
         fSamplesFallWet--;
     }
     else
     {
         fWetOld      = fWet;
         fWetVol      = 1.0f - exp(-0.01f*fWet);
-        fWetVol      = fWetVol + 0.367878*(0.01f*fWet);
+        fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
         fWetFall     = false;
     }
 
