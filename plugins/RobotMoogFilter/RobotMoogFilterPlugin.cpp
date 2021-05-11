@@ -95,10 +95,13 @@ float RobotMoogFilterPlugin::getParameterValue(uint32_t index) const
     {
     case paramFreq:
         return fFreq;
+
     case paramRes:
         return fRes;
+
     case paramWet:
         return fWet;
+
     default:
         return 0.0f;
     }
@@ -112,28 +115,22 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
     switch (index)
     {
     case paramFreq:
-        {
-            fFreq        = value;
-            fChangeFreq  = fFreq-fFreqOld;
-            fFreqFall    = true;
-        }
-    break;
- 
+        fFreq        = value;
+        fChangeFreq  = fFreq-fFreqOld;
+        fFreqFall    = true;
+        break;
+
     case paramRes:
-        {
-            fRes         = value;
-            fChangeRes   = fRes-fResOld;
-            fResFall     = true;
-        }
-    break;
+        fRes         = value;
+        fChangeRes   = fRes-fResOld;
+        fResFall     = true;
+        break;
 
     case paramWet:
-        {
-            fWet         = value;
-            fChangeWet   = fWet-fWetOld;
-            fWetFall     = true;
-        }
-    break;
+        fWet         = value;
+        fChangeWet   = fWet-fWetOld;
+        fWetFall     = true;
+        break;
     }
 }
 
@@ -142,15 +139,14 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
     switch (index)
     {
     case 0:
-        {
-            // Parameter values
-            fFreq = 22000.0f;
-            fRes  = 0.0f;
-            fWet  = 0.0f;
+        // Parameter values
+        fFreq = 22000.0f;
+        fRes  = 0.0f;
+        fWet  = 0.0f;
 
-            // reset filter values
-            activate();
-        }
+        // reset filter values
+        activate();
+        break;
     }
 }
 
@@ -236,7 +232,7 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
         moog_ladder_tune(fFreqOld+freqAdd);
         fSamplesFallFreq--;
     }
-    else { moog_ladder_tune(fFreqOld = fFreq); fFreqFall = false;}
+    else { moog_ladder_tune(fFreqOld = fFreq); fFreqFall = false; }
 
     if (fSamplesFallRes > 1)
     {
@@ -245,7 +241,7 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
         res4         = 4.0f * (fResOld+resAdd) * fAcr;
         fSamplesFallRes--;
     }
-    else { fResOld = fRes; res4 = 4.0f * fRes * fAcr; fResFall = false; }
+    else { res4 = 4.0f * (fResOld = fRes) * fAcr; fResFall = false; }
 
     if (fSamplesFallWet > 1)
     {
