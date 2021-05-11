@@ -2,8 +2,8 @@
  *  Robot Audio Plugins
  *  Copyright (C) 2021  Martin Bångens
  *
- *  Programing style original from https://github.com/DISTRHO/DPF-Plugins
- *  Dsp algorithms original from https://github.com/electro-smith/DaisySP
+ *  Programing style originally from https://github.com/DISTRHO/DPF-Plugins
+ *  Dsp algorithms originally from https://github.com/electro-smith/DaisySP
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -223,11 +223,11 @@ void RobotMoogFilterPlugin::moog_ladder_tune(float freq)
 
 float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 {
-    float  res4;
-    float  stg[4];
 
 // -----------------------------------------------------------------------
 // Parameters
+
+    float  res4;
 
     if (fSamplesFallFreq > 1)
     {
@@ -265,6 +265,8 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
 
 // -----------------------------------------------------------------------
 // Filter
+
+    float  stg[4];
 
     for(int j = 0; j < 2; j++)
     {
