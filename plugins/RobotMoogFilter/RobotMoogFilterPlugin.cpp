@@ -30,7 +30,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 RobotMoogFilterPlugin::RobotMoogFilterPlugin()
-    : Plugin(paramCount, 1, 0) // parameters, program, states
+    : Plugin(paramCount, 7, 0) // parameters, program, states
 {
     // set default values
     loadProgram(0);
@@ -82,6 +82,24 @@ void RobotMoogFilterPlugin::initProgramName(uint32_t index, String& programName)
     {
         case 0:
             programName = "Default";
+            break;
+        case 1:
+            programName = "Low Warm";
+            break;
+        case 2:
+            programName = "Low Glass";
+            break;
+        case 3:
+            programName = "UFO Dream";
+            break;
+        case 4:
+            programName = "Spicy Crisp";
+            break;
+        case 5:
+            programName = "Dune Tones";
+            break;
+        case 6:
+            programName = "Bass Boost (Parallel Track)";
             break;
     }
 }
@@ -139,12 +157,52 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
     switch (index)
     {
     case 0:
-        // Parameter values
+        // Default
         fFreq = 22000.0f;
         fRes  = 0.0f;
         fWet  = 0.0f;
-
-        // reset filter values
+        activate();
+        break;
+    case 1:
+        // Low Warm
+        fFreq = 1500.0f;
+        fRes  = 0.5f;
+        fWet  = 80.0f;
+        activate();
+        break;
+    case 2:
+        // Low Glass
+        fFreq = 811.0f;
+        fRes  = 0.78f;
+        fWet  = 50.0f;
+        activate();
+        break;
+    case 3:
+        // UFO Dream
+        fFreq = 4680.0f;
+        fRes  = 0.95f;
+        fWet  = 80.0f;
+        activate();
+        break;
+    case 4:
+        // Spicy Crisp
+        fFreq = 16637.0f;
+        fRes  = 0.85f;
+        fWet  = 40.0f;
+        activate();
+        break;
+    case 5:
+        // Dune Tones
+        fFreq = 12153.0f;
+        fRes  = 0.92f;
+        fWet  = 30.0f;
+        activate();
+        break;
+    case 6:
+        // Bass Boost (Parallel Track)
+        fFreq = 107.0f;
+        fRes  = 0.62f;
+        fWet  = 100.0f;
         activate();
         break;
     }
@@ -159,10 +217,14 @@ void RobotMoogFilterPlugin::activate()
 
     for(int i = 0; i < 6; i++)
     {
-        fDelay[0][i]        = 0.0;
-        fTanhstg[0][i % 3]  = 0.0;
-        fDelay[1][i]        = 0.0;
-        fTanhstg[1][i % 3]  = 0.0;
+        fDelay[0][i]     = 0.0;
+        fDelay[1][i]     = 0.0;
+    }
+
+    for(int i = 0; i < 3; i++)
+    {
+        fTanhstg[0][i]   = 0.0;
+        fTanhstg[1][i]   = 0.0;
     }
 
     moog_ladder_tune(fFreq);
