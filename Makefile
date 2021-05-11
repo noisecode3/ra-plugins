@@ -25,9 +25,7 @@ plugins: dgl
 	$(MAKE) all -C plugins/RobotMoogFilter
 
 gen: plugins dpf/utils/lv2_ttl_generator
-#ifeq ($(CAN_GENERATE_TTL),true)
 	@$(CURDIR)/dpf/utils/generate-ttl.sh
-#endif
 
 dpf/utils/lv2_ttl_generator:
 	$(MAKE) -C dpf/utils/lv2-ttl-generator

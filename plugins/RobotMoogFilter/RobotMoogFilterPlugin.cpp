@@ -2,6 +2,9 @@
  *  Robot Audio Plugins
  *  Copyright (C) 2021  Martin Bångens
  *
+ *  Programing style original from https://github.com/DISTRHO/DPF-Plugins
+ *  Dsp algorithms original from https://github.com/electro-smith/DaisySP
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +30,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 RobotMoogFilterPlugin::RobotMoogFilterPlugin()
-    : Plugin(paramCount, 1, 0) // 1 program, 0 states
+    : Plugin(paramCount, 1, 0) // parameters, program, states
 {
     // set default values
     loadProgram(0);
@@ -75,10 +78,12 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
 
 void RobotMoogFilterPlugin::initProgramName(uint32_t index, String& programName)
 {
-    if (index != 0)
-        return;
-
-    programName = "Default";
+    switch (index)
+    {
+        case 0:
+            programName = "Default";
+            break;
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -134,16 +139,19 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
 
 void RobotMoogFilterPlugin::loadProgram(uint32_t index)
 {
-    if (index != 0)
-        return;
+    switch (index)
+    {
+    case 0:
+        {
+            // Parameter values
+            fFreq = 22000.0f;
+            fRes  = 0.0f;
+            fWet  = 0.0f;
 
-    // Default values
-    fFreq = 22000.0f;
-    fRes  = 0.0f;
-    fWet  = 0.0f;
-
-    // reset filter values
-    activate();
+            // reset filter values
+            activate();
+        }
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -167,18 +175,11 @@ void RobotMoogFilterPlugin::activate()
     fFreqOld     = fFreq;
     fResOld      = fRes;
     fWetOld      = fWet;
-    //printf("fWetVol%f\n", fWetVol);
 }
 
 void RobotMoogFilterPlugin::deactivate()
 {
-    /*for(int i = 0; i < 6; i++)
-    {
-        fDelay[0][i]        = 0.0;
-        fTanhstg[0][i % 3]  = 0.0;
-        fDelay[1][i]        = 0.0;
-        fTanhstg[1][i % 3]  = 0.0;
-    }*/
+
 }
 
 float RobotMoogFilterPlugin::parameterSurge(float x, float n)

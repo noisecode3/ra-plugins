@@ -2,6 +2,8 @@
  *  Robot Audio Plugins
  *  Copyright (C) 2021  Martin Bångens
  *
+ *  Programing style original from https://github.com/DISTRHO/DPF-Plugins
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -101,9 +103,9 @@ protected:
 
 private:
 
-    //MoogLadder
+    // -------------------------------------------------------------------
+    // Parameters
 
-    //Parameters
     float fFreq = 22000.0f;
     float fRes  = 0.0f;
     float fWet  = 0.0f;
@@ -124,6 +126,9 @@ private:
 
     uint32_t fFrames;
 
+    // -------------------------------------------------------------------
+    // Dsp 
+
     float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld;
 
     float fDelay[2][6]   = { 0 };
@@ -132,7 +137,8 @@ private:
     float moog_tanh(float x);
     void  moog_ladder_tune(float freq);
     float moog_ladder_process(float in, bool chan);
-    //
+
+    // -------------------------------------------------------------------
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotMoogFilterPlugin)
 };
