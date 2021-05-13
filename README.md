@@ -15,3 +15,10 @@ installation:
     git submodule update --init
     make
     make install
+
+## Plugins Todo
+ - TVdistortion (dynamic distortion)
+ - Bark (MIDI trigger/sidechain compressor)
+ - Burn (saturation)
+ - LFO (MIDI CC controller LFO, inspired by Renoise LFO)
+ - RandomMIDICC (done, but need rework/review the code)
