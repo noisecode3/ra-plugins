@@ -143,19 +143,18 @@ private:
 
     float fCutOffOld, fResOld, fGainOld, fWetOld, fWetVol;
 
-	float s1,s2,s3,s4;
-	float fSampleRate;
-	float fSampleRateInv;
-    float d, c;
-	float R24;
-	float rcor24,rcor24Inv;
+    float s1[2],s2[2],s3[2],s4[2];
+    float fSampleRate;
+    float fSampleRateInv;
+    float d[2], c[2];
+    float R24;
+    float rcor24,rcor24Inv;
     float bright;
-    int   R;
- 
-	// 24 db multimode
-    float mm;
-	float mmt;
-	int   mmch;
+    //int   R;
+
+    // 24 db multimode
+    float mmt; //TODO
+    int   mmch;//TODO
 
     float dc_tmp[2];
     float dc_r;
@@ -163,7 +162,7 @@ private:
     float logsc(float param, const float min, const float max, const float rolloff);
     float tptpc(float& state, float inp, float cutoff);
     float tptlpupw(float& state , float inp, float cutoff, float srInv);
-    float NR24(float sample, float g, float lpc);
+    float NR24(float sample, float g, float lpc, bool chan);
     float dexed_filter_process(float x, bool chan);
 
     // -------------------------------------------------------------------

@@ -73,9 +73,9 @@ void RobotDexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Gain";
         parameter.symbol     = "volt";
         parameter.unit       = "v";
-        parameter.ranges.def = 0.0f;
+        parameter.ranges.def = 1.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 1.0f;
+        parameter.ranges.max = 4.0f;
         break;
 
     case paramWet:
@@ -166,7 +166,7 @@ void RobotDexedFilterPlugin::loadProgram(uint32_t index)
         // Default
         fCutOff = 1.0f;
         fRes    = 0.0f;
-        fGain   = 0.0f;
+        fGain   = 1.0f;
         fWet    = 0.0f;
         activate();
         break;
@@ -182,35 +182,29 @@ void RobotDexedFilterPlugin::activate()
     fSampleRate = (float)getSampleRate();
     fSampleRateInv = 1/fSampleRate;
 
-    fWetVol      = 1.0f - exp(-0.01f*fWet);
+    fWetVol      = 1.0f - exp(-0.01f*fWet); //TODO get rid of fWetVol from activate
     fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
     fCutOffOld   = fCutOff;
     fResOld      = fRes;
     fGainOld     = fGain;
     fWetOld      = fWet;
 
-    /*
-    mm=0;
-    s1=s2=s3=s4=c=d=0;
+    s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
+    s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
+    
     R24=0;
 
-    mmch = (int)(mm * 3);
-    mmt = mm*3-mmch;
+    int mm = 0;
 
-    float rcrate =sqrt((44000/sampleRate));
+    mmch = (int)(mm * 3); //TODO this are nuts without a nutcracker
+    mmt  = mm * 3 - mmch;
+
+    float rcrate = sqrt((44000/fSampleRate));
     rcor24 = (970.0 / 44000)*rcrate;
     rcor24Inv = 1 / rcor24;
 
-    bright = tan((sampleRate*0.5f-10) * juce::float_Pi * sampleRateInv);
+    bright = tan((fSampleRate*0.5f-10) * PI_F * fSampleRateInv);
 
-    R = 1;
-    rcor = (480.0 / 44000)*rcrate;
-    rcorInv = 1 / rcor;
-    bandPassSw = false;
-
-    pCutoff = -1;
-    pReso = -1;
-*/
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
     dc_tmp[1] = 0; 
@@ -233,33 +227,57 @@ float RobotDexedFilterPlugin::logsc(float param, const float min, const float ma
 
 float RobotDexedFilterPlugin::tptpc(float& state, float inp, float cutoff)
 {
-    double v = (inp - state) * cutoff / (1 + cutoff);
+    double v   = (inp - state) * cutoff / (1 + cutoff);
     double res = v + state;
-    state = res + v;
+    state      = res + v;
     return res;
 }
 
-float RobotDexedFilterPlugin::tptlpupw(float& state , float inp, float cutoff, float srInv)
+float RobotDexedFilterPlugin::tptlpupw(float& state, float inp, float cutoff, float srInv)
 {
-    cutoff = (cutoff * srInv)* PI_F;
-    double v = (inp - state) * cutoff / (1 + cutoff);
+    cutoff     = (cutoff * srInv)* PI_F;
+    double v   = (inp - state) * cutoff / (1 + cutoff);
     double res = v + state;
-    state = res + v;
+    state      = res + v;
     return res;
 }
 
-float RobotDexedFilterPlugin::NR24(float sample,float g,float lpc)
+float RobotDexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
-    float S = (lpc*(lpc*(lpc*s1 + s2) + s3) +s4)*ml;
-    float G = lpc*lpc*lpc*lpc;
-    float y = (sample - R24 * S) / (1 + R24*G);
+    float S  = (lpc*(lpc*(lpc*s1[chan] + s2[chan]) + s3[chan]) +s4[chan])*ml;
+    float G  = lpc*lpc*lpc*lpc;
+    float y  = (sample - R24 * S) / (1 + R24*G);
     return y + 1e-8;
 }
 
 float RobotDexedFilterPlugin::dexed_filter_process(float x, bool chan)
 {
 
+    float rCutoff;
+    float rReso;
+    float uiCutoff;
+    float uiReso;
+
+    if (fSamplesFallCutOff > 1)
+    {
+        float steps   = 1.0f/fFrames;
+        float cutoffAdd = parameterSurge((fFrames-fSamplesFallCutOff+1)*steps, fChangeCutOff);
+        
+        uiCutoff = fCutOffOld+cutoffAdd;
+        
+        fSamplesFallCutOff--;
+    }
+    else { uiCutoff = fCutOffOld = fCutOff; fCutOffFall = false; } //TODO dont do else here
+
+    if (fSamplesFallRes > 1)
+    {
+        float steps  = 1.0f/fFrames;
+        float resAdd = parameterSurge((fFrames-fSamplesFallRes+1)*steps, fChangeRes);
+        uiReso       = fResOld+resAdd;
+        fSamplesFallRes--;
+    }
+    else { uiReso = fResOld = fRes; fResFall = false; }
 
     if (fSamplesFallWet > 1)
     {
@@ -281,79 +299,60 @@ float RobotDexedFilterPlugin::dexed_filter_process(float x, bool chan)
     // basic DC filter, this removes a super tiny bit of low
 
     float dc_prev = x;
-    x = x - dc_tmp[chan] + dc_r * dc_tmp[chan];
-    dc_tmp[chan] = dc_prev;
+                x = x - dc_tmp[chan] + dc_r * dc_tmp[chan];
+     dc_tmp[chan] = dc_prev;
 
-    return x;
-/*
-    if ( uiGain != 1 ) {
-        for(int i=0; i < sampleSize; i++ )
-            work[i] *= uiGain;
-    }
+    
+    // TODO dont calculate rReso and rCutoff for every sample 
+    
+    rReso = (0.991-logsc(1-uiReso,0,0.991));
+    R24   = 3.5 * rReso;
 
-    // don't apply the LPF if the cutoff is to maximum
-    if ( uiCutoff == 1 )
-        return;
+    float cutoffNorm = logsc(uiCutoff,60,19000);
+    rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
 
-    if ( uiCutoff != pCutoff || uiReso != pReso ) {
-        rReso = (0.991-logsc(1-uiReso,0,0.991));
-        R24 = 3.5 * rReso;
-
-        float cutoffNorm = logsc(uiCutoff,60,19000);
-        rCutoff = (float)tan(cutoffNorm * sampleRateInv * juce::float_Pi);
-
-        pCutoff = uiCutoff;
-        pReso = uiReso;
-
-        R = 1 - rReso;
-    }
-
-    // THIS IS MY FAVORITE 4POLE OBXd filter
-
-    // maybe smooth this value
-    float g = rCutoff;
+    float g   = rCutoff;
     float lpc = g / (1 + g);
 
-    for(int i=0; i < sampleSize; i++ ) {
-        float s = work[i];
-        s = s - 0.45*tptlpupw(c,s,15,sampleRateInv);
-        s = tptpc(d,s,bright);
+    float s = x;
+    s       = s - 0.45*tptlpupw(c[chan],s,15,fSampleRateInv);
+    s       = tptpc(d[chan],s,bright);
 
-        float y0 = NR24(s,g,lpc);
+    float y0 = NR24(s,g,lpc,chan);
 
-        //first low pass in cascade
-        double v = (y0 - s1) * lpc;
-        double res = v + s1;
-        s1 = res + v;
+    //first low pass in cascade
+    double v   = (y0 - s1[chan]) * lpc;
+    double res =   v + s1[chan];
+    s1[chan]   = res + v;
 
-        //damping
-        s1 =atan(s1*rcor24)*rcor24Inv;
-        float y1= res;
-        float y2 = tptpc(s2,y1,g);
-        float y3 = tptpc(s3,y2,g);
-        float y4 = tptpc(s4,y3,g);
-        float mc;
+    //damping
+    s1[chan] = atan(s1[chan]*rcor24)*rcor24Inv;
+    float y1 = res;
+    float y2 = tptpc(s2[chan],y1,g);
+    float y3 = tptpc(s3[chan],y2,g);
+    float y4 = tptpc(s4[chan],y3,g);
+    float mc = 0.0f;
 
-        switch(mmch) {
-            case 0:
-                mc = ((1 - mmt) * y4 + (mmt) * y3);
-                break;
-            case 1:
-                mc = ((1 - mmt) * y3 + (mmt) * y2);
-                break;
-            case 2:
-                mc = ((1 - mmt) * y2 + (mmt) * y1);
-                break;
-            case 3:
-                mc = y1;
-                break;
-        }
+    //TODO investigate and handel mmch and mmt, this is some weird scary shit
+    switch(mmch)
+    {
+        case 0:
+            mc = ((1 - mmt) * y4 + (mmt) * y3);
+            break;
+        case 1:
+            mc = ((1 - mmt) * y3 + (mmt) * y2);
+            break;
+        case 2:
+            mc = ((1 - mmt) * y2 + (mmt) * y1);
+            break;
+        case 3:
+            mc = y1;
+            break;
+    }
 
-        //half volume comp
-        work[i] = mc * (1 + R24 * 0.45);
-    }*/
+    //half volume comp
+    return mc * (1 + R24 * 0.45);
 }
-
 
 void RobotDexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 {
@@ -372,8 +371,8 @@ void RobotDexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
     {
         float fout1, fout2;
 
-        fout1   = (in1[i]*(1.0f-fWetVol)) + (dexed_filter_process(in1[i], 0)*fWetVol);
-        fout2   = (in2[i]*(1.0f-fWetVol)) + (dexed_filter_process(in2[i], 1)*fWetVol);
+        fout1   = ((in1[i]*(1.0f-fWetVol)) + (dexed_filter_process(in1[i], 0)*fWetVol))*fGain;
+        fout2   = ((in2[i]*(1.0f-fWetVol)) + (dexed_filter_process(in2[i], 1)*fWetVol))*fGain;
 
         if (fout1 >  1.0f) fout1 =  1.0f;
         if (fout1 < -1.0f) fout1 = -1.0f;
