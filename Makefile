@@ -23,6 +23,7 @@ endif
 plugins: dgl
 	# Plugins
 	$(MAKE) all -C plugins/RobotMoogFilter
+	#$(MAKE) all -C plugins/RobotDexedFilter
 
 gen: plugins dpf/utils/lv2_ttl_generator
 	@$(CURDIR)/dpf/utils/generate-ttl.sh
@@ -38,6 +39,7 @@ clean:
 
 	# Plugins
 	$(MAKE) clean -C plugins/RobotMoogFilter
+	#$(MAKE) clean -C plugins/RobotDexedFilter
 
 # --------------------------------------------------------------
 
@@ -54,7 +56,8 @@ install:
 	cp -r bin/*.lv2   $(DESTDIR)$(PREFIX)/.lv2/
 
 ifeq ($(HAVE_JACK),true)
-	#install -m 755 bin/RobotFilter$(APP_EXT)       $(DESTDIR)$(PREFIX)/.local/bin/
+	#install -m 755 bin/RobotMoogFilter$(APP_EXT)       $(DESTDIR)$(PREFIX)/.local/bin/
+	#install -m 755 bin/RobotDexedFilter$(APP_EXT)      $(DESTDIR)$(PREFIX)/.local/bin/
 endif # HAVE_JACK
 
 # --------------------------------------------------------------

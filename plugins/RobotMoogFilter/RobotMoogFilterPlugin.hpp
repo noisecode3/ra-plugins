@@ -34,6 +34,7 @@ public:
     {
         paramFreq = 0,
         paramRes,
+        paramGain,
         paramWet,
         paramCount
     };
@@ -66,7 +67,7 @@ protected:
 
     const char* getLicense() const noexcept override
     {
-        return "LGPL";
+        return "GPL";
     }
 
     uint32_t getVersion() const noexcept override
@@ -108,6 +109,7 @@ private:
 
     float fFreq = 22000.0f;
     float fRes  = 0.0f;
+    float fGain = 1.0f;
     float fWet  = 0.0f;
 
     float parameterSurge(float x, float n);
@@ -120,6 +122,10 @@ private:
     bool     fResFall;
     float    fChangeRes;
 
+    uint32_t fSamplesFallGain;
+    bool     fGainFall;
+    float    fChangeGain;
+
     uint32_t fSamplesFallWet;
     bool     fWetFall;
     float    fChangeWet;
@@ -129,7 +135,7 @@ private:
     // -------------------------------------------------------------------
     // Dsp 
 
-    float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld;
+    float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld, fGainOld;
 
     float fDelay[2][6]   = { 0 };
     float fTanhstg[2][3] = { 0 };
