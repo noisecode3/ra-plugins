@@ -24,8 +24,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ROBOT_DEXED_FILTER_PLUGIN_HPP_INCLUDED
-#define ROBOT_DEXED_FILTER_PLUGIN_HPP_INCLUDED
+#ifndef ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
+#define ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
 
 #include "DistrhoPlugin.hpp"
 
@@ -33,7 +33,7 @@ START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
 
-class RobotDexedFilterPlugin : public Plugin
+class RobotHexedFilterPlugin : public Plugin
 {
 public:
     enum Parameters
@@ -45,7 +45,7 @@ public:
         paramCount
     };
 
-    RobotDexedFilterPlugin();
+    RobotHexedFilterPlugin();
 
 protected:
     // -------------------------------------------------------------------
@@ -162,16 +162,16 @@ private:
     float tptpc(float& state, float inp, float cutoff);
     float tptlpupw(float& state , float inp, float cutoff, float srInv);
     float NR24(float sample, float g, float lpc, bool chan);
-    float dexed_filter_process(float x, bool chan);
+    float hexed_filter_process(float x, bool chan);
 
     // -------------------------------------------------------------------
 
-    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotDexedFilterPlugin)
+    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotHexedFilterPlugin)
 };
 
 // -----------------------------------------------------------------------
 
 END_NAMESPACE_DISTRHO
 
-#endif // ROBOT_DEXED_FILTER_PLUGIN_HPP_INCLUDED
+#endif // ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
  

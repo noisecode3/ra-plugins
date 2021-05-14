@@ -34,7 +34,7 @@ START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
 
-RobotDexedFilterPlugin::RobotDexedFilterPlugin()
+RobotHexedFilterPlugin::RobotHexedFilterPlugin()
     : Plugin(paramCount, 1, 0) // parameters, program, states
 {
     // set default values
@@ -44,7 +44,7 @@ RobotDexedFilterPlugin::RobotDexedFilterPlugin()
 // -----------------------------------------------------------------------
 // Init
 
-void RobotDexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
+void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
 {
     switch (index)
     {
@@ -52,7 +52,7 @@ void RobotDexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "CutOff";
         parameter.symbol     = "freq";
-        parameter.unit       = "Hz";
+        parameter.unit       = "%";
         parameter.ranges.def = 1.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 1.0f;
@@ -91,7 +91,7 @@ void RobotDexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
     }
 }
 
-void RobotDexedFilterPlugin::initProgramName(uint32_t index, String& programName)
+void RobotHexedFilterPlugin::initProgramName(uint32_t index, String& programName)
 {
     switch (index)
     {
@@ -104,7 +104,7 @@ void RobotDexedFilterPlugin::initProgramName(uint32_t index, String& programName
 // -----------------------------------------------------------------------
 // Internal data
 
-float RobotDexedFilterPlugin::getParameterValue(uint32_t index) const
+float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
 {
     switch (index)
     {
@@ -125,7 +125,7 @@ float RobotDexedFilterPlugin::getParameterValue(uint32_t index) const
     }
 }
 
-void RobotDexedFilterPlugin::setParameterValue(uint32_t index, float value)
+void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
 {
     if (getSampleRate() <= 0.0)
         return;
@@ -158,7 +158,7 @@ void RobotDexedFilterPlugin::setParameterValue(uint32_t index, float value)
     }
 }
 
-void RobotDexedFilterPlugin::loadProgram(uint32_t index)
+void RobotHexedFilterPlugin::loadProgram(uint32_t index)
 {
     switch (index)
     {
@@ -176,7 +176,7 @@ void RobotDexedFilterPlugin::loadProgram(uint32_t index)
 // -----------------------------------------------------------------------
 // Process
 
-void RobotDexedFilterPlugin::activate()
+void RobotHexedFilterPlugin::activate()
 {
 
     fSampleRate = (float)getSampleRate();
@@ -210,22 +210,22 @@ void RobotDexedFilterPlugin::activate()
     dc_tmp[1] = 0; 
 }
 
-void RobotDexedFilterPlugin::deactivate()
+void RobotHexedFilterPlugin::deactivate()
 {
 
 }
 
-float RobotDexedFilterPlugin::parameterSurge(float x, float n)
+float RobotHexedFilterPlugin::parameterSurge(float x, float n)
 {
     return x*n;
 }
 
-float RobotDexedFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
+float RobotHexedFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
 {
     return ((expf(param * logf(rolloff+1)) - 1.0f) / (rolloff)) * (max-min) + min;
 }
 
-float RobotDexedFilterPlugin::tptpc(float& state, float inp, float cutoff)
+float RobotHexedFilterPlugin::tptpc(float& state, float inp, float cutoff)
 {
     double v   = (inp - state) * cutoff / (1 + cutoff);
     double res = v + state;
@@ -233,7 +233,7 @@ float RobotDexedFilterPlugin::tptpc(float& state, float inp, float cutoff)
     return res;
 }
 
-float RobotDexedFilterPlugin::tptlpupw(float& state, float inp, float cutoff, float srInv)
+float RobotHexedFilterPlugin::tptlpupw(float& state, float inp, float cutoff, float srInv)
 {
     cutoff     = (cutoff * srInv)* PI_F;
     double v   = (inp - state) * cutoff / (1 + cutoff);
@@ -242,16 +242,16 @@ float RobotDexedFilterPlugin::tptlpupw(float& state, float inp, float cutoff, fl
     return res;
 }
 
-float RobotDexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
+float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
-    float S  = (lpc*(lpc*(lpc*s1[chan] + s2[chan]) + s3[chan]) +s4[chan])*ml;
+    float S  = ((lpc-(0.0033789*sin(sample)))*((lpc+(0.0030123*sin(sample)))*((lpc+(0.0032384*sin(sample)))*s1[chan] + s2[chan]) + s3[chan]) +s4[chan])*ml;
     float G  = lpc*lpc*lpc*lpc;
     float y  = (sample - R24 * S) / (1 + R24*G);
     return y + 1e-8;
 }
 
-float RobotDexedFilterPlugin::dexed_filter_process(float x, bool chan)
+float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 {
 
     float rCutoff;
@@ -351,10 +351,10 @@ float RobotDexedFilterPlugin::dexed_filter_process(float x, bool chan)
     }
 
     //half volume comp
-    return mc * (1 + R24 * 0.45);
+    return mc * (1 + R24 * 0.20);
 }
 
-void RobotDexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
+void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 {
     const float* in1  = inputs[0];
     const float* in2  = inputs[1];
@@ -371,8 +371,8 @@ void RobotDexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
     {
         float fout1, fout2;
 
-        fout1   = ((in1[i]*(1.0f-fWetVol)) + (dexed_filter_process(in1[i], 0)*fWetVol))*fGain;
-        fout2   = ((in2[i]*(1.0f-fWetVol)) + (dexed_filter_process(in2[i], 1)*fWetVol))*fGain;
+        fout1   = ((in1[i]*(1.0f-fWetVol)) + (hexed_filter_process(in1[i], 0)*fWetVol))*fGain;
+        fout2   = ((in2[i]*(1.0f-fWetVol)) + (hexed_filter_process(in2[i], 1)*fWetVol))*fGain;
 
         if (fout1 >  1.0f) fout1 =  1.0f;
         if (fout1 < -1.0f) fout1 = -1.0f;
@@ -388,7 +388,7 @@ void RobotDexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
 
 Plugin* createPlugin()
 {
-    return new RobotDexedFilterPlugin();
+    return new RobotHexedFilterPlugin();
 }
 
 // -----------------------------------------------------------------------
