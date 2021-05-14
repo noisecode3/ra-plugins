@@ -1,5 +1,6 @@
 # Robot Audio Plugins
 This is a work in progress! I like noisy and heavy music mostly and are interested in those sounds.
+![screenshot](https://raw.githubusercontent.com/noisecode3/ra-plugins/main/extra/RobotAudioLogo.png "Beta Logo")
 
 ## Moog filter
 This is a low-pass filter with resonance that boost cut-off frequency. It's the original ladder.
