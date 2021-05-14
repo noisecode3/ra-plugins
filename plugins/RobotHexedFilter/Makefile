@@ -7,13 +7,13 @@
 # --------------------------------------------------------------
 # Project name, used for binaries
 
-NAME = RobotDexedFilter
+NAME = RobotHexedFilter
 
 # --------------------------------------------------------------
 # Files to build
 
 FILES_DSP = \
-	RobotDexedFilterPlugin.cpp
+	RobotHexedFilterPlugin.cpp
 
 #FILES_UI  = \
 #	RobotDexedFilterArtwork.cpp \

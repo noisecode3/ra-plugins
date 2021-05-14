@@ -53,12 +53,12 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "Robot Dexed Filter";
+        return "Robot Hexed Filter";
     }
 
     const char* getDescription() const override
     {
-        return "Dexed filter";
+        return "Modified Dexed filter";
     }
 
     const char* getMaker() const noexcept override
@@ -78,12 +78,12 @@ protected:
 
     uint32_t getVersion() const noexcept override
     {
-        return d_version(1, 0, 0);
+        return d_version(0, 0, 1);
     }
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('R', '3', 'D', 'f');
+        return d_cconst('R', '3', 'H', 'f');
     }
 
     // -------------------------------------------------------------------
@@ -150,7 +150,6 @@ private:
     float R24;
     float rcor24,rcor24Inv;
     float bright;
-    //int   R;
 
     // 24 db multimode
     float mmt; //TODO

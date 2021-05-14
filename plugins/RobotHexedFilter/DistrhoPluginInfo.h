@@ -22,7 +22,7 @@
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
 #define DISTRHO_PLUGIN_BRAND "Robot Audio"
-#define DISTRHO_PLUGIN_NAME  "Robot Dexed Filter"
+#define DISTRHO_PLUGIN_NAME  "Robot Hexed Filter"
 #define DISTRHO_PLUGIN_URI   "https://github.com/noisecode3/ra-plugins"
 
 #define DISTRHO_PLUGIN_HAS_UI        0

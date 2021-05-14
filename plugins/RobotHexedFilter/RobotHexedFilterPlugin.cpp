@@ -24,7 +24,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "RobotDexedFilterPlugin.hpp"
+#include "RobotHexedFilterPlugin.hpp"
 
 #define PI_F 3.1415927410125732421875f
 #define E_F  2.7182818284590452353602f

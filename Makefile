@@ -23,7 +23,7 @@ endif
 plugins: dgl
 	# Plugins
 	$(MAKE) all -C plugins/RobotMoogFilter
-	$(MAKE) all -C plugins/RobotDexedFilter
+	$(MAKE) all -C plugins/RobotHexedFilter
 
 gen: plugins dpf/utils/lv2_ttl_generator
 	@$(CURDIR)/dpf/utils/generate-ttl.sh
@@ -39,7 +39,7 @@ clean:
 
 	# Plugins
 	$(MAKE) clean -C plugins/RobotMoogFilter
-	$(MAKE) clean -C plugins/RobotDexedFilter
+	$(MAKE) clean -C plugins/RobotHexedFilter
 
 # --------------------------------------------------------------
 
