@@ -41,6 +41,7 @@ public:
         paramCutOff = 0,
         paramRes,
         paramDuck,
+        paramMode,
         paramWet,
         paramCount
     };
@@ -116,6 +117,7 @@ private:
     float fCutOff = 1;
     float fRes    = 0;
     float fDuck   = 1;
+    float fMode   = 1;
     float fWet    = 0;
 
     float parameterSurge(float x, float n);

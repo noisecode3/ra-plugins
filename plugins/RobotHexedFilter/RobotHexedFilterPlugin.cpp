@@ -53,6 +53,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
     {
     case paramCutOff:
         parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsLogarithmic;
         parameter.name       = "CutOff";
         parameter.symbol     = "freq";
         parameter.unit       = "%";
@@ -79,6 +80,17 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.def = 1.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 1.0f;
+        break;
+
+    case paramMode:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsInteger;
+        parameter.name       = "Mode";
+        parameter.symbol     = "switch";
+        parameter.unit       = "I";
+        parameter.ranges.def = 1.0f;
+        parameter.ranges.min = 1.0f;
+        parameter.ranges.max = 4.0f;
         break;
 
     case paramWet:
@@ -120,6 +132,9 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
     case paramDuck:
         return fDuck;
 
+    case paramMode:
+        return fMode;
+
     case paramWet:
         return fWet;
 
@@ -153,6 +168,11 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         fDuckFall     = true;
         break;
 
+    case paramMode:
+        fMode         = value;
+        mmch          = (int)fMode -1;
+        break;
+
     case paramWet:
         fWet          = value;
         fChangeWet    = fWet-fWetOld;
@@ -170,6 +190,7 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
         fCutOff = 1.0f;
         fRes    = 0.0f;
         fDuck   = 1.0f;
+        fMode   = 1.0f;
         fWet    = 0.0f;
         activate();
         break;

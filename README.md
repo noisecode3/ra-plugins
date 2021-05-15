@@ -3,10 +3,10 @@ This is a work in progress! I like noisy and heavy music mostly and are interest
 ![screenshot](https://raw.githubusercontent.com/noisecode3/ra-plugins/main/extra/RobotAudioLogoTransparent.png "Beta Logo")
 
 ## Moog filter
-This is a low-pass filter with resonance that boost cut-off frequency. It's the original ladder.
+This is a low-pass filter with resonance that boost cut-off frequency. It tries to be the original ladder.
 
 ## Hexed filter
-This is a modified version Dexed synth filter
+This is a modified version Dexed synth filter, its it's similar to Moog but different algorithm and sound.
 
 # Prepare
 You need to have mesa headers and basic build tools from you're distribution. make install will install in you home folder, in the future I will make root installation.
