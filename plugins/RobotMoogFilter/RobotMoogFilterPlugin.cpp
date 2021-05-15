@@ -256,10 +256,16 @@ void RobotMoogFilterPlugin::activate()
     moog_ladder_tune(fFreq);
     fWetVol      = 1.0f - exp(-0.01f*fWet);
     fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
+
     fFreqOld     = fFreq;
     fResOld      = fRes;
     fGainOld     = fGain;
     fWetOld      = fWet;
+
+    fFreqFall    = false;
+    fResFall     = false;
+    fGainFall    = false;
+    fWetFall     = false;
 }
 
 void RobotMoogFilterPlugin::deactivate()

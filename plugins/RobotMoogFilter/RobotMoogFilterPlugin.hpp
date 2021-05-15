@@ -62,7 +62,7 @@ protected:
 
     const char* getHomePage() const override
     {
-        return "https://github.com/noisecode3/ra-plugins";
+        return "https://github.com/noisecode3/ra-plugins#moog-filter";
     }
 
     const char* getLicense() const noexcept override
@@ -77,7 +77,7 @@ protected:
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('R', '3', 'M', 'f');
+        return d_cconst('r', 'B', 'm', 'F');
     }
 
     // -------------------------------------------------------------------
@@ -114,21 +114,21 @@ private:
 
     float parameterSurge(float x, float n);
 
-    uint32_t fSamplesFallFreq;
-    bool     fFreqFall;
-    float    fChangeFreq;
+    uint32_t fSamplesFallFreq = 0;
+    bool     fFreqFall = false;
+    float    fChangeFreq = 0.0f;
 
-    uint32_t fSamplesFallRes;
-    bool     fResFall;
-    float    fChangeRes;
+    uint32_t fSamplesFallRes = 0;
+    bool     fResFall = false;
+    float    fChangeRes = 0.0f;
 
-    uint32_t fSamplesFallGain;
-    bool     fGainFall;
-    float    fChangeGain;
+    uint32_t fSamplesFallGain = 0;
+    bool     fGainFall = false;
+    float    fChangeGain = 0.0f;
 
-    uint32_t fSamplesFallWet;
-    bool     fWetFall;
-    float    fChangeWet;
+    uint32_t fSamplesFallWet = 0;
+    bool     fWetFall = false;
+    float    fChangeWet = 0.0f;
 
     uint32_t fFrames;
 

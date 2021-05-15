@@ -40,7 +40,7 @@ public:
     {
         paramCutOff = 0,
         paramRes,
-        paramGain,
+        paramDuck,
         paramWet,
         paramCount
     };
@@ -68,7 +68,7 @@ protected:
 
     const char* getHomePage() const override
     {
-        return "https://github.com/noisecode3/ra-plugins";
+        return "https://github.com/noisecode3/ra-plugins#hexed-filter";
     }
 
     const char* getLicense() const noexcept override
@@ -78,12 +78,12 @@ protected:
 
     uint32_t getVersion() const noexcept override
     {
-        return d_version(0, 0, 1);
+        return d_version(1, 0, 0);
     }
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('R', '3', 'H', 'f');
+        return d_cconst('r', 'B', 'h', 'F');
     }
 
     // -------------------------------------------------------------------
@@ -113,35 +113,35 @@ private:
     // -------------------------------------------------------------------
     // Parameters
 
-    float fCutOff = 0.0f;
-    float fRes    = 0.0f;
-    float fGain   = 1.0f;
-    float fWet    = 0.0f;
+    float fCutOff = 1;
+    float fRes    = 0;
+    float fDuck   = 1;
+    float fWet    = 0;
 
     float parameterSurge(float x, float n);
 
-    uint32_t fSamplesFallCutOff;
-    bool     fCutOffFall;
-    float    fChangeCutOff;
+    uint32_t fSamplesFallCutOff = 0;
+    bool     fCutOffFall        = false;
+    float    fChangeCutOff      = 0.0f;
 
-    uint32_t fSamplesFallRes;
-    bool     fResFall;
-    float    fChangeRes;
+    uint32_t fSamplesFallRes    = 0;
+    bool     fResFall           = false;
+    float    fChangeRes         = 0.0f;
 
-    uint32_t fSamplesFallGain;
-    bool     fGainFall;
-    float    fChangeGain;
+    uint32_t fSamplesFallDuck   = 0;
+    bool     fDuckFall          = false;
+    float    fChangeDuck        = 0.0f;
 
-    uint32_t fSamplesFallWet;
-    bool     fWetFall;
-    float    fChangeWet;
+    uint32_t fSamplesFallWet    = 0;
+    bool     fWetFall           = false;
+    float    fChangeWet         = 0.0f;
 
-    uint32_t fFrames;
+    uint32_t fFrames = 0;
 
     // -------------------------------------------------------------------
     // Dsp 
 
-    float fCutOffOld, fResOld, fGainOld, fWetOld, fWetVol;
+    float fCutOffOld, fResOld, fWetOld, fDuckOld, fWetVol;
 
     float s1[2],s2[2],s3[2],s4[2];
     float fSampleRate;

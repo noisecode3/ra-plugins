@@ -26,8 +26,11 @@
 
 #include "RobotHexedFilterPlugin.hpp"
 
-#define PI_F 3.1415927410125732421875f
-#define E_F  2.7182818284590452353602f
+//#define PI_F 3.1415927410125732421875f
+//#define E_F  2.7182818284590452353602f
+
+const float PI_F =3.1415927410125732421875f;
+const float E_F  = 2.7182818284590452353602f;
 const float dc = 1e-18;
 
 START_NAMESPACE_DISTRHO
@@ -68,14 +71,14 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 1.0f;
         break;
 
-    case paramGain:
+    case paramDuck:
         parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Gain";
+        parameter.name       = "FilterDuck";
         parameter.symbol     = "volt";
-        parameter.unit       = "v";
+        parameter.unit       = "V";
         parameter.ranges.def = 1.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 4.0f;
+        parameter.ranges.max = 1.0f;
         break;
 
     case paramWet:
@@ -114,8 +117,8 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
     case paramRes:
         return fRes;
 
-    case paramGain:
-        return fGain;
+    case paramDuck:
+        return fDuck;
 
     case paramWet:
         return fWet;
@@ -144,10 +147,10 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         fResFall      = true;
         break;
 
-    case paramGain:
-        fGain         = value;
-        fChangeGain   = fRes-fResOld;
-        fGainFall     = true;
+    case paramDuck:
+        fDuck         = value;
+        fChangeDuck   = fDuck-fDuckOld;
+        fDuckFall     = true;
         break;
 
     case paramWet:
@@ -166,7 +169,7 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
         // Default
         fCutOff = 1.0f;
         fRes    = 0.0f;
-        fGain   = 1.0f;
+        fDuck   = 1.0f;
         fWet    = 0.0f;
         activate();
         break;
@@ -182,16 +185,22 @@ void RobotHexedFilterPlugin::activate()
     fSampleRate = (float)getSampleRate();
     fSampleRateInv = 1/fSampleRate;
 
-    fWetVol      = 1.0f - exp(-0.01f*fWet); //TODO get rid of fWetVol from activate
-    fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
     fCutOffOld   = fCutOff;
     fResOld      = fRes;
-    fGainOld     = fGain;
+    fDuckOld     = fDuck;
     fWetOld      = fWet;
+
+    fCutOffFall  = false; // cus new framebuffer
+    fResFall     = false;
+    fDuckFall    = false;
+    fWetFall     = false;
+
+    fWetVol      = 1.0f - exp(-0.01f*fWet); //TODO get rid of fWetVol from activate
+    fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
 
     s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
     s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
-    
+
     R24=0;
 
     int mm = 0;
@@ -203,7 +212,7 @@ void RobotHexedFilterPlugin::activate()
     rcor24 = (970.0 / 44000)*rcrate;
     rcor24Inv = 1 / rcor24;
 
-    bright = tan((fSampleRate*0.5f-10) * PI_F * fSampleRateInv);
+    bright = tan((fSampleRate*0.5f-10) * PI_F * fSampleRateInv); //TODO maybe use diffrent tan
 
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
@@ -245,7 +254,15 @@ float RobotHexedFilterPlugin::tptlpupw(float& state, float inp, float cutoff, fl
 float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
-    float S  = ((lpc-(0.0033789*sin(sample)))*((lpc+(0.0030123*sin(sample)))*((lpc+(0.0032384*sin(sample)))*s1[chan] + s2[chan]) + s3[chan]) +s4[chan])*ml;
+
+    float S = ((lpc+(0.0533789*sin(sample*E_F)))*
+              ((lpc-(0.0330123*sin(sample*E_F)))*
+              ((lpc-(0.0032384*sin(sample*E_F)))*
+                            s1[chan] + s2[chan])+
+                                       s3[chan])+
+                                       s4[chan])* ml;
+    // This is art
+
     float G  = lpc*lpc*lpc*lpc;
     float y  = (sample - R24 * S) / (1 + R24*G);
     return y + 1e-8;
@@ -256,16 +273,15 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 
     float rCutoff;
     float rReso;
+    float rGain;
     float uiCutoff;
     float uiReso;
 
     if (fSamplesFallCutOff > 1)
     {
-        float steps   = 1.0f/fFrames;
+        float steps     = 1.0f/fFrames;
         float cutoffAdd = parameterSurge((fFrames-fSamplesFallCutOff+1)*steps, fChangeCutOff);
-        
-        uiCutoff = fCutOffOld+cutoffAdd;
-        
+        uiCutoff = fCutOffOld+cutoffAdd; 
         fSamplesFallCutOff--;
     }
     else { uiCutoff = fCutOffOld = fCutOff; fCutOffFall = false; } //TODO dont do else here
@@ -279,21 +295,14 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
     else { uiReso = fResOld = fRes; fResFall = false; }
 
-    if (fSamplesFallWet > 1)
+    if (fSamplesFallDuck > 1)
     {
-        float steps  = 1.0f/fFrames;
-        float wetAdd = parameterSurge((fFrames-fSamplesFallWet+1)*steps, fChangeWet);
-        fWetVol      = 1.0f - exp(-0.01f*(fWetOld+wetAdd));
-        fWetVol      = fWetVol + 0.367879*(0.01f*(fWetOld+wetAdd));
-        fSamplesFallWet--;
+        float steps   = 1.0f/fFrames;
+        float duckAdd = parameterSurge((fFrames-fSamplesFallDuck+1)*steps, fChangeDuck);
+        rGain         = fDuckOld+duckAdd;
+        fSamplesFallDuck--;
     }
-    else
-    {
-        fWetOld      = fWet;
-        fWetVol      = 1.0f - exp(-0.01f*fWet);
-        fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
-        fWetFall     = false;
-    }
+    else { rGain = fDuckOld = fDuck; fDuckFall = false; }
 
 
     // basic DC filter, this removes a super tiny bit of low
@@ -302,11 +311,10 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
                 x = x - dc_tmp[chan] + dc_r * dc_tmp[chan];
      dc_tmp[chan] = dc_prev;
 
-    
     // TODO dont calculate rReso and rCutoff for every sample 
     
-    rReso = (0.991-logsc(1-uiReso,0,0.991));
-    R24   = 3.5 * rReso;
+    rReso = (0.991-logsc(1-uiReso, 0, 0.991));
+    R24   =  3.5 * rReso;
 
     float cutoffNorm = logsc(uiCutoff,60,19000);
     rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
@@ -315,10 +323,10 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float lpc = g / (1 + g);
 
     float s = x;
-    s       = s - 0.45*tptlpupw(c[chan],s,15,fSampleRateInv);
-    s       = tptpc(d[chan],s,bright);
+    s       = s - 0.45*tptlpupw(c[chan], s, 15, fSampleRateInv);
+    s       = tptpc(d[chan], s, bright);
 
-    float y0 = NR24(s,g,lpc,chan);
+    float y0 = NR24(s, g, lpc, chan);
 
     //first low pass in cascade
     double v   = (y0 - s1[chan]) * lpc;
@@ -333,7 +341,8 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float y4 = tptpc(s4[chan],y3,g);
     float mc = 0.0f;
 
-    //TODO investigate and handel mmch and mmt, this is some weird scary shit
+    //TODO handel mmch and mmt
+
     switch(mmch)
     {
         case 0:
@@ -351,7 +360,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
 
     //half volume comp
-    return mc * (1 + R24 * 0.20);
+    return (mc * (1 + R24 * 0.45))*rGain;
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
@@ -362,17 +371,33 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
     float*       out2 = outputs[1];
 
     fFrames = frames;
-    if (fCutOffFall) fSamplesFallCutOff = frames;
-    if (fResFall)    fSamplesFallRes    = frames;
-    if (fGainFall)   fSamplesFallGain   = frames;
-    if (fWetFall)    fSamplesFallWet    = frames;
+    if (fCutOffFall) fSamplesFallCutOff = fFrames;
+    if (fResFall)    fSamplesFallRes    = fFrames;
+    if (fDuckFall)   fSamplesFallDuck   = fFrames;
+    if (fWetFall)    fSamplesFallWet    = fFrames;
 
     for (uint32_t i=0; i < frames; ++i)
     {
         float fout1, fout2;
 
-        fout1   = ((in1[i]*(1.0f-fWetVol)) + (hexed_filter_process(in1[i], 0)*fWetVol))*fGain;
-        fout2   = ((in2[i]*(1.0f-fWetVol)) + (hexed_filter_process(in2[i], 1)*fWetVol))*fGain;
+        if (fSamplesFallWet > 1)
+        {
+            float steps  = 1.0f/fFrames;
+            float wetAdd = parameterSurge((fFrames-fSamplesFallWet+1)*steps, fChangeWet);
+            fWetVol      = 1.0f - exp(-0.01f*(fWetOld+wetAdd));
+            fWetVol      = fWetVol + 0.367879*(0.01f*(fWetOld+wetAdd));
+            fSamplesFallWet--;
+        }
+        else
+        {
+            fWetOld      = fWet;
+            fWetVol      = 1.0f - exp(-0.01f*fWet);
+            fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
+            fWetFall     = false;
+        }
+
+        fout1   = (in1[i]*(1.0f-fWetVol)) + (hexed_filter_process(in1[i], 0)*fWetVol);
+        fout2   = (in2[i]*(1.0f-fWetVol)) + (hexed_filter_process(in2[i], 1)*fWetVol);
 
         if (fout1 >  1.0f) fout1 =  1.0f;
         if (fout1 < -1.0f) fout1 = -1.0f;
