@@ -276,9 +276,19 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
 
-    float S = ((lpc+(0.0533789*sin(sample*E_F)))*
-              ((lpc-(0.0330123*sin(sample*E_F)))*
-              ((lpc-(0.0032384*sin(sample*E_F)))*
+    // lol I created a super intresing distortion of this if you dont set cut off to high..
+
+    /*float S = ((lpc-(0.33378*sin(sample*E_F)))*
+                ((lpc-(0.13012*sin(sample*E_F)))*
+                ((lpc-(0.03238*sin(sample*E_F)))*
+                            s1[chan] + s2[chan])+
+                                       s3[chan])+
+                                       s4[chan])* ml;*/
+
+    // this sin(sample*E_F) creates small variations and "vibrations" in tone
+    float S = ((lpc-(0.00338*sin(sample*E_F)))*
+              ((lpc+(0.00052*sin(sample*E_F)))*
+              ((lpc+(0.00003*sin(sample*E_F)))*
                             s1[chan] + s2[chan])+
                                        s3[chan])+
                                        s4[chan])* ml;
@@ -380,8 +390,8 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             break;
     }
 
-    //half volume comp
-    return (mc * (1 + R24 * 0.45))*rGain;
+    //volume comp
+    return (mc * ( 1 + R24 * rGain));// * rGain;
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
