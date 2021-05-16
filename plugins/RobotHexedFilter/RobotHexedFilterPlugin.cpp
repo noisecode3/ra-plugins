@@ -282,7 +282,7 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
                            s1[chan]+s2[chan])+
                                     s3[chan])+
                                     s4[chan])*ml;
-
+    /*
     switch (std::fpclassify(S))
     {
     case FP_INFINITE:  printf ("infinite");  break;
@@ -291,7 +291,7 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
     case FP_SUBNORMAL: printf ("subnormal"); break;
     case FP_NORMAL:    break;
     }
-
+    */
     float G  = (lpc-(0.05338*sin(sample*E_F)))*
                (lpc+(0.03452*sin(sample*E_F)))*
                (lpc+(0.02363*sin(sample*E_F)))*
@@ -394,7 +394,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
 
     //volume comp
-    return (mc * ( 1 + R24 * 0.1 )) * rGain;
+    return (mc * ( 1 + R24 * 0.3 )) * rGain;
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
@@ -437,7 +437,7 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
         //if (fout1 < -1.0f) fout1 = -1.0f;
         //if (fout2 >  1.0f) fout2 =  1.0f;
         //if (fout2 < -1.0f) fout2 = -1.0f;
-
+        /*
         switch (std::fpclassify(fout1))
         {
         case FP_INFINITE:  printf ("infinite");  break;
@@ -455,7 +455,7 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
         case FP_SUBNORMAL: printf ("subnormal"); break;
         case FP_NORMAL:    break;
         }
-
+        */
 
         out1[i] = fout1;
         out2[i] = fout2;
