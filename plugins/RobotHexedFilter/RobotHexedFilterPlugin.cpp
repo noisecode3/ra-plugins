@@ -78,7 +78,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.symbol     = "volt";
         parameter.unit       = "V";
         parameter.ranges.def = 1.0f;
-        parameter.ranges.min = 0.0f;
+        parameter.ranges.min = 0.01f;
         parameter.ranges.max = 1.0f;
         break;
 
@@ -276,26 +276,29 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
 
-    // lol I created a super intresing distortion of this if you dont set cut off to high..
+    float S = ((lpc-(0.05338*sin(sample*E_F)))*
+              ((lpc+(0.03452*sin(sample*E_F)))*
+              ((lpc+(0.02363*sin(sample*E_F)))*
+                           s1[chan]+s2[chan])+
+                                    s3[chan])+
+                                    s4[chan])*ml;
 
-    /*float S = ((lpc-(0.33378*sin(sample*E_F)))*
-                ((lpc-(0.13012*sin(sample*E_F)))*
-                ((lpc-(0.03238*sin(sample*E_F)))*
-                            s1[chan] + s2[chan])+
-                                       s3[chan])+
-                                       s4[chan])* ml;*/
+    switch (std::fpclassify(S))
+    {
+    case FP_INFINITE:  printf ("infinite");  break;
+    case FP_NAN:       printf ("NaN");       break;
+    case FP_ZERO:      printf ("zero");      break;
+    case FP_SUBNORMAL: printf ("subnormal"); break;
+    case FP_NORMAL:    break;
+    }
 
-    // this sin(sample*E_F) creates small variations and "vibrations" in tone
-    float S = ((lpc-(0.00338*sin(sample*E_F)))*
-              ((lpc+(0.00052*sin(sample*E_F)))*
-              ((lpc+(0.00003*sin(sample*E_F)))*
-                            s1[chan] + s2[chan])+
-                                       s3[chan])+
-                                       s4[chan])* ml;
-    // This is art
+    float G  = (lpc-(0.05338*sin(sample*E_F)))*
+               (lpc+(0.03452*sin(sample*E_F)))*
+               (lpc+(0.02363*sin(sample*E_F)))*
+               (lpc);
 
-    float G  = lpc*lpc*lpc*lpc;
     float y  = (sample - R24 * S) / (1 + R24*G);
+
     return y + 1e-8;
 }
 
@@ -391,7 +394,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
 
     //volume comp
-    return (mc * ( 1 + R24 * rGain));// * rGain;
+    return (mc * ( 1 + R24 * 0.1 )) * rGain;
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
@@ -430,10 +433,29 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
         fout1   = (in1[i]*(1.0f-fWetVol)) + (hexed_filter_process(in1[i], 0)*fWetVol);
         fout2   = (in2[i]*(1.0f-fWetVol)) + (hexed_filter_process(in2[i], 1)*fWetVol);
 
-        if (fout1 >  1.0f) fout1 =  1.0f;
-        if (fout1 < -1.0f) fout1 = -1.0f;
-        if (fout2 >  1.0f) fout2 =  1.0f;
-        if (fout2 < -1.0f) fout2 = -1.0f;
+        //if (fout1 >  1.0f) fout1 =  1.0f;
+        //if (fout1 < -1.0f) fout1 = -1.0f;
+        //if (fout2 >  1.0f) fout2 =  1.0f;
+        //if (fout2 < -1.0f) fout2 = -1.0f;
+
+        switch (std::fpclassify(fout1))
+        {
+        case FP_INFINITE:  printf ("infinite");  break;
+        case FP_NAN:       printf ("NaN");       break;
+        case FP_ZERO:      printf ("zero");      break;
+        case FP_SUBNORMAL: printf ("subnormal"); break;
+        case FP_NORMAL:    break;
+        }
+
+        switch (std::fpclassify(fout2))
+        {
+        case FP_INFINITE:  printf ("infinite");  break;
+        case FP_NAN:       printf ("NaN");       break;
+        case FP_ZERO:      printf ("zero");      break;
+        case FP_SUBNORMAL: printf ("subnormal"); break;
+        case FP_NORMAL:    break;
+        }
+
 
         out1[i] = fout1;
         out2[i] = fout2;

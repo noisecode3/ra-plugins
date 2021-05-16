@@ -34,11 +34,11 @@ endif
 TARGETS += ladspa
 TARGETS += vst
 
-ifeq ($(HAVE_DGL),true)
+#ifeq ($(HAVE_DGL),true)
 #ifeq ($(HAVE_LIBLO),true)
 #TARGETS += dssi
 #endif
-endif
+#endif
 
 #ifeq ($(HAVE_DGL),true)
 #TARGETS += lv2_sep
