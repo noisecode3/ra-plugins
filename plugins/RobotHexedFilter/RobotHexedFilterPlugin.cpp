@@ -297,9 +297,9 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
     float ml = 1 / (1+g);
 
 
-    float S = ((lpc-(0.000010*E_F))*
-              ((lpc+(0.000001*E_F))*
-              ((lpc+(0.000001*E_F))*
+    float S = ((lpc+(0.00001*sin(sample*0.00001)))*
+              ((lpc+(0.000001*sin(sample*0.000001)))*
+              ((lpc+(0.0000001*sin(sample*0.0000001)))*
                             s1[chan]+s2[chan])+
                                      s3[chan])+
                                      s4[chan])*ml;
@@ -325,9 +325,9 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 
 
 
-    float G  = (lpc-(0.000010*E_F))*
-               (lpc+(0.000001*E_F))*
-               (lpc+(0.000001*E_F))*
+    float G  = (lpc+(0.00001*sin(sample*0.00001)))*
+               (lpc+(0.000001*sin(sample*0.000001)))*
+               (lpc+(0.0000001*sin(sample*0.0000001)))*
                (lpc);
 
 
@@ -432,7 +432,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
 
     //volume comp
-    return (mc * ( 1 + R24 * 0.3 )) * rGain;
+    return (mc * ( 1 + R24 * 0.45 )) * rGain;
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
