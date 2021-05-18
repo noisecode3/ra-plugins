@@ -233,7 +233,7 @@ void RobotHexedFilterPlugin::activate()
     rcor24 = (970.0 / 44000)*rcrate;
     rcor24Inv = 1 / rcor24;
 
-    bright = tan((fSampleRate*0.5f-10) * PI_F * fSampleRateInv); //TODO maybe use diffrent tan
+    bright = moog_tanh((fSampleRate*0.5f-10) * PI_F * fSampleRateInv); //TODO maybe use diffrent tan
 
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
@@ -243,6 +243,26 @@ void RobotHexedFilterPlugin::activate()
 void RobotHexedFilterPlugin::deactivate()
 {
 
+}
+
+float RobotHexedFilterPlugin::moog_tanh(float x)
+{
+    int sign = 1;
+    if(x < 0)
+    {
+        sign = -1;
+        x    = -x;
+        return x * sign;
+    }
+    else if(x >= 4.0f)
+    {
+        return sign;
+    }
+    else if(x < 0.5f)
+    {
+        return x * sign;
+    }
+    return sign * tanhf(x);
 }
 
 float RobotHexedFilterPlugin::parameterSurge(float x, float n)
@@ -276,26 +296,44 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
 
-    float S = ((lpc-(0.05338*sin(sample*E_F)))*
-              ((lpc+(0.03452*sin(sample*E_F)))*
-              ((lpc+(0.02363*sin(sample*E_F)))*
-                           s1[chan]+s2[chan])+
-                                    s3[chan])+
-                                    s4[chan])*ml;
-    /*
-    switch (std::fpclassify(S))
-    {
-    case FP_INFINITE:  printf ("infinite");  break;
-    case FP_NAN:       printf ("NaN");       break;
-    case FP_ZERO:      printf ("zero");      break;
-    case FP_SUBNORMAL: printf ("subnormal"); break;
-    case FP_NORMAL:    break;
-    }
-    */
-    float G  = (lpc-(0.05338*sin(sample*E_F)))*
-               (lpc+(0.03452*sin(sample*E_F)))*
-               (lpc+(0.02363*sin(sample*E_F)))*
+
+    float S = ((lpc-(0.000010*E_F))*
+              ((lpc+(0.000001*E_F))*
+              ((lpc+(0.000001*E_F))*
+                            s1[chan]+s2[chan])+
+                                     s3[chan])+
+                                     s4[chan])*ml;
+
+
+    // original gangster
+    //float S = (lpc*(lpc*(lpc*s1[chan]+s2[chan])+
+    //                                  s3[chan])+
+    //                                  s4[chan])*ml;
+
+
+
+
+    // test
+    //switch (std::fpclassify(S))
+    //{
+    //case FP_INFINITE:  printf ("infinite");  break;
+    //case FP_NAN:       printf ("NaN");       break;
+    //case FP_ZERO:      printf ("zero");      break;
+    //case FP_SUBNORMAL: printf ("subnormal"); break;
+    //case FP_NORMAL:    break;
+    //}
+
+
+
+    float G  = (lpc-(0.000010*E_F))*
+               (lpc+(0.000001*E_F))*
+               (lpc+(0.000001*E_F))*
                (lpc);
+
+
+    // original gangster
+    //float G  = lpc*lpc*lpc*lpc;
+
 
     float y  = (sample - R24 * S) / (1 + R24*G);
 

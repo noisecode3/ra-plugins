@@ -160,6 +160,7 @@ private:
     float dc_tmp[2];
     float dc_r;
 
+    float moog_tanh(float x);
     float logsc(float param, const float min, const float max, const float rolloff);
     float tptpc(float& state, float inp, float cutoff);
     float tptlpupw(float& state , float inp, float cutoff, float srInv);
