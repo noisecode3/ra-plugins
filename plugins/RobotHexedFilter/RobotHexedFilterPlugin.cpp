@@ -211,7 +211,7 @@ void RobotHexedFilterPlugin::activate()
     fDuckOld     = fDuck;
     fWetOld      = fWet;
 
-    fCutOffFall  = false; // cus new framebuffer
+    fCutOffFall  = false;
     fResFall     = false;
     fDuckFall    = false;
     fWetFall     = false;
@@ -224,16 +224,15 @@ void RobotHexedFilterPlugin::activate()
 
     R24=0;
 
-    int mm = 0;
-
-    mmch = (int)(mm * 3); //TODO this are nuts without a nutcracker
-    mmt  = mm * 3 - mmch;
+    mmch = 0;
+    mmt  = 0;
 
     float rcrate = sqrt((44000/fSampleRate));
     rcor24 = (970.0 / 44000)*rcrate;
     rcor24Inv = 1 / rcor24;
 
-    bright = moog_tanh((fSampleRate*0.5f-10) * PI_F * fSampleRateInv); //TODO maybe use diffrent tan
+    //bright = tan((fSampleRate*0.5f-10) * PI_F * fSampleRateInv); //TODO maybe use diffrent or somehting completly diffrent
+    bright = sinh( log(fSampleRate) * ((fSampleRate*0.5f-10) * PI_F * fSampleRateInv)); //TODO maybe use diffrent or somehting completly diffrent
 
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
@@ -297,9 +296,9 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
     float ml = 1 / (1+g);
 
 
-    float S = ((lpc+(0.00001*sin(sample*0.00001)))*
-              ((lpc+(0.000001*sin(sample*0.0001)))*
-              ((lpc+(0.0000001*sin(sample*0.001)))*
+    float S = ((lpc+(0.0001*moog_tanh(sample*0.0001)))*
+              ((lpc+(0.00001*moog_tanh(sample*0.001)))*
+              ((lpc+(0.000001*moog_tanh(sample*0.01)))*
                             s1[chan]+s2[chan])+
                                      s3[chan])+
                                      s4[chan])*ml;
@@ -325,9 +324,9 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 
 
 
-    float G  = (lpc+(0.00001*sin(sample*0.00001)))*
-               (lpc+(0.000001*sin(sample*0.0001)))*
-               (lpc+(0.0000001*sin(sample*0.001)))*
+    float G  = (lpc+(0.0001*moog_tanh(sample*0.0001)))*
+               (lpc+(0.00001*moog_tanh(sample*0.001)))*
+               (lpc+(0.000001*moog_tanh(sample*0.01)))*
                (lpc);
 
 
@@ -389,7 +388,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     R24   =  3.5 * rReso;
 
     float cutoffNorm = logsc(uiCutoff,60,19000);
-    rCutoff = moog_tanh(cutoffNorm * fSampleRateInv * PI_F);
+    rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
 
     float g   = rCutoff;
     float lpc = g / (1 + g);
@@ -413,7 +412,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float y4 = tptpc(s4[chan],y3,g);
     float mc = 0.0f;
 
-    //TODO handel mmch and mmt
+    //TODO handel mmt
 
     switch(mmch)
     {
@@ -432,7 +431,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
 
     //volume comp
-    return (mc * ( 1 + R24 * 0.45 )) * rGain;
+    return (mc * ( 1 + R24 * (0.45 * rGain) )) * ( 0.988 * rGain);
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
