@@ -298,8 +298,8 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 
 
     float S = ((lpc+(0.00001*sin(sample*0.00001)))*
-              ((lpc+(0.000001*sin(sample*0.000001)))*
-              ((lpc+(0.0000001*sin(sample*0.0000001)))*
+              ((lpc+(0.000001*sin(sample*0.0001)))*
+              ((lpc+(0.0000001*sin(sample*0.001)))*
                             s1[chan]+s2[chan])+
                                      s3[chan])+
                                      s4[chan])*ml;
@@ -326,8 +326,8 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 
 
     float G  = (lpc+(0.00001*sin(sample*0.00001)))*
-               (lpc+(0.000001*sin(sample*0.000001)))*
-               (lpc+(0.0000001*sin(sample*0.0000001)))*
+               (lpc+(0.000001*sin(sample*0.0001)))*
+               (lpc+(0.0000001*sin(sample*0.001)))*
                (lpc);
 
 
@@ -389,7 +389,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     R24   =  3.5 * rReso;
 
     float cutoffNorm = logsc(uiCutoff,60,19000);
-    rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
+    rCutoff = moog_tanh(cutoffNorm * fSampleRateInv * PI_F);
 
     float g   = rCutoff;
     float lpc = g / (1 + g);
