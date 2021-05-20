@@ -250,7 +250,7 @@ float RobotHexedFilterPlugin::hexed_tanh(float x)
     {
         return x * 0.1;
     }
-    else if(x >= 1.0f)
+    else if(x >= 6.0f)
     {
         return 1;
     }
