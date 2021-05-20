@@ -216,7 +216,7 @@ void RobotHexedFilterPlugin::activate()
     fDuckFall    = false;
     fWetFall     = false;
 
-    fWetVol      = 1.0f - exp(-0.01f*fWet); //TODO get rid of fWetVol from activate
+    fWetVol      = 1.0f - exp(-0.01f*fWet);
     fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
 
     s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
@@ -231,8 +231,8 @@ void RobotHexedFilterPlugin::activate()
     rcor24 = (970.0 / 44000)*rcrate;
     rcor24Inv = 1 / rcor24;
 
-    //bright = tan((fSampleRate*0.5f-10) * PI_F * fSampleRateInv); //TODO maybe use diffrent or somehting completly diffrent
-    bright = sinh( log(fSampleRate) * ((fSampleRate*0.5f-10) * PI_F * fSampleRateInv)); //TODO maybe use diffrent or somehting completly diffrent
+    bright =  (sin((fSampleRate*0.666f-16) * PI_F * fSampleRateInv))/
+              (cos((fSampleRate*0.5-16)    * PI_F * fSampleRateInv));
 
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
@@ -244,27 +244,24 @@ void RobotHexedFilterPlugin::deactivate()
 
 }
 
-float RobotHexedFilterPlugin::moog_tanh(float x)
+float RobotHexedFilterPlugin::hexed_tanh(float x)
 {
-    int sign = 1;
     if(x < 0)
     {
-        sign = -1;
-        x    = -x;
-        return x * sign;
+        return x * 0.1;
     }
-    else if(x >= 4.0f)
+    else if(x >= 1.0f)
     {
-        return sign;
+        return 1;
     }
     else if(x < 0.5f)
     {
-        return x * sign;
+        return x ;
     }
-    return sign * tanhf(x);
+    return tanhf(x);
 }
 
-float RobotHexedFilterPlugin::parameterSurge(float x, float n)
+float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO
 {
     return x*n;
 }
@@ -296,12 +293,12 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
     float ml = 1 / (1+g);
 
 
-    float S = ((lpc+(0.0001*moog_tanh(sample*0.0001)))*
-              ((lpc+(0.00001*moog_tanh(sample*0.001)))*
-              ((lpc+(0.000001*moog_tanh(sample*0.01)))*
-                            s1[chan]+s2[chan])+
-                                     s3[chan])+
-                                     s4[chan])*ml;
+    float S = ((lpc+(0.016*hexed_tanh(sample*0.006)))*
+              ((lpc+(0.0016*hexed_tanh(sample*0.06)))*
+              ((lpc+(0.00016*hexed_tanh(sample*0.6)))*
+                                  s1[chan]+s2[chan])+
+                                           s3[chan])+
+                                           s4[chan])*ml;
 
 
     // original gangster
@@ -324,9 +321,9 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 
 
 
-    float G  = (lpc+(0.0001*moog_tanh(sample*0.0001)))*
-               (lpc+(0.00001*moog_tanh(sample*0.001)))*
-               (lpc+(0.000001*moog_tanh(sample*0.01)))*
+    float G  = (lpc+(0.016*hexed_tanh(sample*0.006)))*
+               (lpc+(0.0016*hexed_tanh(sample*0.06)))*
+               (lpc+(0.00016*hexed_tanh(sample*0.6)))*
                (lpc);
 
 
@@ -412,7 +409,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float y4 = tptpc(s4[chan],y3,g);
     float mc = 0.0f;
 
-    //TODO handel mmt
+    //TODO handel mmt so it can go smooth to next pole and maybe reverse the parameter number accually represent pole number
 
     switch(mmch)
     {
