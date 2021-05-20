@@ -292,44 +292,31 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
 
+    // this makes some cricket like distortion I love to save this
+    //
+    //float S = ((lpc+(hexed_tanh(sample)))*
+    //          ((lpc+(0.6*hexed_tanh(sample)))*
+    //          ((lpc+(0.16*hexed_tanh(sample)))*
+    //                              s1[chan]+s2[chan])+
+    //                                       s3[chan])+
+    //                                       s4[chan])*ml;
+
+    //float G  = (lpc+(hexed_tanh(sample)))*
+    //           (lpc+(0.6*hexed_tanh(sample)))*
+    //           (lpc+(0.16*hexed_tanh(sample)))*
+    //           (lpc);
 
     float S = ((lpc+(0.016*hexed_tanh(sample*0.006)))*
               ((lpc+(0.0016*hexed_tanh(sample*0.06)))*
               ((lpc+(0.00016*hexed_tanh(sample*0.6)))*
-                                  s1[chan]+s2[chan])+
-                                           s3[chan])+
-                                           s4[chan])*ml;
-
-
-    // original gangster
-    //float S = (lpc*(lpc*(lpc*s1[chan]+s2[chan])+
-    //                                  s3[chan])+
-    //                                  s4[chan])*ml;
-
-
-
-
-    // test
-    //switch (std::fpclassify(S))
-    //{
-    //case FP_INFINITE:  printf ("infinite");  break;
-    //case FP_NAN:       printf ("NaN");       break;
-    //case FP_ZERO:      printf ("zero");      break;
-    //case FP_SUBNORMAL: printf ("subnormal"); break;
-    //case FP_NORMAL:    break;
-    //}
-
-
+                                   s1[chan]+s2[chan])+
+                                            s3[chan])+
+                                            s4[chan])*ml;
 
     float G  = (lpc+(0.016*hexed_tanh(sample*0.006)))*
                (lpc+(0.0016*hexed_tanh(sample*0.06)))*
                (lpc+(0.00016*hexed_tanh(sample*0.6)))*
                (lpc);
-
-
-    // original gangster
-    //float G  = lpc*lpc*lpc*lpc;
-
 
     float y  = (sample - R24 * S) / (1 + R24*G);
 
