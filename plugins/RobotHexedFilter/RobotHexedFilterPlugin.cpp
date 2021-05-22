@@ -234,6 +234,8 @@ void RobotHexedFilterPlugin::activate()
     bright =  (sin((fSampleRate*0.6f-16) * PI_F * fSampleRateInv))/
               (cos((fSampleRate*0.5f-16) * PI_F * fSampleRateInv));
 
+    ringc = fSampleRateInv * 500;
+
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
     dc_tmp[1] = 0; 
@@ -306,16 +308,16 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
     //           (lpc+(0.16*hexed_tanh(sample)))*
     //           (lpc);
 
-    float S = ((lpc+(0.012*tanh(sample*0.016)))*
-              ((lpc+(0.0012*tanh(sample*0.16)))*
-              ((lpc+(0.00012*tanh(sample*1.6)))*
-                             s1[chan]+s2[chan])+
-                                      s3[chan])+
-                                      s4[chan])*ml;
+    float S = ((lpc+(0.025*  ringc*tanh(sample*1.6)))*
+              ((lpc+(0.0125* ringc*tanh(sample*1.6)))*
+              ((lpc+(0.00625*ringc*tanh(sample*1.6)))*
+                                   s1[chan]+s2[chan])+
+                                            s3[chan])+
+                                            s4[chan])*ml;
 
-    float G  = (lpc+(0.012*tanh(sample*0.016)))*
-               (lpc+(0.0012*tanh(sample*0.16)))*
-               (lpc+(0.00012*tanh(sample*1.6)))*
+    float G  = (lpc+(0.025*  ringc*tanh(sample*1.6)))*
+               (lpc+(0.0125* ringc*tanh(sample*1.6)))*
+               (lpc+(0.00625*ringc*tanh(sample*1.6)))*
                (lpc);
 
     float y  = (sample - R24 * S) / (1 + R24*G);
