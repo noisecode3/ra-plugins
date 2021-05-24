@@ -40,7 +40,6 @@ public:
     {
         paramCutOff = 0,
         paramRes,
-        paramDuck,
         paramMode,
         paramWet,
         paramCount
@@ -114,11 +113,11 @@ private:
     // -------------------------------------------------------------------
     // Parameters
 
-    float fCutOff = 1;
-    float fRes    = 0;
-    float fDuck   = 1;
-    float fMode   = 1;
-    float fWet    = 0;
+    float fCutOff = 100.0;
+    float fRes    = 0.0;
+    float fDuck   = 1.0;
+    float fMode   = 4.0;
+    float fWet    = 0.0;
 
     float parameterSurge(float x, float n);
 
@@ -155,7 +154,9 @@ private:
 
     // 24 db multimode
     float mmt; //TODO
-    int   mmch;//TODO
+    int   mmch = 4;
+
+    float uiCutoff, uiReso;
 
     float dc_tmp[2];
     float dc_r;
@@ -164,7 +165,7 @@ private:
     float logsc(float param, const float min, const float max, const float rolloff);
     float tptpc(float& state, float inp, float cutoff);
     float tptlpupw(float& state , float inp, float cutoff, float srInv);
-    float NR24(float sample, float g, float lpc, bool chan);
+    float NR24(float sample, float g, float lpc, bool chan );
     float hexed_filter_process(float x, bool chan);
 
     // -------------------------------------------------------------------

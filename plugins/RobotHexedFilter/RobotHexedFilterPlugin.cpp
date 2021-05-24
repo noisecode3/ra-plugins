@@ -57,29 +57,19 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "CutOff";
         parameter.symbol     = "freq";
         parameter.unit       = "%";
-        parameter.ranges.def = 1.0f;
+        parameter.ranges.def = 100.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 1.0f;
+        parameter.ranges.max = 100.0f;
         break;
 
     case paramRes:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Resonance";
         parameter.symbol     = "res";
-        parameter.unit       = "L";
+        parameter.unit       = "%";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 1.0f;
-        break;
-
-    case paramDuck:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "FilterDuck";
-        parameter.symbol     = "volt";
-        parameter.unit       = "V";
-        parameter.ranges.def = 1.0f;
-        parameter.ranges.min = 0.01f;
-        parameter.ranges.max = 1.0f;
+        parameter.ranges.max = 100.0f;
         break;
 
     case paramMode:
@@ -88,7 +78,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Mode";
         parameter.symbol     = "switch";
         parameter.unit       = "I";
-        parameter.ranges.def = 1.0f;
+        parameter.ranges.def = 4.0f;
         parameter.ranges.min = 1.0f;
         parameter.ranges.max = 4.0f;
         break;
@@ -129,9 +119,6 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
     case paramRes:
         return fRes;
 
-    case paramDuck:
-        return fDuck;
-
     case paramMode:
         return fMode;
 
@@ -162,15 +149,9 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         fResFall      = true;
         break;
 
-    case paramDuck:
-        fDuck         = value;
-        fChangeDuck   = fDuck-fDuckOld;
-        fDuckFall     = true;
-        break;
-
     case paramMode:
         fMode         = value;
-        mmch          = (int)fMode -1;
+        mmch          = (int)fMode;
         break;
 
     case paramWet:
@@ -187,10 +168,9 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
     {
     case 0:
         // Default
-        fCutOff = 1.0f;
+        fCutOff = 100.0f;
         fRes    = 0.0f;
-        fDuck   = 1.0f;
-        fMode   = 1.0f;
+        fMode   = 4.0f;
         fWet    = 0.0f;
         activate();
         break;
@@ -224,7 +204,7 @@ void RobotHexedFilterPlugin::activate()
 
     R24=0;
 
-    mmch = 0;
+    //mmch = 0;
     mmt  = 0;
 
     float rcrate = sqrt((44000/fSampleRate));
@@ -308,17 +288,17 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
     //           (lpc+(0.16*hexed_tanh(sample)))*
     //           (lpc);
 
-    float S = ((lpc+(0.025*  ringc*tanh(sample*1.6)))*
-              ((lpc+(0.0125* ringc*tanh(sample*1.6)))*
-              ((lpc+(0.00625*ringc*tanh(sample*1.6)))*
+    float S = (lpc/*+(0.025*  ringc*tanh(sample*uiCutoff))**/
+              (lpc/*+(0.0125* ringc*tanh(sample*uiCutoff))**/
+              (lpc/*+(0.00625*ringc*tanh(sample*uiCutoff))**/
                                    s1[chan]+s2[chan])+
                                             s3[chan])+
                                             s4[chan])*ml;
 
-    float G  = (lpc+(0.025*  ringc*tanh(sample*1.6)))*
-               (lpc+(0.0125* ringc*tanh(sample*1.6)))*
-               (lpc+(0.00625*ringc*tanh(sample*1.6)))*
-               (lpc);
+    float G  = lpc/*+(0.025*  ringc*tanh(sample*uiCutoff))**/
+               lpc/*+(0.0125* ringc*tanh(sample*uiCutoff))**/
+               lpc/*+(0.00625*ringc*tanh(sample*uiCutoff))**/
+               lpc;
 
     float y  = (sample - R24 * S) / (1 + R24*G);
 
@@ -331,35 +311,26 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float rCutoff;
     float rReso;
     float rGain;
-    float uiCutoff;
-    float uiReso;
 
     if (fSamplesFallCutOff > 1)
     {
         float steps     = 1.0f/fFrames;
         float cutoffAdd = parameterSurge((fFrames-fSamplesFallCutOff+1)*steps, fChangeCutOff);
-        uiCutoff = fCutOffOld+cutoffAdd; 
+        uiCutoff        = fCutOffOld+cutoffAdd;
+        uiCutoff        = uiCutoff*0.01;
         fSamplesFallCutOff--;
     }
-    else { uiCutoff = fCutOffOld = fCutOff; fCutOffFall = false; } //TODO dont do else here
+    else { uiCutoff = fCutOffOld = fCutOff; uiCutoff = uiCutoff * 0.01; fCutOffFall = false; } //TODO dont do else here
 
     if (fSamplesFallRes > 1)
     {
         float steps  = 1.0f/fFrames;
         float resAdd = parameterSurge((fFrames-fSamplesFallRes+1)*steps, fChangeRes);
         uiReso       = fResOld+resAdd;
+        uiReso       = uiReso*0.01;
         fSamplesFallRes--;
     }
-    else { uiReso = fResOld = fRes; fResFall = false; }
-
-    if (fSamplesFallDuck > 1)
-    {
-        float steps   = 1.0f/fFrames;
-        float duckAdd = parameterSurge((fFrames-fSamplesFallDuck+1)*steps, fChangeDuck);
-        rGain         = fDuckOld+duckAdd;
-        fSamplesFallDuck--;
-    }
-    else { rGain = fDuckOld = fDuck; fDuckFall = false; }
+    else { uiReso = fResOld = fRes; uiReso = uiReso * 0.01; fResFall = false; }
 
 
     // basic DC filter, this removes a super tiny bit of low
@@ -371,7 +342,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     // TODO dont calculate rReso and rCutoff for every sample 
     
     rReso = (0.991-logsc(1-uiReso, 0, 0.991));
-    R24   =  3.5 * rReso;
+    R24   =  3.25 * rReso;
 
     float cutoffNorm = logsc(uiCutoff,60,19000);
     rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
@@ -398,26 +369,24 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float y4 = tptpc(s4[chan],y3,g);
     float mc = 0.0f;
 
-    //TODO handel mmt so it can go smooth to next pole and maybe reverse the parameter number accually represent pole number
-
     switch(mmch)
     {
-        case 0:
+        case 4:
             mc = ((1 - mmt) * y4 + (mmt) * y3);
             break;
-        case 1:
+        case 3:
             mc = ((1 - mmt) * y3 + (mmt) * y2);
             break;
         case 2:
             mc = ((1 - mmt) * y2 + (mmt) * y1);
             break;
-        case 3:
+        case 1:
             mc = y1;
             break;
     }
 
     //volume comp
-    return (mc * ( 1 + R24 * (0.45 * rGain) )) * ( 0.988 * rGain);
+    return (mc * ( 1 + R24 * ( 0.05 + 0.4 * uiCutoff))) * 0.95;
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
