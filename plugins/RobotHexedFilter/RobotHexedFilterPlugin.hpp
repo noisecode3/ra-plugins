@@ -27,6 +27,8 @@
 #ifndef ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
 #define ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
 
+// this is a dummy comment to test how git commits in integrateded sotware works
+
 #include "DistrhoPlugin.hpp"
 
 START_NAMESPACE_DISTRHO
