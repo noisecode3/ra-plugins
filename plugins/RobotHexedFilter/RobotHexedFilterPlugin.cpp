@@ -212,7 +212,7 @@ void RobotHexedFilterPlugin::activate()
     bright =  (sin((fSampleRate*0.6f-16) * PI_F * fSampleRateInv))/
               (cos((fSampleRate*0.5f-16) * PI_F * fSampleRateInv));
 
-    ringc = fSampleRateInv * 500;
+    //ringc = fSampleRateInv * 500;
 
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
@@ -228,7 +228,7 @@ float RobotHexedFilterPlugin::hexed_tanh(float x)
 {
     if(x < 0)
     {
-        return x * 0.1;
+        return x;
     }
     else if(x >= 6.0f)
     {
@@ -272,25 +272,11 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
 
-    // this makes some cricket like distortion I love to save this
-    //
-    //float S = ((lpc+(hexed_tanh(sample)))*
-    //          ((lpc+(0.6*hexed_tanh(sample)))*
-    //          ((lpc+(0.16*hexed_tanh(sample)))*
-    //                              s1[chan]+s2[chan])+
-    //                                       s3[chan])+
-    //                                       s4[chan])*ml;
-
-    //float G  = (lpc+(hexed_tanh(sample)))*
-    //           (lpc+(0.6*hexed_tanh(sample)))*
-    //           (lpc+(0.16*hexed_tanh(sample)))*
-    //           (lpc);
-
     float S = (lpc*(lpc*(lpc*s1[chan]+s2[chan])+s3[chan])+s4[chan])*ml;
 
     float G  = lpc*lpc*lpc*lpc;
 
-    float y  = (sample - R24 * S) / (1 + R24*G);
+    float y  = (sample - R24*S) / (1 + R24*G);
 
     return y + 1e-8;
 }
@@ -333,10 +319,10 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     // TODO dont calculate rReso and rCutoff for every sample 
 
     rReso = (0.991-logsc(1-uiReso, 0, 0.991));
-    R24   =  3.25 * rReso;
-
     float cutoffNorm = logsc(uiCutoff,60,19000);
+
     rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
+    R24   =  (3+(0.24*rCutoff)) * rReso;
 
     float g   = rCutoff;
     float lpc = g / (1 + g);
@@ -377,7 +363,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
 
     //volume comp
-    return (mc * ( 1 + R24 * ( 0.05 + 0.4 * uiCutoff))) * 0.95;
+    return (mc * ( 1 + R24 * 0.45 ))* (0.95-(0.65*rReso));
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)

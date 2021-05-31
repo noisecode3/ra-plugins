@@ -145,7 +145,7 @@ private:
     float d[2], c[2];
     float R24;
     float rcor24,rcor24Inv;
-    float bright, ringc;
+    float bright;
 
     // 24 db multimode
     float mmt; //TODO
