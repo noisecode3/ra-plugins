@@ -27,8 +27,6 @@
 #ifndef ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
 #define ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
 
-// this is a dummy comment to test how git commits in integrateded sotware works
-
 #include "DistrhoPlugin.hpp"
 
 START_NAMESPACE_DISTRHO
@@ -117,7 +115,6 @@ private:
 
     float fCutOff = 100.0;
     float fRes    = 0.0;
-    float fDuck   = 1.0;
     float fMode   = 4.0;
     float fWet    = 0.0;
 
@@ -131,10 +128,6 @@ private:
     bool     fResFall           = false;
     float    fChangeRes         = 0.0f;
 
-    uint32_t fSamplesFallDuck   = 0;
-    bool     fDuckFall          = false;
-    float    fChangeDuck        = 0.0f;
-
     uint32_t fSamplesFallWet    = 0;
     bool     fWetFall           = false;
     float    fChangeWet         = 0.0f;
@@ -144,7 +137,7 @@ private:
     // -------------------------------------------------------------------
     // Dsp 
 
-    float fCutOffOld, fResOld, fWetOld, fDuckOld, fWetVol;
+    float fCutOffOld, fResOld, fWetOld, fWetVol;
 
     float s1[2],s2[2],s3[2],s4[2];
     float fSampleRate;

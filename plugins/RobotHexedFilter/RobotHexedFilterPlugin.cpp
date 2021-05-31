@@ -188,12 +188,10 @@ void RobotHexedFilterPlugin::activate()
 
     fCutOffOld   = fCutOff;
     fResOld      = fRes;
-    fDuckOld     = fDuck;
     fWetOld      = fWet;
 
     fCutOffFall  = false;
     fResFall     = false;
-    fDuckFall    = false;
     fWetFall     = false;
 
     fWetVol      = 1.0f - exp(-0.01f*fWet);
@@ -302,8 +300,8 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 
     float rCutoff;
     float rReso;
-    float rGain;
 
+    //uiCutoff is used a with value from 1.0 to 0.0 after this
     if (fSamplesFallCutOff > 1)
     {
         float steps     = 1.0f/fFrames;
@@ -314,6 +312,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
     else { uiCutoff = fCutOffOld = fCutOff; uiCutoff = uiCutoff * 0.01; fCutOffFall = false; } //TODO dont do else here
 
+    //uiReso is used a with value from 1.0 to 0.0 after this
     if (fSamplesFallRes > 1)
     {
         float steps  = 1.0f/fFrames;
@@ -332,7 +331,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
      dc_tmp[chan] = dc_prev;
 
     // TODO dont calculate rReso and rCutoff for every sample 
-    
+
     rReso = (0.991-logsc(1-uiReso, 0, 0.991));
     R24   =  3.25 * rReso;
 
@@ -391,7 +390,6 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
     fFrames = frames;
     if (fCutOffFall) fSamplesFallCutOff = fFrames;
     if (fResFall)    fSamplesFallRes    = fFrames;
-    if (fDuckFall)   fSamplesFallDuck   = fFrames;
     if (fWetFall)    fSamplesFallWet    = fFrames;
 
     for (uint32_t i=0; i < frames; ++i)
