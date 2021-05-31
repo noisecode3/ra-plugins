@@ -1,0 +1,79 @@
+make all --dry-run --keep-going --print-directory
+make: Entering directory '/home/marbangens/Documents/Code/ra-plugins'
+ 
+# Plugins
+make all -C plugins/RobotMoogFilter
+ 
+make[1]: Entering directory '/home/marbangens/Documents/Code/ra-plugins/plugins/RobotMoogFilter'
+ 
+mkdir -p "../../build/RobotMoogFilter"
+echo "Compiling RobotMoogFilterPlugin.cpp"
+g++ RobotMoogFilterPlugin.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -c -o ../../build/RobotMoogFilter/RobotMoogFilterPlugin.cpp.o
+ 
+mkdir -p ../../build/RobotMoogFilter
+echo "Compiling DistrhoPluginMain.cpp (LADSPA)"
+g++ ../../dpf/distrho/DistrhoPluginMain.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -DDISTRHO_PLUGIN_TARGET_LADSPA -c -o ../../build/RobotMoogFilter/DistrhoPluginMain_LADSPA.cpp.o
+ 
+mkdir -p ../../bin
+echo "Creating LADSPA plugin for RobotMoogFilter"
+g++ ../../build/RobotMoogFilter/RobotMoogFilterPlugin.cpp.o ../../build/RobotMoogFilter/DistrhoPluginMain_LADSPA.cpp.o -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all  -Wl,--no-undefined -shared -o ../../bin/RobotMoogFilter-ladspa.so
+ 
+mkdir -p ../../build/RobotMoogFilter
+echo "Compiling DistrhoPluginMain.cpp (VST)"
+g++ ../../dpf/distrho/DistrhoPluginMain.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -DDISTRHO_PLUGIN_TARGET_VST -c -o ../../build/RobotMoogFilter/DistrhoPluginMain_VST.cpp.o
+ 
+mkdir -p ../../bin
+echo "Creating VST plugin for RobotMoogFilter"
+g++ ../../build/RobotMoogFilter/RobotMoogFilterPlugin.cpp.o ../../build/RobotMoogFilter/DistrhoPluginMain_VST.cpp.o -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all  -Wl,--no-undefined  -shared -o ../../bin/RobotMoogFilter-vst.so
+ 
+mkdir -p ../../build/RobotMoogFilter
+echo "Compiling DistrhoPluginMain.cpp (LV2)"
+g++ ../../dpf/distrho/DistrhoPluginMain.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -DDISTRHO_PLUGIN_TARGET_LV2 -c -o ../../build/RobotMoogFilter/DistrhoPluginMain_LV2.cpp.o
+ 
+mkdir -p ../../bin/RobotMoogFilter.lv2
+echo "Creating LV2 plugin library for RobotMoogFilter"
+g++ ../../build/RobotMoogFilter/RobotMoogFilterPlugin.cpp.o ../../build/RobotMoogFilter/DistrhoPluginMain_LV2.cpp.o -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all  -Wl,--no-undefined -shared -o ../../bin/RobotMoogFilter.lv2/RobotMoogFilter_dsp.so
+make[1]: Leaving directory '/home/marbangens/Documents/Code/ra-plugins/plugins/RobotMoogFilter'
+ 
+make all -C plugins/RobotHexedFilter
+ 
+make[1]: Entering directory '/home/marbangens/Documents/Code/ra-plugins/plugins/RobotHexedFilter'
+ 
+mkdir -p "../../build/RobotHexedFilter"
+echo "Compiling RobotHexedFilterPlugin.cpp"
+g++ RobotHexedFilterPlugin.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -c -o ../../build/RobotHexedFilter/RobotHexedFilterPlugin.cpp.o
+ 
+mkdir -p ../../build/RobotHexedFilter
+echo "Compiling DistrhoPluginMain.cpp (LADSPA)"
+g++ ../../dpf/distrho/DistrhoPluginMain.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -DDISTRHO_PLUGIN_TARGET_LADSPA -c -o ../../build/RobotHexedFilter/DistrhoPluginMain_LADSPA.cpp.o
+ 
+mkdir -p ../../bin
+echo "Creating LADSPA plugin for RobotHexedFilter"
+g++ ../../build/RobotHexedFilter/RobotHexedFilterPlugin.cpp.o ../../build/RobotHexedFilter/DistrhoPluginMain_LADSPA.cpp.o -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all  -Wl,--no-undefined -shared -o ../../bin/RobotHexedFilter-ladspa.so
+ 
+mkdir -p ../../build/RobotHexedFilter
+echo "Compiling DistrhoPluginMain.cpp (VST)"
+g++ ../../dpf/distrho/DistrhoPluginMain.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -DDISTRHO_PLUGIN_TARGET_VST -c -o ../../build/RobotHexedFilter/DistrhoPluginMain_VST.cpp.o
+ 
+mkdir -p ../../bin
+echo "Creating VST plugin for RobotHexedFilter"
+g++ ../../build/RobotHexedFilter/RobotHexedFilterPlugin.cpp.o ../../build/RobotHexedFilter/DistrhoPluginMain_VST.cpp.o -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all  -Wl,--no-undefined  -shared -o ../../bin/RobotHexedFilter-vst.so
+ 
+mkdir -p ../../build/RobotHexedFilter
+echo "Compiling DistrhoPluginMain.cpp (LV2)"
+g++ ../../dpf/distrho/DistrhoPluginMain.cpp -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -DDISTRHO_PLUGIN_TARGET_LV2 -c -o ../../build/RobotHexedFilter/DistrhoPluginMain_LV2.cpp.o
+mkdir -p ../../bin/RobotHexedFilter.lv2
+echo "Creating LV2 plugin library for RobotHexedFilter"
+g++ ../../build/RobotHexedFilter/RobotHexedFilterPlugin.cpp.o ../../build/RobotHexedFilter/DistrhoPluginMain_LV2.cpp.o -Wall -Wextra -pipe -MD -MP -fPIC -DPIC -DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden  -std=gnu++0x -fvisibility-inlines-hidden -I. -I../../dpf/distrho -I../../dpf/dgl -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all  -Wl,--no-undefined -shared -o ../../bin/RobotHexedFilter.lv2/RobotHexedFilter_dsp.so
+make[1]: Leaving directory '/home/marbangens/Documents/Code/ra-plugins/plugins/RobotHexedFilter'
+ 
+make -C dpf/utils/lv2-ttl-generator
+ 
+make[1]: Entering directory '/home/marbangens/Documents/Code/ra-plugins/dpf/utils/lv2-ttl-generator'
+ 
+cc lv2_ttl_generator.c  -o ../lv2_ttl_generator -ldl
+make[1]: Leaving directory '/home/marbangens/Documents/Code/ra-plugins/dpf/utils/lv2-ttl-generator'
+ 
+/home/marbangens/Documents/Code/ra-plugins/dpf/utils/generate-ttl.sh
+make: Leaving directory '/home/marbangens/Documents/Code/ra-plugins'
+ 
