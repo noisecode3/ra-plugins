@@ -202,7 +202,7 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         // Just Bass
         fFreq = 107.0f;
         fRes  = 0.62f;
-        fWet  = 50.0f;
+        fWet  = 100.0f;
         activate();
         break;
     }
