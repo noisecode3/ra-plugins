@@ -63,16 +63,6 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 0.95f;
         break;
 
-    case paramGain:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Gain";
-        parameter.symbol     = "volt"; // simple for now
-        parameter.unit       = "V";
-        parameter.ranges.def = 1.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 4.0f;
-        break;
-
     case paramWet:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Wet";
@@ -109,7 +99,7 @@ void RobotMoogFilterPlugin::initProgramName(uint32_t index, String& programName)
             programName = "Dune Tones";
             break;
         case 6:
-            programName = "Bass Boost (Parallel Track)";
+            programName = "Just Bass";
             break;
     }
 }
@@ -126,9 +116,6 @@ float RobotMoogFilterPlugin::getParameterValue(uint32_t index) const
 
     case paramRes:
         return fRes;
-
-    case paramGain:
-        return fGain;
 
     case paramWet:
         return fWet;
@@ -157,12 +144,6 @@ void RobotMoogFilterPlugin::setParameterValue(uint32_t index, float value)
         fResFall     = true;
         break;
 
-    case paramGain:
-        fGain        = value;
-        fChangeGain  = fGain-fGainOld;
-        fGainFall    = true;
-        break;
-
     case paramWet:
         fWet         = value;
         fChangeWet   = fWet-fWetOld;
@@ -179,7 +160,6 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         // Default
         fFreq = 22000.0f;
         fRes  = 0.0f;
-        fGain = 1.0f;
         fWet  = 0.0f;
         activate();
         break;
@@ -187,7 +167,6 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         // Low Warm
         fFreq = 1500.0f;
         fRes  = 0.5f;
-        fGain = 1.0f;
         fWet  = 80.0f;
         activate();
         break;
@@ -195,7 +174,6 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         // Low Glass
         fFreq = 811.0f;
         fRes  = 0.78f;
-        fGain = 1.0f;
         fWet  = 50.0f;
         activate();
         break;
@@ -203,7 +181,6 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         // UFO Dream
         fFreq = 4680.0f;
         fRes  = 0.95f;
-        fGain = 1.0f;
         fWet  = 80.0f;
         activate();
         break;
@@ -211,7 +188,6 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         // Spicy Crisp
         fFreq = 16637.0f;
         fRes  = 0.85f;
-        fGain = 1.0f;
         fWet  = 40.0f;
         activate();
         break;
@@ -219,15 +195,13 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         // Dune Tones
         fFreq = 12153.0f;
         fRes  = 0.92f;
-        fGain = 1.0f;
         fWet  = 30.0f;
         activate();
         break;
     case 6:
-        // Bass Boost
+        // Just Bass
         fFreq = 107.0f;
         fRes  = 0.62f;
-        fGain = 4.0f;
         fWet  = 50.0f;
         activate();
         break;
@@ -259,12 +233,10 @@ void RobotMoogFilterPlugin::activate()
 
     fFreqOld     = fFreq;
     fResOld      = fRes;
-    fGainOld     = fGain;
     fWetOld      = fWet;
 
     fFreqFall    = false;
     fResFall     = false;
-    fGainFall    = false;
     fWetFall     = false;
 }
 
@@ -396,13 +368,13 @@ void RobotMoogFilterPlugin::run(const float** inputs, float** outputs, uint32_t 
     {
         float fout1, fout2;
 
-        fout1   = ((in1[i]*(1.0f-fWetVol)) + (moog_ladder_process(in1[i], 0)*fWetVol))*fGain;
-        fout2   = ((in2[i]*(1.0f-fWetVol)) + (moog_ladder_process(in2[i], 1)*fWetVol))*fGain;
+        fout1   = ((in1[i]*(1.0f-fWetVol)) + (moog_ladder_process(in1[i], 0)*fWetVol));
+        fout2   = ((in2[i]*(1.0f-fWetVol)) + (moog_ladder_process(in2[i], 1)*fWetVol));
 
-        if (fout1 >  1.0f) fout1 =  1.0f;
-        if (fout1 < -1.0f) fout1 = -1.0f;
-        if (fout2 >  1.0f) fout2 =  1.0f;
-        if (fout2 < -1.0f) fout2 = -1.0f;
+        //if (fout1 >  1.0f) fout1 =  1.0f;
+        //if (fout1 < -1.0f) fout1 = -1.0f;
+        //if (fout2 >  1.0f) fout2 =  1.0f;
+        //if (fout2 < -1.0f) fout2 = -1.0f;
 
         out1[i] = fout1;
         out2[i] = fout2;

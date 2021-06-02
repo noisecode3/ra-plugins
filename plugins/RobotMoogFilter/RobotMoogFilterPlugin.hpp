@@ -34,7 +34,6 @@ public:
     {
         paramFreq = 0,
         paramRes,
-        paramGain,
         paramWet,
         paramCount
     };
@@ -109,7 +108,6 @@ private:
 
     float fFreq = 22000.0f;
     float fRes  = 0.0f;
-    float fGain = 1.0f;
     float fWet  = 0.0f;
 
     float parameterSurge(float x, float n);
@@ -122,10 +120,6 @@ private:
     bool     fResFall = false;
     float    fChangeRes = 0.0f;
 
-    uint32_t fSamplesFallGain = 0;
-    bool     fGainFall = false;
-    float    fChangeGain = 0.0f;
-
     uint32_t fSamplesFallWet = 0;
     bool     fWetFall = false;
     float    fChangeWet = 0.0f;
@@ -135,7 +129,7 @@ private:
     // -------------------------------------------------------------------
     // Dsp 
 
-    float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld, fGainOld;
+    float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld;
 
     float fDelay[2][6]   = { 0 };
     float fTanhstg[2][3] = { 0 };
