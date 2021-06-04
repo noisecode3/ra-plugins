@@ -7,7 +7,9 @@ This is a work in progress! I like noisy and heavy music mostly and are interest
 This is a little bit modified version of Dexed synth filter, its alow-pass filter with 1-4 pole modes and bit metallic tone
 
  - To do: remove clicks, balance the amplitude, make 5-8 presets to for quick demonstration
-
+ - 1:st pole/order should have more natural peak(pole 0) with less distortion, the aim is a clean filter not but not colorless
+ - dc filter part, should it be different? 60HZ or 50Hz cut off limit?
+ - brightness, resonance and magnitude? new plan make parameters of those, (brightness and damping) the 2's in the pi's ;) freq's and curves ;)
 
 ## Moog filter
 This is a low-pass Moog like filter
