@@ -72,6 +72,16 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 100.0f;
         break;
 
+    case paramBri:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Bright";
+        parameter.symbol     = "bright";
+        parameter.unit       = "%";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 100.0f;
+        break;
+
     case paramMode:
         parameter.hints      = kParameterIsAutomable;
         parameter.hints      = kParameterIsInteger;
@@ -119,6 +129,9 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
     case paramRes:
         return fRes;
 
+    case paramBri:
+        return fBri;
+
     case paramMode:
         return fMode;
 
@@ -149,6 +162,12 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         fResFall      = true;
         break;
 
+    case paramBri:
+        fBri          = value;
+        fChangeBri    = fBri-fBriOld;
+        fBriFall      = true;
+        break;
+
     case paramMode:
         fMode         = value;
         mmch          = (int)fMode;
@@ -170,6 +189,7 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
         // Default
         fCutOff = 100.0f;
         fRes    = 0.0f;
+        fBri    = 0.0f;
         fMode   = 4.0f;
         fWet    = 0.0f;
         activate();
@@ -188,10 +208,12 @@ void RobotHexedFilterPlugin::activate()
 
     fCutOffOld   = fCutOff;
     fResOld      = fRes;
+    fBriOld      = fBri;
     fWetOld      = fWet;
 
     fCutOffFall  = false;
     fResFall     = false;
+    fBriFall     = false;
     fWetFall     = false;
 
     fWetVol      = 1.0f - exp(-0.01f*fWet);
@@ -209,8 +231,8 @@ void RobotHexedFilterPlugin::activate()
     rcor24 = (970.0 / 44000)*rcrate;
     rcor24Inv = 1 / rcor24;
 
-    bright =  (sin((fSampleRate*0.6f-16) * PI_F * fSampleRateInv))/
-              (cos((fSampleRate*0.5f-16) * PI_F * fSampleRateInv));
+    bright =  (sin((fSampleRate*0.5f-5) * PI_F * fSampleRateInv))/
+              (cos((fSampleRate*0.5f-5) * PI_F * fSampleRateInv));
 
     //ringc = fSampleRateInv * 500;
 
@@ -327,9 +349,11 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float g   = rCutoff;
     float lpc = g / (1 + g);
 
+    float br = bright - ((bright-1)*(1.0-(0.01*fBri)));
+
     float s = x;
     s       = s - 0.45*tptlpupw(c[chan], s, 15, fSampleRateInv);
-    s       = tptpc(d[chan], s, bright);
+    s       = tptpc(d[chan], s, br);
 
     float y0 = NR24(s, g, lpc, chan);
 

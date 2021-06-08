@@ -40,6 +40,7 @@ public:
     {
         paramCutOff = 0,
         paramRes,
+        paramBri,
         paramMode,
         paramWet,
         paramCount
@@ -115,6 +116,7 @@ private:
 
     float fCutOff = 100.0;
     float fRes    = 0.0;
+    float fBri    = 0.0f;
     float fMode   = 4.0;
     float fWet    = 0.0;
 
@@ -128,6 +130,10 @@ private:
     bool     fResFall           = false;
     float    fChangeRes         = 0.0f;
 
+    uint32_t fSamplesFallBri    = 0;
+    bool     fBriFall           = false;
+    float    fChangeBri         = 0.0f;
+
     uint32_t fSamplesFallWet    = 0;
     bool     fWetFall           = false;
     float    fChangeWet         = 0.0f;
@@ -137,7 +143,11 @@ private:
     // -------------------------------------------------------------------
     // Dsp 
 
-    float fCutOffOld, fResOld, fWetOld, fWetVol;
+    float fCutOffOld = fCutOff;
+    float fResOld    = fRes;
+    float fBriOld    = fBri;
+    float fWetOld    = fWet;
+    float fWetVol    = 0;
 
     float s1[2],s2[2],s3[2],s4[2];
     float fSampleRate;
