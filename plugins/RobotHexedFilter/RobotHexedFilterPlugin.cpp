@@ -72,15 +72,15 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 100.0f;
         break;
 
-    case paramBri:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Bright";
-        parameter.symbol     = "bright";
-        parameter.unit       = "%";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
-        break;
+    //case paramBri:
+    //    parameter.hints      = kParameterIsAutomable;
+    //    parameter.name       = "Bright";
+    //    parameter.symbol     = "bright";
+    //    parameter.unit       = "%";
+    //    parameter.ranges.def = 0.0f;
+    //    parameter.ranges.min = 0.0f;
+    //    parameter.ranges.max = 1.0f;
+    //    break;
 
     case paramMode:
         parameter.hints      = kParameterIsAutomable;
@@ -129,8 +129,8 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
     case paramRes:
         return fRes;
 
-    case paramBri:
-        return fBri;
+    //case paramBri:
+    //    return fBri;
 
     case paramMode:
         return fMode;
@@ -162,11 +162,11 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         fResFall      = true;
         break;
 
-    case paramBri:
-        fBri          = value;
-        fChangeBri    = fBri-fBriOld;
-        fBriFall      = true;
-        break;
+    //case paramBri:
+    //    fBri          = value;
+    //    fChangeBri    = fBri-fBriOld;
+    //    fBriFall      = true;
+    //    break;
 
     case paramMode:
         fMode         = value;
@@ -189,7 +189,7 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
         // Default
         fCutOff = 100.0f;
         fRes    = 0.0f;
-        fBri    = 0.0f;
+        //fBri    = 0.0f;
         fMode   = 4.0f;
         fWet    = 0.0f;
         activate();
@@ -208,12 +208,12 @@ void RobotHexedFilterPlugin::activate()
 
     fCutOffOld   = fCutOff;
     fResOld      = fRes;
-    fBriOld      = fBri;
+    //fBriOld      = fBri;
     fWetOld      = fWet;
 
     fCutOffFall  = false;
     fResFall     = false;
-    fBriFall     = false;
+    //fBriFall     = false;
     fWetFall     = false;
 
     fWetVol      = 1.0f - exp(-0.01f*fWet);
@@ -349,7 +349,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float g   = rCutoff;
     float lpc = g / (1 + g);
 
-    float br = bright - ((bright-1)*(1.0-(0.01*fBri)));
+    float br = bright - ((bright-1)*(1.0-((cutoffNorm-60)*0.000000016)));
 
     float s = x;
     s       = s - 0.45*tptlpupw(c[chan], s, 15, fSampleRateInv);

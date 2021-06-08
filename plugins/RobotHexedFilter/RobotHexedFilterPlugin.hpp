@@ -40,7 +40,7 @@ public:
     {
         paramCutOff = 0,
         paramRes,
-        paramBri,
+        //paramBri,
         paramMode,
         paramWet,
         paramCount
@@ -116,7 +116,7 @@ private:
 
     float fCutOff = 100.0;
     float fRes    = 0.0;
-    float fBri    = 0.0f;
+    //float fBri    = 0.0f;
     float fMode   = 4.0;
     float fWet    = 0.0;
 
@@ -130,9 +130,9 @@ private:
     bool     fResFall           = false;
     float    fChangeRes         = 0.0f;
 
-    uint32_t fSamplesFallBri    = 0;
-    bool     fBriFall           = false;
-    float    fChangeBri         = 0.0f;
+    //uint32_t fSamplesFallBri    = 0;
+    //bool     fBriFall           = false;
+    //float    fChangeBri         = 0.0f;
 
     uint32_t fSamplesFallWet    = 0;
     bool     fWetFall           = false;
@@ -145,7 +145,7 @@ private:
 
     float fCutOffOld = fCutOff;
     float fResOld    = fRes;
-    float fBriOld    = fBri;
+    //float fBriOld    = fBri;
     float fWetOld    = fWet;
     float fWetVol    = 0;
 
