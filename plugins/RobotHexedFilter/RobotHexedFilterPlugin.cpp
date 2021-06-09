@@ -85,7 +85,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
     case paramMode:
         parameter.hints      = kParameterIsAutomable;
         parameter.hints      = kParameterIsInteger;
-        parameter.name       = "Mode";
+        parameter.name       = "Stage";
         parameter.symbol     = "switch";
         parameter.unit       = "I";
         parameter.ranges.def = 4.0f;
