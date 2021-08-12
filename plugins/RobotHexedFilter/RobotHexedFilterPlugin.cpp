@@ -344,12 +344,13 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float cutoffNorm = logsc(uiCutoff,60,19000);
 
     rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
-    R24   =  (2.1+(0.3*rCutoff)) * rReso;
+    R24   =  3.8 * rReso;
 
     float g   = rCutoff;
     float lpc = g / (1 + g);
 
     float br = bright - ((bright-1)*(1.0-((cutoffNorm-60)*0.000000016)));
+    //float br = 1.0;
 
     float s = x;
     s       = s - 0.45*tptlpupw(c[chan], s, 15, fSampleRateInv);
@@ -385,9 +386,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             mc = y1;
             break;
     }
-
-    //volume comp
-    return (mc * ( 1 + R24 * 0.45 )) * (0.95-(0.65*rReso*(1-(cutoffNorm-60)*0.000018798)));
+    return (mc * ( 1 + R24 * 0.45 )) * (0.95-(0.887*rReso));
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
