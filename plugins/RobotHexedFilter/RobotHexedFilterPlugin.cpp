@@ -72,16 +72,6 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 100.0f;
         break;
 
-    //case paramBri:
-    //    parameter.hints      = kParameterIsAutomable;
-    //    parameter.name       = "Bright";
-    //    parameter.symbol     = "bright";
-    //    parameter.unit       = "%";
-    //    parameter.ranges.def = 0.0f;
-    //    parameter.ranges.min = 0.0f;
-    //    parameter.ranges.max = 1.0f;
-    //    break;
-
     case paramMode:
         parameter.hints      = kParameterIsAutomable;
         parameter.hints      = kParameterIsInteger;
@@ -129,9 +119,6 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
     case paramRes:
         return fRes;
 
-    //case paramBri:
-    //    return fBri;
-
     case paramMode:
         return fMode;
 
@@ -162,12 +149,6 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         fResFall      = true;
         break;
 
-    //case paramBri:
-    //    fBri          = value;
-    //    fChangeBri    = fBri-fBriOld;
-    //    fBriFall      = true;
-    //    break;
-
     case paramMode:
         fMode         = value;
         mmch          = (int)fMode;
@@ -189,7 +170,6 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
         // Default
         fCutOff = 100.0f;
         fRes    = 0.0f;
-        //fBri    = 0.0f;
         fMode   = 4.0f;
         fWet    = 0.0f;
         activate();
@@ -208,12 +188,10 @@ void RobotHexedFilterPlugin::activate()
 
     fCutOffOld   = fCutOff;
     fResOld      = fRes;
-    //fBriOld      = fBri;
     fWetOld      = fWet;
 
     fCutOffFall  = false;
     fResFall     = false;
-    //fBriFall     = false;
     fWetFall     = false;
 
     fWetVol      = 1.0f - exp(-0.01f*fWet);
@@ -225,7 +203,9 @@ void RobotHexedFilterPlugin::activate()
     R24=0;
 
     //mmch = 0;
-    mmt  = 0;
+    mmt  = 0; // this value should be use to implament click free change from pole (4 to 3) (3 to 2) (2 to 1) in pairs and 1 by itself lol
+              // only problem is that it has to go in between those pairs if the user enter an number on the keyboard, without using the slider
+              // the solution could be to extend the switch with cases for all of these...
 
     float rcrate = sqrt((44000/fSampleRate));
     rcor24 = (970.0 / 44000)*rcrate;
@@ -234,7 +214,6 @@ void RobotHexedFilterPlugin::activate()
     bright =  (sin((fSampleRate*0.5f-5) * PI_F * fSampleRateInv))/
               (cos((fSampleRate*0.5f-5) * PI_F * fSampleRateInv));
 
-    //ringc = fSampleRateInv * 500;
 
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
@@ -302,10 +281,13 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 {
 
+    // Remember about sampels fall, the last sample in the frame buffer is the same as the starting one on the next only if there was NO NEW change !!!
+    // Calling run() with only 1 frames should just read fCutOff
+
     float rCutoff;
     float rReso;
 
-    //uiCutoff is used a with value from 1.0 to 0.0 after this
+    //uiCutoff is used with value from 1.0 to 0.0 after this
     if (fSamplesFallCutOff > 1)
     {
         float steps     = 1.0f/fFrames;
@@ -313,10 +295,13 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
         uiCutoff        = fCutOffOld+cutoffAdd;
         uiCutoff        = uiCutoff*0.01;
         fSamplesFallCutOff--;
+        //printf("fSamplesFallCutOff = %d\n", fSamplesFallCutOff);
+        //printf("uiCutoff = %f\n", uiCutoff);
+
     }
     else { uiCutoff = fCutOffOld = fCutOff; uiCutoff = uiCutoff * 0.01; fCutOffFall = false; } //TODO dont do else here
 
-    //uiReso is used a with value from 1.0 to 0.0 after this
+    //uiReso is used with value from 1.0 to 0.0 after this
     if (fSamplesFallRes > 1)
     {
         float steps  = 1.0f/fFrames;
@@ -346,7 +331,6 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float lpc = g / (1 + g);
 
     float br = bright - ((bright-1)*(1.0-((cutoffNorm-60)*0.000000016)));
-    //float br = 1.0;
 
     float s = x;
     s       = s - 0.45*tptlpupw(c[chan], s, 15, fSampleRateInv);
