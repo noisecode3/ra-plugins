@@ -29,9 +29,9 @@
 //#define PI_F 3.1415927410125732421875f
 //#define E_F  2.7182818284590452353602f
 
-const float PI_F =3.1415927410125732421875f;
+const float PI_F = 3.1415927410125732421875f;
 const float E_F  = 2.7182818284590452353602f;
-const float dc = 1e-18;
+const float dc   = 1e-18;
 
 START_NAMESPACE_DISTRHO
 
@@ -293,13 +293,9 @@ float RobotHexedFilterPlugin::tptlpupw(float& state, float inp, float cutoff, fl
 float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 {
     float ml = 1 / (1+g);
-
-    float S = (lpc*(lpc*(lpc*s1[chan]+s2[chan])+s3[chan])+s4[chan])*ml;
-
+    float S  = (lpc*(lpc*(lpc*s1[chan]+s2[chan])+s3[chan])+s4[chan])*ml;
     float G  = lpc*lpc*lpc*lpc;
-
     float y  = (sample - R24*S) / (1 + R24*G);
-
     return y + 1e-8;
 }
 
