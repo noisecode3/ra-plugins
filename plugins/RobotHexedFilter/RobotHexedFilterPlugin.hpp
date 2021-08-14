@@ -152,7 +152,9 @@ private:
     float bright;
 
     // 24 db multimode
-    float mmt; //TODO
+    // will be use ass parameter smoothing for crossing over only in this case
+
+    float mmt_y1, mmt_y2, mmt_y3, mmt_y4 = 0;
     int   mmch = 4;
 
     float uiCutoff, uiReso;

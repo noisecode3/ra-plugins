@@ -152,6 +152,8 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
     case paramMode:
         fMode         = value;
         mmch          = (int)fMode;
+        //Im gonna try a fast non linear function
+        // TODO
         break;
 
     case paramWet:
@@ -202,10 +204,7 @@ void RobotHexedFilterPlugin::activate()
 
     R24=0;
 
-    //mmch = 0;
-    mmt  = 0; // this value should be use to implament click free change from pole (4 to 3) (3 to 2) (2 to 1) in pairs and 1 by itself lol
-              // only problem is that it has to go in between those pairs if the user enter an number on the keyboard, without using the slider
-              // the solution could be to extend the switch with cases for all of these...
+    mmt_y1=mmt_y2=mmt_y3=mmt_y4=0; 
 
     float rcrate = sqrt((44000/fSampleRate));
     rcor24 = (970.0 / 44000)*rcrate;
@@ -354,16 +353,19 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     switch(mmch)
     {
         case 4:
-            mc = ((1 - mmt) * y4 + (mmt) * y3);
+            mc = y4;
             break;
         case 3:
-            mc = ((1 - mmt) * y3 + (mmt) * y2);
+            mc = y3;
             break;
         case 2:
-            mc = ((1 - mmt) * y2 + (mmt) * y1);
+            mc = y2;
             break;
         case 1:
             mc = y1;
+            break;
+        case 5: // mixed pole case
+            mc = mmt_y4*y4 + mmt_y3*y3 + mmt_y2*y2 + mmt_y1*y1;
             break;
     }
     return (mc * ( 1 + R24 * 0.45 )) * (0.95-(0.887*rReso));
