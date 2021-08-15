@@ -151,9 +151,9 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
 
     case paramMode:
         fMode         = value;
+        mmch_old      = mmch;
         mmch          = (int)fMode;
-        //Im gonna try a fast non linear function
-        // TODO
+        fModeFall     = true;
         break;
 
     case paramWet:
@@ -184,7 +184,6 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
 
 void RobotHexedFilterPlugin::activate()
 {
-
     fSampleRate = (float)getSampleRate();
     fSampleRateInv = 1/fSampleRate;
 
@@ -207,12 +206,11 @@ void RobotHexedFilterPlugin::activate()
     mmt_y1=mmt_y2=mmt_y3=mmt_y4=0; 
 
     float rcrate = sqrt((44000/fSampleRate));
-    rcor24 = (970.0 / 44000)*rcrate;
-    rcor24Inv = 1 / rcor24;
+    rcor24 = (970.0/44000)*rcrate;
+    rcor24Inv = 1/rcor24;
 
-    bright =  (sin((fSampleRate*0.5f-5) * PI_F * fSampleRateInv))/
-              (cos((fSampleRate*0.5f-5) * PI_F * fSampleRateInv));
-
+    bright =  (sin((fSampleRate*0.5-5) * PI_F * fSampleRateInv))/
+              (cos((fSampleRate*0.5-5) * PI_F * fSampleRateInv));
 
     dc_r = 1.0-(126.0/fSampleRate);
     dc_tmp[0] = 0;
@@ -279,9 +277,8 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 
 float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 {
-
-    // Remember about sampels fall, the last sample in the frame buffer is the same as the starting one on the next only if there was NO NEW change !!!
-    // Calling run() with only 1 frames should just read fCutOff
+    // Remember about sampels fall, the last sample in the framebuffer is the same as the starting one on the next
+    // only if there was NO NEW change. Calling run() with only 1 frame should just read fCutOff.
 
     float rCutoff;
     float rReso;
@@ -364,7 +361,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
         case 1:
             mc = y1;
             break;
-        case 5: // mixed pole case
+        case 5:
             mc = mmt_y4*y4 + mmt_y3*y3 + mmt_y2*y2 + mmt_y1*y1;
             break;
     }

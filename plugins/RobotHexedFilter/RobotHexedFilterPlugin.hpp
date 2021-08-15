@@ -40,7 +40,6 @@ public:
     {
         paramCutOff = 0,
         paramRes,
-        //paramBri,
         paramMode,
         paramWet,
         paramCount
@@ -133,6 +132,9 @@ private:
     bool     fWetFall           = false;
     float    fChangeWet         = 0.0f;
 
+    uint32_t fSamplesFallMode   = 0;
+    bool     fModeFall          = false;
+
     uint32_t fFrames = 0;
 
     // -------------------------------------------------------------------
@@ -152,10 +154,11 @@ private:
     float bright;
 
     // 24 db multimode
-    // will be use ass parameter smoothing for crossing over only in this case
+    // will be use as parameter smoothing for crossing over
 
     float mmt_y1, mmt_y2, mmt_y3, mmt_y4 = 0;
     int   mmch = 4;
+    int   mmch_old = mmch;
 
     float uiCutoff, uiReso;
 
