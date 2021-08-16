@@ -195,8 +195,8 @@ void RobotHexedFilterPlugin::activate()
     fResFall     = false;
     fWetFall     = false;
 
-    fWetVol      = 1.0f - exp(-0.01f*fWet);
-    fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
+    fWetVol      = 1.0 - exp(-0.01*fWet);
+    fWetVol      = fWetVol + 0.367879*(0.01*fWet);
 
     s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
     s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
@@ -308,7 +308,15 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     }
     else { uiReso = fResOld = fRes; uiReso = uiReso * 0.01; fResFall = false; }
 
-
+    if (fSamplesFallMode > 1)
+    {
+        float steps  = 1.0f/fFrames;
+        // this gonna be diffrent from the rest, it need to make mmch = 5
+        // and then make a blend over
+        // maybe this should be a fixed set of samples?
+        // non linear function for sample crossover?
+        // at line 358
+    }
     // basic DC filter, this removes a super tiny bit of low
 
     float dc_prev = x;
@@ -366,6 +374,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             break;
     }
     return (mc * ( 1 + R24 * 0.45 )) * (0.95-(0.887*rReso));
+    // there could be a diffrent lowering of valume for every pole mode to make it better
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
@@ -379,6 +388,7 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
     if (fCutOffFall) fSamplesFallCutOff = fFrames;
     if (fResFall)    fSamplesFallRes    = fFrames;
     if (fWetFall)    fSamplesFallWet    = fFrames;
+    if (fModeFall)   fSamplesFallMode   = fFrames;
 
     for (uint32_t i=0; i < frames; ++i)
     {
