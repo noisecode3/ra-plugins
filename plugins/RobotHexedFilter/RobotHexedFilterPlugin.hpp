@@ -115,10 +115,11 @@ private:
 
     float fCutOff = 100.0;
     float fRes    = 0.0;
-    float fMode   = 4.0;
+    int   fMode   = 4;
     float fWet    = 0.0;
 
     float parameterSurge(float x, float n);
+    float mm_switchSurge(float x);
 
     uint32_t fSamplesFallCutOff = 0;
     bool     fCutOffFall        = false;
@@ -142,6 +143,7 @@ private:
 
     float fCutOffOld = fCutOff;
     float fResOld    = fRes;
+    int   fModeOld   = fMode;
     float fWetOld    = fWet;
     float fWetVol    = 0;
 
@@ -152,6 +154,7 @@ private:
     float R24;
     float rcor24,rcor24Inv;
     float bright;
+    float mm_balancer = 0.7687;
 
     // 24 db multimode
     // will be use as parameter smoothing for crossing over
@@ -159,6 +162,7 @@ private:
     float mmt_y1, mmt_y2, mmt_y3, mmt_y4 = 0;
     int   mmch = 4;
     int   mmch_old = mmch;
+    int   mmch_end;
 
     float uiCutoff, uiReso;
 
@@ -182,4 +186,3 @@ private:
 END_NAMESPACE_DISTRHO
 
 #endif // ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
- 

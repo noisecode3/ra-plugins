@@ -120,7 +120,7 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
         return fRes;
 
     case paramMode:
-        return fMode;
+        return static_cast<float>(fMode);
 
     case paramWet:
         return fWet;
@@ -150,10 +150,10 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         break;
 
     case paramMode:
-        fMode         = value;
-        mmch_old      = mmch;
-        mmch          = (int)fMode;
-        fModeFall     = true;
+        fModeOld      = fMode;
+        fMode         = static_cast<int>(value);
+        if (fMode != fModeOld)
+            fModeFall = true;
         break;
 
     case paramWet:
@@ -172,7 +172,7 @@ void RobotHexedFilterPlugin::loadProgram(uint32_t index)
         // Default
         fCutOff = 100.0f;
         fRes    = 0.0f;
-        fMode   = 4.0f;
+        fMode   = 4;
         fWet    = 0.0f;
         activate();
         break;
@@ -244,6 +244,13 @@ float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO
     return x*n;
 }
 
+float RobotHexedFilterPlugin::mm_switchSurge(float x)
+{
+     // +0.187x^(-e+2)+0.7
+     //return +0.187*pow(x, -E_F+2)+0.7;
+     return 0.8999-0.0328*x;
+}
+
 float RobotHexedFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
 {
     return ((expf(param * logf(rolloff+1)) - 1.0f) / (rolloff)) * (max-min) + min;
@@ -310,13 +317,52 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 
     if (fSamplesFallMode > 1)
     {
-        float steps  = 1.0f/fFrames;
-        // this gonna be diffrent from the rest, it need to make mmch = 5
-        // and then make a blend over
-        // maybe this should be a fixed set of samples?
-        // non linear function for sample crossover?
-        // at line 358
+        float steps   = 1.0/fFrames;
+        mm_balancer   = mm_switchSurge(mmch_old+(mmch_end-mmch_old)*steps*(fFrames-fSamplesFallMode+1));
+        mmch_old      = fModeOld;
+        mmch_end      = fMode;
+        mmch = 5;
+
+
+        switch (mmch_old) // lowering
+        {
+            case 4:
+                mmt_y4 = steps*(fSamplesFallMode);
+                break;
+            case 3:
+                mmt_y3 = steps*(fSamplesFallMode);
+                break;
+            case 2:
+                mmt_y2 = steps*(fSamplesFallMode);
+                break;
+            case 1:
+                mmt_y1 = steps*(fSamplesFallMode);
+                break;
+        }
+
+        switch (mmch_end) // rise n curry
+        {
+            case 4:
+                mmt_y4 = steps*(fFrames-fSamplesFallMode);
+                break;
+            case 3:
+                mmt_y3 = steps*(fFrames-fSamplesFallMode);
+                break;
+            case 2:
+                mmt_y2 = steps*(fFrames-fSamplesFallMode);
+                break;
+            case 1:
+                mmt_y1 = steps*(fFrames-fSamplesFallMode);
+                break;
+        }
+        if (fSamplesFallMode == 2)
+        {
+            //printf("last sample, mm_balancer:%f\n", mm_balancer);
+        }
+        fSamplesFallMode--;
     }
+    else { mmch = mmch_end = fMode; fModeFall = false; }
+
     // basic DC filter, this removes a super tiny bit of low
 
     float dc_prev = x;
@@ -373,7 +419,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             mc = mmt_y4*y4 + mmt_y3*y3 + mmt_y2*y2 + mmt_y1*y1;
             break;
     }
-    return (mc * ( 1 + R24 * 0.45 )) * (0.95-(0.887*rReso));
+    return (mc * ( 1 + R24 * 0.45 )) * (0.95-(mm_balancer*rReso));
     // there could be a diffrent lowering of valume for every pole mode to make it better
 }
 
