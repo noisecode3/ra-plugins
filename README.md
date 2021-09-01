@@ -5,12 +5,12 @@ Im trying to fix all the bugs I test them a lot usually in carla (or Ardour or R
 ![screenshot](https://raw.githubusercontent.com/noisecode3/ra-plugins/main/extra/RobotAudioLogoTransparent.png "Beta Logo")
 
 ## Hexed filter
-This is a little bit modified version of Dexed synth filter, its a low-pass filter with 1-4 pole modes that can be perceived a bit metallic and soft 
+This is a modified version of Dexed synth filter, its a low-pass filter with 1-4 pole modes
 
- - To do: remove clicks from switching pole mode
+ - To do: balance amplitude
  - To do: make 5-8 presets to for quick demonstration
  - To do: clean up
- - To do: investigate a bug that makes a nasty 1.0 signal at activate (initialize bad values get stuck in the algorithm?)
+ - To do: Take a good look at how data is handled
  - https://www.dsprelated.com/freebooks/filters/
 
 ## Moog filter
