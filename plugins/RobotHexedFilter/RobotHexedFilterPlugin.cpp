@@ -77,10 +77,10 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.hints      = kParameterIsInteger;
         parameter.name       = "Stage";
         parameter.symbol     = "switch";
-        parameter.unit       = "I";
-        parameter.ranges.def = 4.0f;
-        parameter.ranges.min = 1.0f;
-        parameter.ranges.max = 4.0f;
+        parameter.unit       = "Pole";
+        parameter.ranges.def = 4;
+        parameter.ranges.min = 1;
+        parameter.ranges.max = 4;
         break;
 
     case paramWet:
