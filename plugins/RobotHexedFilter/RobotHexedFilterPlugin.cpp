@@ -155,7 +155,6 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         if (fMode != fModeOld)
         {
             fModeFall = true;
-            printf("tacos\n");
         }
         break;
 
@@ -242,15 +241,14 @@ float RobotHexedFilterPlugin::hexed_tanh(float x)
     return tanhf(x);
 }
 
-float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO
+float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO This too simple my not be needed
 {
     return x*n;
 }
 
 float RobotHexedFilterPlugin::mm_switchSurge(float x)
 {
-     // +0.187x^(-e+2)+0.7
-     //return +0.187*pow(x, -E_F+2)+0.7;
+     //TODO Make middle part of this function more bent 
      return 0.8999-0.0328*x;
 }
 
@@ -288,7 +286,8 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 {
     // Remember about sampels fall, the last sample in the framebuffer is the same as the starting one on the next
-    // only if there was NO NEW change. Calling run() with only 1 frame should just read fCutOff.
+    // only if there was NO NEW change. Calling run() with only 1 frame should just read fCutOff. This is linear here
+    // but later ln is used
 
     float rCutoff;
     float rReso;
@@ -329,7 +328,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
         //fFramesOld = fFrames;
         if (fFrames == fSamplesFallMode) mmt_y1 = mmt_y2 = mmt_y3 = mmt_y4 = 0;
 
-        switch (fModeOld) // lowering
+        switch (fModeOld) // Lowering
         {
             case 4:
                 mmt_y4   = 1.0 - exp(-(steps*(fSamplesFallMode-1)));
@@ -349,7 +348,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
                 break;
         }
 
-        switch (fMode) // rise n curry
+        switch (fMode) // Rise
         {
             case 4:
                 mmt_y4   = exp(-(steps*(fSamplesFallMode)));
