@@ -136,7 +136,7 @@ private:
     uint32_t fSamplesFallMode   = 0;
     bool     fModeFall          = false;
 
-    uint32_t fFrames = 0;
+    uint32_t fFrames, fFramesOld = 0;
 
     // -------------------------------------------------------------------
     // Dsp 
@@ -154,15 +154,14 @@ private:
     float R24;
     float rcor24,rcor24Inv;
     float bright;
-    float mm_balancer = 0.7687;
+    float mm_balancer = 0.7687; //TODO should read from parameter init/default values
 
     // 24 db multimode
     // will be use as parameter smoothing for crossing over
 
-    float mmt_y1, mmt_y2, mmt_y3, mmt_y4 = 0;
+    float mmt_y1, mmt_y2, mmt_y3, mmt_y4 = 0.0f;
     int   mmch = 4;
-    int   mmch_old = mmch;
-    int   mmch_end;
+
 
     float uiCutoff, uiReso;
 

@@ -153,7 +153,10 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         fModeOld      = fMode;
         fMode         = static_cast<int>(value);
         if (fMode != fModeOld)
+        {
             fModeFall = true;
+            printf("tacos\n");
+        }
         break;
 
     case paramWet:
@@ -317,51 +320,62 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 
     if (fSamplesFallMode > 1)
     {
+        
         float steps   = 1.0/fFrames;
-        mm_balancer   = mm_switchSurge(mmch_old+(mmch_end-mmch_old)*steps*(fFrames-fSamplesFallMode+1));
-        mmch_old      = fModeOld;
-        mmch_end      = fMode;
+        mm_balancer   = mm_switchSurge(fModeOld+(fMode-fModeOld)*steps*(fFrames-fSamplesFallMode+1)); // makes clicks
         mmch = 5;
 
+        //if(fFrames != fFramesOld) printf("Used diffrent frames value = %d", fFrames);
+        //fFramesOld = fFrames;
+        if (fFrames == fSamplesFallMode) mmt_y1 = mmt_y2 = mmt_y3 = mmt_y4 = 0;
 
-        switch (mmch_old) // lowering
+        switch (fModeOld) // lowering
         {
             case 4:
-                mmt_y4 = steps*(fSamplesFallMode);
+                mmt_y4   = 1.0 - exp(-(steps*(fSamplesFallMode-1)));
+                mmt_y4   = mmt_y4 + 0.367879*(steps*(fSamplesFallMode-1));
                 break;
             case 3:
-                mmt_y3 = steps*(fSamplesFallMode);
+                mmt_y3   = 1.0 - exp(-(steps*(fSamplesFallMode-1)));
+                mmt_y3   = mmt_y3 + 0.367879*(steps*(fSamplesFallMode-1));
                 break;
             case 2:
-                mmt_y2 = steps*(fSamplesFallMode);
+                mmt_y2   = 1.0 - exp(-(steps*(fSamplesFallMode-1)));
+                mmt_y2   = mmt_y2 + 0.367879*(steps*(fSamplesFallMode-1));
                 break;
             case 1:
-                mmt_y1 = steps*(fSamplesFallMode);
+                mmt_y1   = 1.0 - exp(-(steps*(fSamplesFallMode-1)));
+                mmt_y1   = mmt_y1 + 0.367879*(steps*(fSamplesFallMode-1));
                 break;
         }
 
-        switch (mmch_end) // rise n curry
+        switch (fMode) // rise n curry
         {
             case 4:
-                mmt_y4 = steps*(fFrames-fSamplesFallMode);
+                mmt_y4   = exp(-(steps*(fSamplesFallMode)));
+                mmt_y4   = mmt_y4 - 0.367879*(steps*(fSamplesFallMode));
                 break;
             case 3:
-                mmt_y3 = steps*(fFrames-fSamplesFallMode);
+                mmt_y3   = exp(-(steps*(fSamplesFallMode)));
+                mmt_y3   = mmt_y3 - 0.367879*(steps*(fSamplesFallMode));
                 break;
             case 2:
-                mmt_y2 = steps*(fFrames-fSamplesFallMode);
+                mmt_y2   = exp(-(steps*(fSamplesFallMode)));
+                mmt_y2   = mmt_y2 - 0.367879*(steps*(fSamplesFallMode));
                 break;
             case 1:
-                mmt_y1 = steps*(fFrames-fSamplesFallMode);
+                mmt_y1   = exp(-(steps*(fSamplesFallMode)));
+                mmt_y1   = mmt_y1 - 0.367879*(steps*(fSamplesFallMode));
                 break;
         }
-        if (fSamplesFallMode == 2)
-        {
+        //printf("mmt_y1 = %f mmt_y2 = %f mmt_y3 = %f mmt_y4 = %f\n", mmt_y1, mmt_y2, mmt_y3, mmt_y4);
+        //if (fSamplesFallMode == 2)
+        //{
             //printf("last sample, mm_balancer:%f\n", mm_balancer);
-        }
+        //}
         fSamplesFallMode--;
     }
-    else { mmch = mmch_end = fMode; fModeFall = false; }
+    else { mmch = fMode; fModeFall = false; }
 
     // basic DC filter, this removes a super tiny bit of low
 
@@ -399,7 +413,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float y2 = tptpc(s2[chan],y1,g);
     float y3 = tptpc(s3[chan],y2,g);
     float y4 = tptpc(s4[chan],y3,g);
-    float mc = 0.0f;
+    float mc = 0.0;
 
     switch(mmch)
     {
@@ -420,7 +434,6 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             break;
     }
     return (mc * ( 1 + R24 * 0.45 )) * (0.95-(mm_balancer*rReso));
-    // there could be a diffrent lowering of valume for every pole mode to make it better
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
@@ -442,22 +455,23 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
 
         if (fSamplesFallWet > 1)
         {
-            float steps  = 1.0f/fFrames;
+            float steps  = 1.0/fFrames;
             float wetAdd = parameterSurge((fFrames-fSamplesFallWet+1)*steps, fChangeWet);
-            fWetVol      = 1.0f - exp(-0.01f*(fWetOld+wetAdd));
-            fWetVol      = fWetVol + 0.367879*(0.01f*(fWetOld+wetAdd));
+            fWetVol      = 1.0 - exp(-0.01*(fWetOld+wetAdd));
+            fWetVol      = fWetVol + 0.367879*(0.01*(fWetOld+wetAdd));
+            //printf("fWetVol = %f\n", fWetVol);
             fSamplesFallWet--;
         }
         else
         {
             fWetOld      = fWet;
-            fWetVol      = 1.0f - exp(-0.01f*fWet);
-            fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
+            fWetVol      = 1.0 - exp(-0.01*fWet);
+            fWetVol      = fWetVol + 0.367879*(0.01*fWet);
             fWetFall     = false;
         }
 
-        fout1   = (in1[i]*(1.0f-fWetVol)) + (hexed_filter_process(in1[i], 0)*fWetVol);
-        fout2   = (in2[i]*(1.0f-fWetVol)) + (hexed_filter_process(in2[i], 1)*fWetVol);
+        fout1   = (in1[i]*(1.0-fWetVol)) + (hexed_filter_process(in1[i], 0)*fWetVol);
+        fout2   = (in2[i]*(1.0-fWetVol)) + (hexed_filter_process(in2[i], 1)*fWetVol);
 
         //if (fout1 >  1.0f) fout1 =  1.0f;
         //if (fout1 < -1.0f) fout1 = -1.0f;
