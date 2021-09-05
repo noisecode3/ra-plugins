@@ -248,8 +248,8 @@ float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO This too s
 
 float RobotHexedFilterPlugin::mm_switchSurge(float x)
 {
-     //TODO Make middle part of this function more bent 
-     return 0.8999-0.0328*x;
+     //TODO Need to test 
+     return 0.8999-0.0328*pow(x,E_F);
 }
 
 float RobotHexedFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
@@ -432,7 +432,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             mc = mmt_y4*y4 + mmt_y3*y3 + mmt_y2*y2 + mmt_y1*y1;
             break;
     }
-    return (mc * ( 1 + R24 * 0.45 )) * (0.95-(mm_balancer*rReso));
+    return (mc * ( 1 + R24 * 0.45 )) * (1-(mm_balancer*rReso*0.222));
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
