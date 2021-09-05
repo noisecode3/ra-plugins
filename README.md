@@ -7,7 +7,6 @@ Im trying to fix all the bugs I test them a lot usually in carla (or Ardour or R
 ## Hexed filter
 This is a modified version of Dexed synth filter, its a low-pass filter with 1-4 pole modes
 
- - To do: balance amplitude
  - To do: make 5-8 presets to for quick demonstration
  - To do: clean up
  - To do: Take a good look at how data is handled
