@@ -113,10 +113,11 @@ private:
     // -------------------------------------------------------------------
     // Parameters
 
-    float fCutOff = 100.0;
-    float fRes    = 0.0;
-    int   fMode   = 4;
-    float fWet    = 0.0;
+    float fCutOff;
+    float fRes;
+    float fMode;
+    int   iMode = 4;
+    float fWet;
 
     float parameterSurge(float x, float n);
     float mm_switchSurge(float x);
@@ -143,7 +144,7 @@ private:
 
     float fCutOffOld = fCutOff;
     float fResOld    = fRes;
-    int   fModeOld   = fMode;
+    int   iModeOld   = iMode;
     float fWetOld    = fWet;
     float fWetVol    = 0;
 
@@ -159,8 +160,8 @@ private:
     // 24 db multimode
     // will be use as parameter smoothing for crossing over
 
-    float mmt_y1, mmt_y2, mmt_y3, mmt_y4 = 0.0f;
-    int   mmch = 4;
+    float mmt_y1, mmt_y2, mmt_y3, mmt_y4;
+    int   mmch;
 
 
     float uiCutoff, uiReso;

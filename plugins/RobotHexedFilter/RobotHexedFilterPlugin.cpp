@@ -52,8 +52,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
     switch (index)
     {
     case paramCutOff:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.hints      = kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
         parameter.name       = "CutOff";
         parameter.symbol     = "freq";
         parameter.unit       = "%";
@@ -63,7 +62,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramRes:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsLogarithmic | kParameterIsAutomable;
         parameter.name       = "Resonance";
         parameter.symbol     = "res";
         parameter.unit       = "%";
@@ -73,11 +72,10 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramMode:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.hints      = kParameterIsInteger;
-        parameter.name       = "Stage";
+        parameter.hints      = kParameterIsAutomable | kParameterIsInteger;
+        parameter.name       = "Mode";
         parameter.symbol     = "switch";
-        parameter.unit       = "Pole";
+        parameter.unit       = "p";
         parameter.ranges.def = 4;
         parameter.ranges.min = 1;
         parameter.ranges.max = 4;
@@ -120,7 +118,7 @@ float RobotHexedFilterPlugin::getParameterValue(uint32_t index) const
         return fRes;
 
     case paramMode:
-        return static_cast<float>(fMode);
+        return fMode;
 
     case paramWet:
         return fWet;
@@ -150,12 +148,10 @@ void RobotHexedFilterPlugin::setParameterValue(uint32_t index, float value)
         break;
 
     case paramMode:
-        fModeOld      = fMode;
-        fMode         = static_cast<int>(value);
-        if (fMode != fModeOld)
-        {
-            fModeFall = true;
-        }
+        fMode         = value;
+        iModeOld      = iMode;
+        iMode         = static_cast<int>(fMode);
+        if (iMode != iModeOld) fModeFall = true;
         break;
 
     case paramWet:
@@ -321,14 +317,14 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     {
         
         float steps   = 1.0/fFrames;
-        mm_balancer   = mm_switchSurge(fModeOld+(fMode-fModeOld)*steps*(fFrames-fSamplesFallMode+1)); // makes clicks
+        mm_balancer   = mm_switchSurge(iModeOld+(iMode-iModeOld)*steps*(fFrames-fSamplesFallMode+1));
         mmch = 5;
 
         //if(fFrames != fFramesOld) printf("Used diffrent frames value = %d", fFrames);
         //fFramesOld = fFrames;
         if (fFrames == fSamplesFallMode) mmt_y1 = mmt_y2 = mmt_y3 = mmt_y4 = 0;
 
-        switch (fModeOld) // Lowering
+        switch (iModeOld) // Lowering
         {
             case 4:
                 mmt_y4   = 1.0 - exp(-(steps*(fSamplesFallMode-1)));
@@ -348,7 +344,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
                 break;
         }
 
-        switch (fMode) // Rise
+        switch (iMode) // Rise
         {
             case 4:
                 mmt_y4   = exp(-(steps*(fSamplesFallMode)));
@@ -374,7 +370,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
         //}
         fSamplesFallMode--;
     }
-    else { mmch = fMode; fModeFall = false; }
+    else { mmch = iMode; fModeFall = false; }
 
     // basic DC filter, this removes a super tiny bit of low
 
