@@ -227,7 +227,7 @@ float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO This too s
 
 float RobotHexedFilterPlugin::mm_switchSurge(float x)
 {
-     return 0.8999-0.0328*pow(x,E_F);
+     return 0.8999-0.00328*pow(x,E_F);
 }
 
 float RobotHexedFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
@@ -366,7 +366,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     float cutoffNorm = logsc(uiCutoff,60,19000);
 
     rCutoff = (float)tan(cutoffNorm * fSampleRateInv * PI_F);
-    R24   =  3.8 * rReso;
+    R24   =  3.7 * rReso;
 
     float g   = rCutoff;
     float lpc = g / (1 + g);

@@ -1,6 +1,6 @@
 # Robot Audio Plugins
 This is a work in progress! I like noisy and heavy music mostly and are interested in those sounds. I make my plugins with lots of love.
-Im trying to fix all the bugs I test them a lot usually in carla (or Ardour or Renoise)
+Im will fix all the bugs I test them a lot usually in carla (or Ardour or Renoise)
 
 ![screenshot](https://raw.githubusercontent.com/noisecode3/ra-plugins/main/extra/RobotAudioLogoTransparent.png "Beta Logo")
 
@@ -14,17 +14,16 @@ Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
 ## Moog filter
 Low-pass Moog like filter
 
- - To do: make resonance and cutoff in percent
- - To do: remake presets
+ - To do: presets
  - To do: Make UI
  - To do: clean up
 
 
 # Prepare
-You need to have mesa headers and basic build tools from you're distribution(I don't have a GUI lol).
+You need to have mesa headers and basic build tools and git from you're distribution(I don't have a GUI lol, dpf needs it).
 make install will install in you're home folder, in the future I will make root installation.
 
-installation:
+installation Guide:
 =============
 
     git clone https://github.com/noisecode3/ra-plugins
@@ -33,7 +32,7 @@ installation:
     make
     make install
 
-The one line COPY and PASTE ME:
+COPY and PASTE ME to install:
 =============
 
     git clone https://github.com/noisecode3/ra-plugins; cd ra-plugins; git submodule update --init; make; make install;

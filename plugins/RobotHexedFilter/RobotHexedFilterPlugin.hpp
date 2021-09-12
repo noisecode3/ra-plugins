@@ -155,7 +155,7 @@ private:
     float R24;
     float rcor24,rcor24Inv;
     float bright;
-    float mm_balancer = 0.7687; //TODO should read from parameter init/default values
+    float mm_balancer = 0.7578; //TODO should read from parameter init/default values
 
     // 24 db multimode
     // will be use as parameter smoothing for crossing over

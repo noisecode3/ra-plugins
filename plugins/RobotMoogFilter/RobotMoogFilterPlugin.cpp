@@ -30,7 +30,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 RobotMoogFilterPlugin::RobotMoogFilterPlugin()
-    : Plugin(paramCount, 7, 0) // parameters, program, states
+    : Plugin(paramCount, 1, 0) // parameters, program, states
 {
     // set default values
     loadProgram(0);
@@ -83,7 +83,7 @@ void RobotMoogFilterPlugin::initProgramName(uint32_t index, String& programName)
         case 0:
             programName = "Default";
             break;
-        case 1:
+/*        case 1:
             programName = "Low Warm";
             break;
         case 2:
@@ -100,7 +100,7 @@ void RobotMoogFilterPlugin::initProgramName(uint32_t index, String& programName)
             break;
         case 6:
             programName = "Just Bass";
-            break;
+            break;*/
     }
 }
 
@@ -163,7 +163,7 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         fWet  = 0.0f;
         activate();
         break;
-    case 1:
+/*    case 1:
         // Low Warm
         fFreq = 70.0f;
         fRes  = 0.5f;
@@ -204,7 +204,7 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         fRes  = 0.62f;
         fWet  = 100.0f;
         activate();
-        break;
+        break;*/
     }
 }
 
