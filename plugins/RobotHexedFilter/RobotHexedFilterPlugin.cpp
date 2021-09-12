@@ -82,7 +82,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramWet:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic; // ist kind of.. I want the host to think of the range like that.
         parameter.name       = "Wet";
         parameter.symbol     = "percent";
         parameter.unit       = "%";

@@ -44,13 +44,13 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
     switch (index)
     {
     case paramFreq:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
         parameter.name       = "CutOffFreq";
         parameter.symbol     = "freq";
-        parameter.unit       = "Hz";
-        parameter.ranges.def = 22000.0f;
-        parameter.ranges.min = 20.0f;
-        parameter.ranges.max = 22000.0f;
+        parameter.unit       = "%";
+        parameter.ranges.def = 100.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 100.0f;
         break;
 
     case paramRes:
@@ -64,7 +64,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramWet:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
         parameter.name       = "Wet";
         parameter.symbol     = "percent";
         parameter.unit       = "%";
@@ -158,49 +158,49 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
     {
     case 0:
         // Default
-        fFreq = 22000.0f;
+        fFreq = 100.0f;
         fRes  = 0.0f;
         fWet  = 0.0f;
         activate();
         break;
     case 1:
         // Low Warm
-        fFreq = 1500.0f;
+        fFreq = 70.0f;
         fRes  = 0.5f;
         fWet  = 80.0f;
         activate();
         break;
     case 2:
         // Low Glass
-        fFreq = 811.0f;
+        fFreq = 20.0f;
         fRes  = 0.78f;
         fWet  = 50.0f;
         activate();
         break;
     case 3:
         // UFO Dream
-        fFreq = 4680.0f;
+        fFreq = 30.0f;
         fRes  = 0.95f;
         fWet  = 80.0f;
         activate();
         break;
     case 4:
         // Spicy Crisp
-        fFreq = 16637.0f;
+        fFreq = 60.0f;
         fRes  = 0.85f;
         fWet  = 40.0f;
         activate();
         break;
     case 5:
         // Dune Tones
-        fFreq = 12153.0f;
+        fFreq = 42.0f;
         fRes  = 0.92f;
         fWet  = 30.0f;
         activate();
         break;
     case 6:
         // Just Bass
-        fFreq = 107.0f;
+        fFreq = 2.0f;
         fRes  = 0.62f;
         fWet  = 100.0f;
         activate();
@@ -210,6 +210,11 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
 
 // -----------------------------------------------------------------------
 // Process
+
+float RobotMoogFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
+{
+    return ((expf(param * logf(rolloff+1)) - 1.0f) / (rolloff)) * (max-min) + min;
+}
 
 void RobotMoogFilterPlugin::activate()
 {
@@ -227,7 +232,7 @@ void RobotMoogFilterPlugin::activate()
         fTanhstg[1][i]   = 0.0;
     }
 
-    moog_ladder_tune(fFreq);
+    moog_ladder_tune(logsc(0.01*fFreq, 20.0, 22000.0));
     fWetVol      = 1.0f - exp(-0.01f*fWet);
     fWetVol      = fWetVol + 0.367879*(0.01f*fWet);
 
@@ -248,11 +253,6 @@ void RobotMoogFilterPlugin::deactivate()
 float RobotMoogFilterPlugin::parameterSurge(float x, float n)
 {
     return x*n;
-}
-
-float RobotMoogFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
-{
-    return ((expf(param * logf(rolloff+1)) - 1.0f) / (rolloff)) * (max-min) + min;
 }
 
 float RobotMoogFilterPlugin::moog_tanh(float x)
@@ -301,15 +301,17 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     {
         float steps   = 1.0f/fFrames;
         float freqAdd = parameterSurge((fFrames-fSamplesFallFreq+1)*steps, fChangeFreq);
-        moog_ladder_tune(fFreqOld+freqAdd);
+        float fr    = logsc(0.01*(fFreqOld+freqAdd), 20.0, 22000.0);
+        moog_ladder_tune(fr);
         fSamplesFallFreq--;
     }
-    else { moog_ladder_tune(fFreqOld = fFreq); fFreqFall = false; }
+    else { moog_ladder_tune(logsc(0.01*fFreq, 20.0, 22000.0)); fFreqOld = fFreq; fFreqFall = false; }
 
     if (fSamplesFallRes > 1)
     {
         float steps  = 1.0f/fFrames;
         float resAdd = parameterSurge((fFrames-fSamplesFallRes+1)*steps, fChangeRes);
+        // 0.0 to 0.95
         res4         = 4.0f * (fResOld+resAdd) * fAcr;
         fSamplesFallRes--;
     }

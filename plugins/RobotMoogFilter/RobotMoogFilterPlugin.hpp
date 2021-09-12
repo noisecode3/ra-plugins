@@ -106,7 +106,7 @@ private:
     // -------------------------------------------------------------------
     // Parameters
 
-    float fFreq = 22000.0f;
+    float fFreq = 100.0f;
     float fRes  = 0.0f;
     float fWet  = 0.0f;
 
