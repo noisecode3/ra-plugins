@@ -62,7 +62,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramRes:
-        parameter.hints      = kParameterIsLogarithmic | kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
         parameter.name       = "Resonance";
         parameter.symbol     = "res";
         parameter.unit       = "%";
@@ -218,23 +218,6 @@ void RobotHexedFilterPlugin::activate()
 void RobotHexedFilterPlugin::deactivate()
 {
 
-}
-
-float RobotHexedFilterPlugin::hexed_tanh(float x)
-{
-    if(x < 0)
-    {
-        return x;
-    }
-    else if(x >= 6.0f)
-    {
-        return 1;
-    }
-    else if(x < 0.5f)
-    {
-        return x ;
-    }
-    return tanhf(x);
 }
 
 float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO This too simple my not be needed

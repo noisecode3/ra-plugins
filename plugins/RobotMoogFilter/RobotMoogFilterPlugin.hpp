@@ -134,6 +134,7 @@ private:
     float fDelay[2][6]   = { 0 };
     float fTanhstg[2][3] = { 0 };
 
+    float logsc(float param, const float min, const float max, const float rolloff);
     float moog_tanh(float x);
     void  moog_ladder_tune(float freq);
     float moog_ladder_process(float in, bool chan);
