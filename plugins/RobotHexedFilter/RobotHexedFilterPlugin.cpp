@@ -82,7 +82,7 @@ void RobotHexedFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramWet:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic; // ist kind of.. I want the host to think of the range like that.
+        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
         parameter.name       = "Wet";
         parameter.symbol     = "percent";
         parameter.unit       = "%";
@@ -227,7 +227,6 @@ float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO This too s
 
 float RobotHexedFilterPlugin::mm_switchSurge(float x)
 {
-     //TODO Need to test 
      return 0.8999-0.0328*pow(x,E_F);
 }
 
@@ -411,7 +410,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             mc = mmt_y4*y4 + mmt_y3*y3 + mmt_y2*y2 + mmt_y1*y1;
             break;
     }
-    return (mc * ( 1 + R24 * 0.45 )) * (1-(mm_balancer*rReso*0.222));
+    return (mc * ( 1 + R24 * 0.45 )) * (1-(mm_balancer*rReso*0.96422)); // rReso is the ln one
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)

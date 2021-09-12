@@ -45,7 +45,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
     {
     case paramFreq:
         parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
-        parameter.name       = "CutOffFreq";
+        parameter.name       = "CutOff";
         parameter.symbol     = "freq";
         parameter.unit       = "%";
         parameter.ranges.def = 100.0f;
@@ -57,10 +57,10 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Resonance";
         parameter.symbol     = "res";
-        parameter.unit       = "L";
+        parameter.unit       = "%";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 0.95f;
+        parameter.ranges.max = 100.0f;
         break;
 
     case paramWet:
@@ -301,8 +301,7 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     {
         float steps   = 1.0f/fFrames;
         float freqAdd = parameterSurge((fFrames-fSamplesFallFreq+1)*steps, fChangeFreq);
-        float fr    = logsc(0.01*(fFreqOld+freqAdd), 20.0, 22000.0);
-        moog_ladder_tune(fr);
+        moog_ladder_tune(logsc(0.01*(fFreqOld+freqAdd), 20.0, 22000.0));
         fSamplesFallFreq--;
     }
     else { moog_ladder_tune(logsc(0.01*fFreq, 20.0, 22000.0)); fFreqOld = fFreq; fFreqFall = false; }
@@ -311,11 +310,10 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     {
         float steps  = 1.0f/fFrames;
         float resAdd = parameterSurge((fFrames-fSamplesFallRes+1)*steps, fChangeRes);
-        // 0.0 to 0.95
-        res4         = 4.0f * (fResOld+resAdd) * fAcr;
+        res4         = 4.0f * logsc(0.01*(fResOld+resAdd), 0.0, 0.95) * fAcr;
         fSamplesFallRes--;
     }
-    else { res4 = 4.0f * (fResOld = fRes) * fAcr; fResFall = false; }
+    else { res4 = 4.0f * logsc(0.01*fRes, 0.0, 0.95) * fAcr; fResOld = fRes; fResFall = false; }
 
     if (fSamplesFallWet > 1)
     {
