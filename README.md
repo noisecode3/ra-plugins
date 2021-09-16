@@ -9,13 +9,17 @@ Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
 
  - To do: make 5-8 presets to for quick demonstration
  - To do: make UI (I like big knobs and I can not lie)
+ - To do: remove dsp instructions that are not needed (when parameters not changed)
+ - To do: change parameter smooth strategy for bigger buffers and optimize parameter smoothing
  - To do: clean up
 
 ## Moog filter
 Low-pass Moog like filter
 
- - To do: presets
- - To do: Make UI
+ - To do: make 5-8 presets to for quick demonstration
+ - To do: Make UI (I like big knobs and I can not lie)
+ - To do: remove dsp instructions that are not needed (when parameters not changed)
+ - To do: change parameter smooth strategy for bigger buffers and optimize parameter smoothing
  - To do: clean up
 
 
