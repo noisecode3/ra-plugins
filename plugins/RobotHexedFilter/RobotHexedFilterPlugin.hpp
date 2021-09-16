@@ -114,13 +114,18 @@ private:
     // Parameters
 
     float fCutOff;
-    float fRes;
-    float fMode;
-    int   iMode = 4;
-    float fWet;
+    float fCutOffOld;    
 
-    float parameterSurge(float x, float n);
-    float mm_switchSurge(float x);
+    float fRes;
+    float fResOld;    
+
+    float fMode;
+    int   iMode     = 4;
+    int   iModeOld  = iMode;
+ 
+    float fWet; 
+    float fWetOld;
+    float fWetVol    = 0;
 
     uint32_t fSamplesFallCutOff = 0;
     bool     fCutOffFall        = false;
@@ -142,12 +147,6 @@ private:
     // -------------------------------------------------------------------
     // Dsp 
 
-    float fCutOffOld = fCutOff;
-    float fResOld    = fRes;
-    int   iModeOld   = iMode;
-    float fWetOld    = fWet;
-    float fWetVol    = 0;
-
     float s1[2],s2[2],s3[2],s4[2];
     float fSampleRate;
     float fSampleRateInv;
@@ -155,14 +154,12 @@ private:
     float R24;
     float rcor24,rcor24Inv;
     float bright;
-    float mm_balancer = 0.7578; //TODO should read from parameter init/default values
+    float mm_balancer = 0.7578;
 
     // 24 db multimode
-    // will be use as parameter smoothing for crossing over
 
     float mmt_y1, mmt_y2, mmt_y3, mmt_y4;
     int   mmch;
-
 
     float uiCutoff, uiReso;
 

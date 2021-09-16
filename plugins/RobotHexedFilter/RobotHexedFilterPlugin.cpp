@@ -26,9 +26,6 @@
 
 #include "RobotHexedFilterPlugin.hpp"
 
-//#define PI_F 3.1415927410125732421875f
-//#define E_F  2.7182818284590452353602f
-
 const float PI_F = 3.1415927410125732421875f;
 const float E_F  = 2.7182818284590452353602f;
 const float dc   = 1e-18;
@@ -217,17 +214,7 @@ void RobotHexedFilterPlugin::activate()
 
 void RobotHexedFilterPlugin::deactivate()
 {
-
-}
-
-float RobotHexedFilterPlugin::parameterSurge(float x, float n) //TODO This too simple my not be needed
-{
-    return x*n;
-}
-
-float RobotHexedFilterPlugin::mm_switchSurge(float x)
-{
-     return 0.8999-0.00328*pow(x,E_F);
+    //TODO maybe there could be someting done here to minimized the work on activate()
 }
 
 float RobotHexedFilterPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
@@ -263,32 +250,29 @@ float RobotHexedFilterPlugin::NR24(float sample, float g, float lpc, bool chan)
 
 float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
 {
-    // Remember about sampels fall, the last sample in the framebuffer is the same as the starting one on the next
-    // only if there was NO NEW change. Calling run() with only 1 frame should just read fCutOff. This is linear here
-    // but later ln is used
+    // Remember about sampels fall, the last sample parameter value in the framebuffer is the same as the starting one 
+    // on the next only if there was NO NEW change. Calling run() with only 1 frame should just read fCutOff.
+    // This is linear here but later e^x is used.
 
     float rCutoff;
     float rReso;
 
-    //uiCutoff is used with value from 1.0 to 0.0 after this
+    //uiCutoff interpolation, used with value from 1.0 to 0.0 after this
     if (fSamplesFallCutOff > 1)
     {
         float steps     = 1.0f/fFrames;
-        float cutoffAdd = parameterSurge((fFrames-fSamplesFallCutOff+1)*steps, fChangeCutOff);
+        float cutoffAdd = ((fFrames-fSamplesFallCutOff+1)*steps)*(fChangeCutOff);
         uiCutoff        = fCutOffOld+cutoffAdd;
         uiCutoff        = uiCutoff*0.01;
         fSamplesFallCutOff--;
-        //printf("fSamplesFallCutOff = %d\n", fSamplesFallCutOff);
-        //printf("uiCutoff = %f\n", uiCutoff);
-
     }
     else { uiCutoff = fCutOffOld = fCutOff; uiCutoff = uiCutoff * 0.01; fCutOffFall = false; } //TODO dont do else here
 
-    //uiReso is used with value from 1.0 to 0.0 after this
+    //uiReso interpolation, used with value from 1.0 to 0.0 after this
     if (fSamplesFallRes > 1)
     {
         float steps  = 1.0f/fFrames;
-        float resAdd = parameterSurge((fFrames-fSamplesFallRes+1)*steps, fChangeRes);
+        float resAdd = ((fFrames-fSamplesFallRes+1)*steps)*(fChangeRes);
         uiReso       = fResOld+resAdd;
         uiReso       = uiReso*0.01;
         fSamplesFallRes--;
@@ -296,14 +280,11 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
     else { uiReso = fResOld = fRes; uiReso = uiReso * 0.01; fResFall = false; }
 
     if (fSamplesFallMode > 1)
-    {
-        
+    {        
         float steps   = 1.0/fFrames;
-        mm_balancer   = mm_switchSurge(iModeOld+(iMode-iModeOld)*steps*(fFrames-fSamplesFallMode+1));
+        mm_balancer   = 0.8999-0.00328*pow((iModeOld+(iMode-iModeOld)*steps*(fFrames-fSamplesFallMode+1)),E_F) ;
         mmch = 5;
 
-        //if(fFrames != fFramesOld) printf("Used diffrent frames value = %d", fFrames);
-        //fFramesOld = fFrames;
         if (fFrames == fSamplesFallMode) mmt_y1 = mmt_y2 = mmt_y3 = mmt_y4 = 0;
 
         switch (iModeOld) // Lowering
@@ -345,11 +326,6 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
                 mmt_y1   = mmt_y1 - 0.367879*(steps*(fSamplesFallMode));
                 break;
         }
-        //printf("mmt_y1 = %f mmt_y2 = %f mmt_y3 = %f mmt_y4 = %f\n", mmt_y1, mmt_y2, mmt_y3, mmt_y4);
-        //if (fSamplesFallMode == 2)
-        //{
-            //printf("last sample, mm_balancer:%f\n", mm_balancer);
-        //}
         fSamplesFallMode--;
     }
     else { mmch = iMode; fModeFall = false; }
@@ -410,7 +386,7 @@ float RobotHexedFilterPlugin::hexed_filter_process(float x, bool chan)
             mc = mmt_y4*y4 + mmt_y3*y3 + mmt_y2*y2 + mmt_y1*y1;
             break;
     }
-    return (mc * ( 1 + R24 * 0.45 )) * (1-(mm_balancer*rReso*0.96422)); // rReso is the ln one
+    return (mc * ( 1 + R24 * 0.45 )) * (1-(mm_balancer*rReso*0.96422));
 }
 
 void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t frames)
@@ -433,10 +409,9 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
         if (fSamplesFallWet > 1)
         {
             float steps  = 1.0/fFrames;
-            float wetAdd = parameterSurge((fFrames-fSamplesFallWet+1)*steps, fChangeWet);
+            float wetAdd = ((fFrames-fSamplesFallWet+1)*steps)*(fChangeWet);
             fWetVol      = 1.0 - exp(-0.01*(fWetOld+wetAdd));
             fWetVol      = fWetVol + 0.367879*(0.01*(fWetOld+wetAdd));
-            //printf("fWetVol = %f\n", fWetVol);
             fSamplesFallWet--;
         }
         else
@@ -449,30 +424,6 @@ void RobotHexedFilterPlugin::run(const float** inputs, float** outputs, uint32_t
 
         fout1   = (in1[i]*(1.0-fWetVol)) + (hexed_filter_process(in1[i], 0)*fWetVol);
         fout2   = (in2[i]*(1.0-fWetVol)) + (hexed_filter_process(in2[i], 1)*fWetVol);
-
-        //if (fout1 >  1.0f) fout1 =  1.0f;
-        //if (fout1 < -1.0f) fout1 = -1.0f;
-        //if (fout2 >  1.0f) fout2 =  1.0f;
-        //if (fout2 < -1.0f) fout2 = -1.0f;
-        /*
-        switch (std::fpclassify(fout1))
-        {
-        case FP_INFINITE:  printf ("infinite");  break;
-        case FP_NAN:       printf ("NaN");       break;
-        case FP_ZERO:      printf ("zero");      break;
-        case FP_SUBNORMAL: printf ("subnormal"); break;
-        case FP_NORMAL:    break;
-        }
-
-        switch (std::fpclassify(fout2))
-        {
-        case FP_INFINITE:  printf ("infinite");  break;
-        case FP_NAN:       printf ("NaN");       break;
-        case FP_ZERO:      printf ("zero");      break;
-        case FP_SUBNORMAL: printf ("subnormal"); break;
-        case FP_NORMAL:    break;
-        }
-        */
 
         out1[i] = fout1;
         out2[i] = fout2;
