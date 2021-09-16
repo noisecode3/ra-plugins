@@ -110,8 +110,6 @@ private:
     float fRes  = 0.0f;
     float fWet  = 0.0f;
 
-    float parameterSurge(float x, float n);
-
     uint32_t fSamplesFallFreq = 0;
     bool     fFreqFall = false;
     float    fChangeFreq = 0.0f;

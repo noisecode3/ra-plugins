@@ -80,27 +80,9 @@ void RobotMoogFilterPlugin::initProgramName(uint32_t index, String& programName)
 {
     switch (index)
     {
-        case 0:
-            programName = "Default";
-            break;
-/*        case 1:
-            programName = "Low Warm";
-            break;
-        case 2:
-            programName = "Low Glass";
-            break;
-        case 3:
-            programName = "UFO Dream";
-            break;
-        case 4:
-            programName = "Spicy Crisp";
-            break;
-        case 5:
-            programName = "Dune Tones";
-            break;
-        case 6:
-            programName = "Just Bass";
-            break;*/
+    case 0:
+        programName = "Default";
+        break;
     }
 }
 
@@ -163,48 +145,6 @@ void RobotMoogFilterPlugin::loadProgram(uint32_t index)
         fWet  = 0.0f;
         activate();
         break;
-/*    case 1:
-        // Low Warm
-        fFreq = 70.0f;
-        fRes  = 0.5f;
-        fWet  = 80.0f;
-        activate();
-        break;
-    case 2:
-        // Low Glass
-        fFreq = 20.0f;
-        fRes  = 0.78f;
-        fWet  = 50.0f;
-        activate();
-        break;
-    case 3:
-        // UFO Dream
-        fFreq = 30.0f;
-        fRes  = 0.95f;
-        fWet  = 80.0f;
-        activate();
-        break;
-    case 4:
-        // Spicy Crisp
-        fFreq = 60.0f;
-        fRes  = 0.85f;
-        fWet  = 40.0f;
-        activate();
-        break;
-    case 5:
-        // Dune Tones
-        fFreq = 42.0f;
-        fRes  = 0.92f;
-        fWet  = 30.0f;
-        activate();
-        break;
-    case 6:
-        // Just Bass
-        fFreq = 2.0f;
-        fRes  = 0.62f;
-        fWet  = 100.0f;
-        activate();
-        break;*/
     }
 }
 
@@ -247,12 +187,7 @@ void RobotMoogFilterPlugin::activate()
 
 void RobotMoogFilterPlugin::deactivate()
 {
-
-}
-
-float RobotMoogFilterPlugin::parameterSurge(float x, float n)
-{
-    return x*n;
+    //TODO
 }
 
 float RobotMoogFilterPlugin::moog_tanh(float x)
@@ -300,7 +235,7 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     if (fSamplesFallFreq > 1)
     {
         float steps   = 1.0f/fFrames;
-        float freqAdd = parameterSurge((fFrames-fSamplesFallFreq+1)*steps, fChangeFreq);
+        float freqAdd = ((fFrames-fSamplesFallFreq+1)*steps)*(fChangeFreq);
         moog_ladder_tune(logsc(0.01*(fFreqOld+freqAdd), 20.0, 22000.0));
         fSamplesFallFreq--;
     }
@@ -309,7 +244,7 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     if (fSamplesFallRes > 1)
     {
         float steps  = 1.0f/fFrames;
-        float resAdd = parameterSurge((fFrames-fSamplesFallRes+1)*steps, fChangeRes);
+        float resAdd = ((fFrames-fSamplesFallRes+1)*steps)*(fChangeRes);
         res4         = 4.0f * logsc(0.01*(fResOld+resAdd), 0.0, 0.95) * fAcr;
         fSamplesFallRes--;
     }
@@ -318,7 +253,7 @@ float RobotMoogFilterPlugin::moog_ladder_process(float in, bool chan)
     if (fSamplesFallWet > 1)
     {
         float steps  = 1.0f/fFrames;
-        float wetAdd = parameterSurge((fFrames-fSamplesFallWet+1)*steps, fChangeWet);
+        float wetAdd = ((fFrames-fSamplesFallWet+1)*steps)*(fChangeWet);
         fWetVol      = 1.0f - exp(-0.01f*(fWetOld+wetAdd));
         fWetVol      = fWetVol + 0.367879*(0.01f*(fWetOld+wetAdd));
         fSamplesFallWet--;
@@ -375,11 +310,6 @@ void RobotMoogFilterPlugin::run(const float** inputs, float** outputs, uint32_t 
 
         fout1   = ((in1[i]*(1.0f-fWetVol)) + (moog_ladder_process(in1[i], 0)*fWetVol));
         fout2   = ((in2[i]*(1.0f-fWetVol)) + (moog_ladder_process(in2[i], 1)*fWetVol));
-
-        //if (fout1 >  1.0f) fout1 =  1.0f;
-        //if (fout1 < -1.0f) fout1 = -1.0f;
-        //if (fout2 >  1.0f) fout2 =  1.0f;
-        //if (fout2 < -1.0f) fout2 = -1.0f;
 
         out1[i] = fout1;
         out2[i] = fout2;
