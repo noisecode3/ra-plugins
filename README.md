@@ -4,6 +4,11 @@ Im will fix all the bugs I test them a lot usually in carla (or Ardour or Renois
 
 ![screenshot](https://raw.githubusercontent.com/noisecode3/ra-plugins/main/extra/RobotAudioLogoTransparent.png "Beta Logo")
 
+## Bark Compressor
+MIDI/audio triggered peak compressor, I now think like 2 modes, 1 normal that get trigger by audio, 2 gets triggered by midi Note on and off and threshold
+
+ - coming soon, don't use, won't build by default
+
 ## Hexed filter
 Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
 
@@ -43,7 +48,6 @@ COPY and PASTE ME to install:
 
 ## Plugins Todo
  - TVDistortion (dynamic distortion)
- - Bark (MIDI trigger/sidechain compressor)
  - Burn (saturation)
  - LFO (MIDI CC controller LFO, inspired by Renoise LFO)
  - RandomMIDICC (done, but need rework/review the code)
