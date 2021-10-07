@@ -9,7 +9,7 @@ MIDI/audio triggered peak compressor, I now think like 2 modes, 1 normal that ge
 
  - coming soon, don't use, won't build by default
 
-## Hexed filter
+## Hexed Filter
 Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
 
  - To do: make 5-8 presets to for quick demonstration
@@ -18,7 +18,7 @@ Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
  - To do: change parameter smooth strategy for bigger buffers and optimize parameter smoothing
  - To do: clean up
 
-## Moog filter
+## Moog Filter
 Low-pass Moog like filter
 
  - To do: make 5-8 presets to for quick demonstration
