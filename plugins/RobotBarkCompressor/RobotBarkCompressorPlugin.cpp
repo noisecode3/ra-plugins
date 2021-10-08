@@ -216,13 +216,13 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 		//left
 		
-		auto sideInput1 = fabs(in1[i]);
-		auto c1 = sideInput1 >= state1 ? cAT : cRT;           // when  sideInput is bigger then state it compresses and have an attack
-		auto env1 = sideInput1 + c1 * (state1 - sideInput1);  // becues sideInput was bigger and in absolute value sideInput is makes it negative
-		auto env_db1 = 10*log10(env1);                        // the state value or delta value (previous env) makes it smaller and smaller or bigger and bigger
-		state1 = env1;                                        // until the number of samples defind by attack or realease multiplied by delta ends 
+		float sideInput1 = fabs(in1[i]);
+		float c1 = sideInput1 >= state1 ? cAT : cRT;           // When  sideInput is bigger then state it compresses and have an attack
+		float env1 = sideInput1 + c1 * (state1 - sideInput1);  // becues sideInput was bigger and in absolute value sideInput makes it negative.
+		float env_db1 = 10*log10(env1);                        // the delta value (previous env) makes it smaller and smaller or bigger and bigger (if negative, it decompresses logically)
+		state1 = env1;                                         // until the number of values defind by attack or realease(in time domain) multiplied by delta sideInput ends 
 
-		auto gain1 = slope * (fThreshold - env_db1);          // if env_db is bigger then fThreshold we alter the gain :) remember env_db can only be positive
+		float gain1 = slope * (fThreshold - env_db1);          // if it is under the threshold nothing happens, but if above gain gets applied in absolute value
 		gain1 = fmin(0.f, gain1);
 		gain1 = pow(10, (gain1/20));
 
@@ -231,13 +231,13 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 		//right
 
-		auto sideInput2 = fabs(in2[i]);
-		auto c2 = sideInput2 >= state2 ? cAT : cRT;
-		auto env2 = sideInput2 + c2 * (state2 - sideInput2);
-		auto env_db2 = 10*log10(env2);
+		float sideInput2 = fabs(in2[i]);
+		float c2 = sideInput2 >= state2 ? cAT : cRT;
+		float env2 = sideInput2 + c2 * (state2 - sideInput2);
+		float env_db2 = 10*log10(env2);
 		state2 = env2;
 
-		auto gain2 = slope * (fThreshold - env_db2);
+		float gain2 = slope * (fThreshold - env_db2);
 		gain2 = fmin(0.f, gain2);
 		gain2 = pow(10, (gain2/20));
 
