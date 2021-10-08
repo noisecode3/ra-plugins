@@ -67,8 +67,8 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.symbol     = "th";
         parameter.unit       = "db";
         parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = -40.0f;
+        parameter.ranges.min = -40.0f;
+        parameter.ranges.max = 0.0f;
         break;
 
     case paramRatio:
