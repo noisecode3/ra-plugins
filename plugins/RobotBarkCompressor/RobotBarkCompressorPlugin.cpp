@@ -42,7 +42,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
     switch (index)
     {
     case paramAttack:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomable; // | kParameterIsLogarithmic;
         parameter.name       = "Attack";
         parameter.symbol     = "at";
         parameter.unit       = "ms";
@@ -52,7 +52,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramRelease:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomable; // | kParameterIsLogarithmic;
         parameter.name       = "Release";
         parameter.symbol     = "re";
         parameter.unit       = "ms";
@@ -62,7 +62,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramThreshold:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomable; // | kParameterIsLogarithmic;
         parameter.name       = "Threshold";
         parameter.symbol     = "th";
         parameter.unit       = "db";
@@ -72,7 +72,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramRatio:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomable; // | kParameterIsLogarithmic;
         parameter.name       = "Ratio";
         parameter.symbol     = "ra";
         parameter.unit       = "";
@@ -82,7 +82,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramMakeUpGain:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomable; // | kParameterIsLogarithmic;
         parameter.name       = "MakeUpGain";
         parameter.symbol     = "mug";
         parameter.unit       = "db";
@@ -145,7 +145,7 @@ void RobotBarkCompressorPlugin::setParameterValue(uint32_t index, float value)
 
     case paramRelease:
         fRelease       = value;
-		cRT            = exp(-1 * 1000 / fRelease / getSampleRate());
+        cRT            = exp(-1 * 1000 / fRelease / getSampleRate());
         break;
 
     case paramThreshold:
@@ -195,12 +195,6 @@ void RobotBarkCompressorPlugin::deactivate()
 {
 
 }
-
-//float RobotBarkCompressorPlugin::logsc(float param, const float min, const float max, const float rolloff = 19.0f)
-//{
-//    return ((expf(param * logf(rolloff+1)) - 1.0f) / (rolloff)) * (max-min) + min;
-//}
-
 
 void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* events, uint32_t eventCount)
 {
