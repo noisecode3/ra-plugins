@@ -114,33 +114,9 @@ private:
     float fRatio      = 1.0f;
     float fMakeUpGain = 0.0f;
 
-    /*uint32_t fSamplesAttack = 0;
-    bool     fAttackFall = false;
-    float    fChangeAttack = 0.0f;
-
-    uint32_t fSamplesFallRelease = 0;
-    bool     fReleaseFall = false;
-    float    fChangeRelease = 0.0f;
-
-    uint32_t fSamplesFallWet = 0;
-    bool     fWetFall = false;
-    float    fChangeWet = 0.0f;
-
-    uint32_t fSamplesFallWet = 0;
-    bool     fWetFall = false;
-    float    fChangeWet = 0.0f;
-
-    uint32_t fFrames;*/
 
     // -------------------------------------------------------------------
     // Dsp 
-	float ratio; //
-	float threshold; //
-
-	//float attack;
-	//float release;
-
-    float MakeUpGain;
 
 	float cAT;
 	float cRT;
