@@ -8,6 +8,11 @@ Im will fix all the bugs I test them a lot usually in carla (or Ardour or Renois
 MIDI/audio triggered peak compressor, I now think like 2 modes, 1 normal that get trigger by audio, 2 gets triggered by midi Note on and off and threshold
 
  - coming soon, don't use, won't build by default
+ - https://en.wikipedia.org/wiki/Bark_scale
+ - https://github.com/micknoise/Maximilian/blob/master/cpp/openFrameworks/ofxMaxim/libs/maxiBark.h
+ - To do: CV try Bark scale and tube emulation
+ - To do: scale parameters
+ - To do: midi
 
 ## Hexed Filter
 Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
