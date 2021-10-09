@@ -48,7 +48,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.unit       = "ms";
         parameter.ranges.def = 10.0f;
         parameter.ranges.min = 0.001f;
-        parameter.ranges.max = 500.0f;
+        parameter.ranges.max = 300.0f;
         break;
 
     case paramRelease:
@@ -57,8 +57,8 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.symbol     = "re";
         parameter.unit       = "ms";
         parameter.ranges.def = 100.0f;
-        parameter.ranges.min = 0.001f;
-        parameter.ranges.max = 600.0f;
+        parameter.ranges.min = 5.0f;
+        parameter.ranges.max = 400.0f;
         break;
 
     case paramThreshold:
@@ -78,7 +78,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.unit       = "";
         parameter.ranges.def = 1.0f;
         parameter.ranges.min = 1.0f;
-        parameter.ranges.max = 12.0f;
+        parameter.ranges.max = 14.0f;
         break;
 
     case paramMakeUpGain:
@@ -88,7 +88,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.unit       = "db";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = -4.0f;
-        parameter.ranges.max = 12.0f;
+        parameter.ranges.max = 16.0f;
         break;
 
     }
@@ -212,7 +212,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 		//left
 		
-        hz1         = (fabs(in1[i]-delay1)/PI_F)*getSampleRate(); // The change/delta velocity in amplitude have a range from (1 to -1) for 2 pi per second 
+        hz1         = getSampleRate()/fabs(in1[i]-delay1); // The change/delta velocity in amplitude have a range from 0 to 2, Simple Nyquist frequency
         delay1      = fabs(in1[i]);
         float bark1 = (13.0*atan(0.00076*hz1) + 3.5*atan(pow((hz1/7500.0),2)))/(56.53526731*24); // Convert to the bark scale
         // try limit hz to 10000 or bend the scale
@@ -234,7 +234,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 		//right
         
-        hz2         = (fabs(in2[i]-delay2)/PI_F)*getSampleRate();
+        hz2         = getSampleRate()/fabs(in2[i]-delay2);
         delay2      = fabs(in2[i]);
         float bark2 = (13.0*atan(0.00076*hz2) + 3.5*atan(pow((hz2/7500.0),2)))/(56.53526731*24);
 
