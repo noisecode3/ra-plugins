@@ -9,7 +9,6 @@ MIDI/audio triggered peak compressor, I now think like 2 modes, 1 normal that ge
 
  - coming soon, don't use, won't build by default
  - https://en.wikipedia.org/wiki/Bark_scale
- - https://github.com/micknoise/Maximilian/blob/master/cpp/openFrameworks/ofxMaxim/libs/maxiBark.h
  - To do: CV try Bark scale and tube emulation
  - To do: scale parameters
  - To do: midi

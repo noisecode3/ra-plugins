@@ -189,6 +189,8 @@ void RobotBarkCompressorPlugin::activate()
 	cRT = exp(-1 * 1000 / fRelease / getSampleRate());
 
 	state1 = state2 = 0;
+    delay1 = delay2 = 0;
+    hz1 = hz2 = 0;
 }
 
 void RobotBarkCompressorPlugin::deactivate()
@@ -210,7 +212,14 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 		//left
 		
-		float sideInput1 = fabs(in1[i]);
+        hz1         = (fabs(in1[i]-delay1)/PI_F)*getSampleRate(); // The change/delta velocity in amplitude have a range from (1 to -1) for 2 pi per second 
+        delay1      = fabs(in1[i]);
+        float bark1 = (13.0*atan(0.00076*hz1) + 3.5*atan(pow((hz1/7500.0),2)))/(56.53526731*24); // Convert to the bark scale
+        // try limit hz to 10000 or bend the scale
+
+        float sideInput1 = bark1;         // try 50:50 blend later
+
+		//float sideInput1 = fabs(in1[i]);
 		float c1 = sideInput1 >= state1 ? cAT : cRT;           // When  sideInput is bigger then state it compresses and have an attack
 		float env1 = sideInput1 + c1 * (state1 - sideInput1);  // becues sideInput was bigger and in absolute value sideInput makes it negative.
 		float env_db1 = 10*log10(env1);                        // the delta value (previous env) makes it smaller and smaller or bigger and bigger (if negative, it decompresses logically)
@@ -224,8 +233,14 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 		out1[i] = in1[i] * gain1 * (pow(10, (fMakeUpGain/20)));
 
 		//right
+        
+        hz2         = (fabs(in2[i]-delay2)/PI_F)*getSampleRate();
+        delay2      = fabs(in2[i]);
+        float bark2 = (13.0*atan(0.00076*hz2) + 3.5*atan(pow((hz2/7500.0),2)))/(56.53526731*24);
 
-		float sideInput2 = fabs(in2[i]);
+        float sideInput2 = bark2;
+		
+        //float sideInput2 = fabs(in2[i]);
 		float c2 = sideInput2 >= state2 ? cAT : cRT;
 		float env2 = sideInput2 + c2 * (state2 - sideInput2);
 		float env_db2 = 10*log10(env2);

@@ -121,6 +121,8 @@ private:
 	float cAT;
 	float cRT;
 	float state1, state2;
+    float delay1, delay2;
+    float hz1, hz2;
     // -------------------------------------------------------------------
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotBarkCompressorPlugin)
