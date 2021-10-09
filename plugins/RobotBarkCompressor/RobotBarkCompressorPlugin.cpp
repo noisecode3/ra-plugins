@@ -217,7 +217,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         float bark1 = (13.0*atan(0.00076*hz1) + 3.5*atan(pow((hz1/7500.0),2)))/(56.53526731*24); // Convert to the bark scale
         // try limit hz to 10000 or bend the scale
 
-        float sideInput1 = bark1;         // try 50:50 blend later
+        float sideInput1 = fabs(in1[i])*0.2+bark1*0.8;         // 80:20 blend to get some low energy back
 
 		//float sideInput1 = fabs(in1[i]);
 		float c1 = sideInput1 >= state1 ? cAT : cRT;           // When  sideInput is bigger then state it compresses and have an attack
@@ -238,7 +238,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         delay2      = fabs(in2[i]);
         float bark2 = (13.0*atan(0.00076*hz2) + 3.5*atan(pow((hz2/7500.0),2)))/(56.53526731*24);
 
-        float sideInput2 = bark2;
+        float sideInput2 = fabs(in2[i])*0.2+bark2*0.8;
 		
         //float sideInput2 = fabs(in2[i]);
 		float c2 = sideInput2 >= state2 ? cAT : cRT;
