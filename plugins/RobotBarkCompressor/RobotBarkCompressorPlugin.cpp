@@ -87,8 +87,8 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.symbol     = "mug";
         parameter.unit       = "dB";
         parameter.ranges.def = 0.0f;
-        parameter.ranges.min = -4.0f;
-        parameter.ranges.max = 16.0f;
+        parameter.ranges.min = -8.0f;
+        parameter.ranges.max = 24.0f;
         break;
 
     }
