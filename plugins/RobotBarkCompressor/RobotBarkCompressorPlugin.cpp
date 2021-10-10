@@ -46,9 +46,9 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.name       = "Attack";
         parameter.symbol     = "at";
         parameter.unit       = "ms";
-        parameter.ranges.def = 10.0f;
+        parameter.ranges.def = 1.0f;
         parameter.ranges.min = 0.001f;
-        parameter.ranges.max = 300.0f;
+        parameter.ranges.max = 10.0f;
         break;
 
     case paramRelease:
@@ -56,18 +56,18 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.name       = "Release";
         parameter.symbol     = "re";
         parameter.unit       = "ms";
-        parameter.ranges.def = 100.0f;
-        parameter.ranges.min = 5.0f;
-        parameter.ranges.max = 400.0f;
+        parameter.ranges.def = 36.0f;
+        parameter.ranges.min = 0.001f;
+        parameter.ranges.max = 120.0f;
         break;
 
     case paramThreshold:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Threshold";
         parameter.symbol     = "th";
-        parameter.unit       = "db";
+        parameter.unit       = "dB";
         parameter.ranges.def = 0.0f;
-        parameter.ranges.min = -40.0f;
+        parameter.ranges.min = -80.0f;
         parameter.ranges.max = 0.0f;
         break;
 
@@ -75,17 +75,17 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Ratio";
         parameter.symbol     = "ra";
-        parameter.unit       = "";
+        parameter.unit       = ":1";
         parameter.ranges.def = 1.0f;
         parameter.ranges.min = 1.0f;
-        parameter.ranges.max = 14.0f;
+        parameter.ranges.max = 16.0f;
         break;
 
     case paramMakeUpGain:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "MakeUpGain";
         parameter.symbol     = "mug";
-        parameter.unit       = "db";
+        parameter.unit       = "dB";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = -4.0f;
         parameter.ranges.max = 16.0f;
@@ -169,8 +169,8 @@ void RobotBarkCompressorPlugin::loadProgram(uint32_t index)
     {
     case 0:
         // Default
-		fAttack     = 10.0;
-		fRelease    = 100.0;
+		fAttack     = 1.0;
+		fRelease    = 36.0;
 		fThreshold  = 0.0;
 		fRatio      = 1.0;
 		fMakeUpGain = 0.0;
@@ -210,40 +210,46 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 	for (uint32_t i = 0; i < frames; ++i) {
 
-		//left
+		//Left
 		
         hz1         = getSampleRate()/fabs(in1[i]-delay1); // The change/delta velocity in amplitude have a range from 0 to 2, Simple Nyquist frequency
-        delay1      = fabs(in1[i]);
-        float bark1 = (13.0*atan(0.00076*hz1) + 3.5*atan(pow((hz1/7500.0),2)))/(56.53526731*24); // Convert to the bark scale
-        // try limit hz to 10000 or bend the scale
+        delay1      = in1[i];
+        
+        float bark1 = (13.0*atan(hz1/1315.8) + 3.5*atan(pow((hz1/7500.0),2)))/(57.32*24); // Convert to the bark scale
 
-        float sideInput1 = fabs(in1[i])*0.2+bark1*0.8;         // 80:20 blend to get some low energy back
+        float sideInput1 = bark1*0.84+in1[i]*0.16;
+
+        //if (sideInput1 > 1) sideInput1 = 1;
 
 		//float sideInput1 = fabs(in1[i]);
 		float c1 = sideInput1 >= state1 ? cAT : cRT;           // When  sideInput is bigger then state it compresses and have an attack
 		float env1 = sideInput1 + c1 * (state1 - sideInput1);  // becues sideInput was bigger and in absolute value sideInput makes it negative.
-		float env_db1 = 10*log10(env1);                        // the delta value (previous env) makes it smaller and smaller or bigger and bigger (if negative, it decompresses logically)
+		float env_db1 = 10*log10(env1*2);                        // the delta value (previous env) makes it smaller and smaller or bigger and bigger (if negative, it decompresses logically)
 		state1 = env1;                                         // until the number of values defind by attack or realease(in time domain) multiplied by delta sideInput ends 
 
 		float gain1 = slope * (fThreshold - env_db1);          // if it is under the threshold nothing happens, but if above gain gets applied in absolute value
 		gain1 = fmin(0.f, gain1);
 		gain1 = pow(10, (gain1/20));
 
-
 		out1[i] = in1[i] * gain1 * (pow(10, (fMakeUpGain/20)));
 
-		//right
+		
+        
+        //Right
         
         hz2         = getSampleRate()/fabs(in2[i]-delay2);
-        delay2      = fabs(in2[i]);
-        float bark2 = (13.0*atan(0.00076*hz2) + 3.5*atan(pow((hz2/7500.0),2)))/(56.53526731*24);
+        delay2      = in2[i];
 
-        float sideInput2 = fabs(in2[i])*0.2+bark2*0.8;
+        float bark2 = (13.0*atan(hz2/1315.8) + 3.5*atan(pow((hz2/7500.0),2)))/(57.32*24);
+
+        float sideInput2 = bark2*0.84 + in2[i]*0.16;
+
+        //if (sideInput2 > 1) sideInput2 = 1;
 		
         //float sideInput2 = fabs(in2[i]);
 		float c2 = sideInput2 >= state2 ? cAT : cRT;
 		float env2 = sideInput2 + c2 * (state2 - sideInput2);
-		float env_db2 = 10*log10(env2);
+		float env_db2 = 10*log10(env2*2);
 		state2 = env2;
 
 		float gain2 = slope * (fThreshold - env_db2);

@@ -108,8 +108,8 @@ private:
     // -------------------------------------------------------------------
     // Parameters
 
-    float fAttack     = 10.0f;
-    float fRelease    = 100.0f;
+    float fAttack     = 1.0f;
+    float fRelease    = 16.0f;
     float fThreshold  = 0.0f;
     float fRatio      = 1.0f;
     float fMakeUpGain = 0.0f;
