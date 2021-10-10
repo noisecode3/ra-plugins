@@ -217,14 +217,14 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         
         float bark1 = (13.0*atan(hz1/1315.8) + 3.5*atan(pow((hz1/7500.0),2)))/(57.32*24); // Convert to the bark scale
 
-        float sideInput1 = bark1*0.84+in1[i]*0.16;
+        float sideInput1 = bark1;
 
         //if (sideInput1 > 1) sideInput1 = 1;
 
 		//float sideInput1 = fabs(in1[i]);
 		float c1 = sideInput1 >= state1 ? cAT : cRT;           // When  sideInput is bigger then state it compresses and have an attack
 		float env1 = sideInput1 + c1 * (state1 - sideInput1);  // becues sideInput was bigger and in absolute value sideInput makes it negative.
-		float env_db1 = 10*log10(env1*2);                        // the delta value (previous env) makes it smaller and smaller or bigger and bigger (if negative, it decompresses logically)
+		float env_db1 = 10*log10(env1);                        // the delta value (previous env) makes it smaller and smaller or bigger and bigger (if negative, it decompresses logically)
 		state1 = env1;                                         // until the number of values defind by attack or realease(in time domain) multiplied by delta sideInput ends 
 
 		float gain1 = slope * (fThreshold - env_db1);          // if it is under the threshold nothing happens, but if above gain gets applied in absolute value
@@ -242,14 +242,14 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
         float bark2 = (13.0*atan(hz2/1315.8) + 3.5*atan(pow((hz2/7500.0),2)))/(57.32*24);
 
-        float sideInput2 = bark2*0.84 + in2[i]*0.16;
+        float sideInput2 = bark2;
 
         //if (sideInput2 > 1) sideInput2 = 1;
 		
         //float sideInput2 = fabs(in2[i]);
 		float c2 = sideInput2 >= state2 ? cAT : cRT;
 		float env2 = sideInput2 + c2 * (state2 - sideInput2);
-		float env_db2 = 10*log10(env2*2);
+		float env_db2 = 10*log10(env2);
 		state2 = env2;
 
 		float gain2 = slope * (fThreshold - env_db2);
