@@ -215,7 +215,16 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         hz1         = (getSampleRate()/2)*(fabs(in1[i]-delay1)*0.5); // The change/delta velocity in amplitude have a range from 0 to 2, Simple Nyquist frequency
         delay1      = in1[i];
         
-        float bark1 = (13.0*atan(hz1/1315.8) + 3.5*atan(pow((hz1/7500.0),2)))/(57.32*24); // Convert to the bark scale
+        float bark1 = (13.0*atan(hz1/1315.8) + 3.5*atan(pow((hz1/7500.0),2)))/((0.000035*getSampleRate()+57.49)*24); // Convert to the bark scale
+        
+        // this is poorly calculated
+
+        // for samprate 44100 = 59.062809
+
+        // for samprate 48000 = 59.3623
+
+        // for samplerate 96000 = 60.821
+
 
         float sideInput1 = bark1;
 
@@ -240,7 +249,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         hz2         = (getSampleRate()/2)*(fabs(in2[i]-delay2)*0.5);
         delay2      = in2[i];
 
-        float bark2 = (13.0*atan(hz2/1315.8) + 3.5*atan(pow((hz2/7500.0),2)))/(57.32*24);
+        float bark2 = (13.0*atan(hz2/1315.8) + 3.5*atan(pow((hz2/7500.0),2)))/((0.000035*getSampleRate()+57.49)*24);
 
         float sideInput2 = bark2;
 
