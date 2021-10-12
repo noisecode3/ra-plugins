@@ -7,10 +7,9 @@ Im will fix all the bugs I test them a lot usually in carla (or Ardour or Renois
 ## Bark Compressor
 MIDI/audio triggered peak compressor, I now think like 2 modes, 1 normal that get trigger by audio, 2 gets triggered by midi Note on and off and threshold
 
- - coming soon, don't use, won't build by default
+ - don't use in serious projects yet
  - https://en.wikipedia.org/wiki/Bark_scale
- - To do: CV try Bark scale and tube emulation
- - To do: scale parameters
+ - To do: Tube gain emulation
  - To do: midi
 
 ## Hexed Filter

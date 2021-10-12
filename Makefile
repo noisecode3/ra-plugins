@@ -24,7 +24,7 @@ plugins: dgl
 	# Plugins
 	$(MAKE) all -C plugins/RobotMoogFilter
 	$(MAKE) all -C plugins/RobotHexedFilter
-	#$(MAKE) all -C plugins/RobotBarkCompressor
+	$(MAKE) all -C plugins/RobotBarkCompressor
 
 gen: plugins dpf/utils/lv2_ttl_generator
 	@$(CURDIR)/dpf/utils/generate-ttl.sh
@@ -41,7 +41,7 @@ clean:
 	# Plugins
 	$(MAKE) clean -C plugins/RobotMoogFilter
 	$(MAKE) clean -C plugins/RobotHexedFilter
-	#$(MAKE) clean -C plugins/RobotBarkCompressor
+	$(MAKE) clean -C plugins/RobotBarkCompressor
 
 # --------------------------------------------------------------
 

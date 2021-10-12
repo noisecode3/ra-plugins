@@ -204,34 +204,64 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
     const float* in2  = inputs[1];
     float*       out1 = outputs[0];
     float*       out2 = outputs[1];
-
 	
 	float slope = 1 - 1 / fRatio;
+    int   sampleRate = (int)getSampleRate();
+    float halfCycle = (getSampleRate()/2);
+
+    // sample rates
+    //
+    // 22050  = 54.56695791
+    // 32000  = 57.52123620
+    // 44100  = 59.06280878
+    // 48000  = 59.36179537
+    // 96000  = 60.82050573
+    // 192000 = 61.39865212
+
+    float sampleRateScaler;
+
+    switch (sampleRate)
+    {
+        case 22050:
+            sampleRateScaler = 54.56695791;
+            break;
+
+        case 32000:
+            sampleRateScaler = 57.52123620;
+            break;
+
+        case 44100:
+            sampleRateScaler = 59.06280878;
+            break;
+
+        case 48000:
+            sampleRateScaler = 59.36179537;
+            break;
+
+        case 96000:
+            sampleRateScaler = 60.82050573;
+            break;
+
+        case 192000:
+            sampleRateScaler = 61.39865212;
+            break;
+
+        default:
+            sampleRateScaler = 0.0;
+            break;
+    }
 
 	for (uint32_t i = 0; i < frames; ++i) {
 
 		//Left
 		
-        hz1         = (getSampleRate()/2)*(fabs(in1[i]-delay1)*0.5); // The change/delta velocity in amplitude have a range from 0 to 2, Simple Nyquist frequency
+        hz1         = halfCycle*(fabs(in1[i]-delay1)*0.5);     // The change/delta velocity in amplitude have a range from 0 to 2, Simple Nyquist frequency
         delay1      = in1[i];
-        
-        float bark1 = (13.0*atan(hz1/1315.8) + 3.5*atan(pow((hz1/7500.0),2)))/((0.000035*getSampleRate()+57.49)*24); // Convert to the bark scale
-        
-        // this is poorly calculated
 
-        // for samprate 44100 = 59.062809
+        float sideInput1 = (13.0*atan(hz1/1315.8)
+                + 3.5*atan(pow((hz1/7500.0),2)))/(sampleRateScaler*24); // Convert to the bark scale
 
-        // for samprate 48000 = 59.3623
-
-        // for samplerate 96000 = 60.821
-
-
-        float sideInput1 = bark1;
-
-        //if (sideInput1 > 1) sideInput1 = 1;
-
-		//float sideInput1 = fabs(in1[i]);
-		float c1 = sideInput1 >= state1 ? cAT : cRT;           // When  sideInput is bigger then state it compresses and have an attack
+        float c1 = sideInput1 >= state1 ? cAT : cRT;           // When  sideInput is bigger then state it compresses and have an attack
 		float env1 = sideInput1 + c1 * (state1 - sideInput1);  // becues sideInput was bigger and in absolute value sideInput makes it negative.
 		float env_db1 = 10*log10(env1);                        // the delta value (previous env) makes it smaller and smaller or bigger and bigger (if negative, it decompresses logically)
 		state1 = env1;                                         // until the number of values defind by attack or realease(in time domain) multiplied by delta sideInput ends 
@@ -242,20 +272,15 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 		out1[i] = in1[i] * gain1 * (pow(10, (fMakeUpGain/20)));
 
-		
-        
+
         //Right
-        
-        hz2         = (getSampleRate()/2)*(fabs(in2[i]-delay2)*0.5);
+
+        hz2         = halfCycle*(fabs(in2[i]-delay2)*0.5);
         delay2      = in2[i];
 
-        float bark2 = (13.0*atan(hz2/1315.8) + 3.5*atan(pow((hz2/7500.0),2)))/((0.000035*getSampleRate()+57.49)*24);
+        float sideInput2 = (13.0*atan(hz2/1315.8)
+                + 3.5*atan(pow((hz2/7500.0),2)))/(sampleRateScaler*24);
 
-        float sideInput2 = bark2;
-
-        //if (sideInput2 > 1) sideInput2 = 1;
-		
-        //float sideInput2 = fabs(in2[i]);
 		float c2 = sideInput2 >= state2 ? cAT : cRT;
 		float env2 = sideInput2 + c2 * (state2 - sideInput2);
 		float env_db2 = 10*log10(env2);
@@ -264,7 +289,6 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 		float gain2 = slope * (fThreshold - env_db2);
 		gain2 = fmin(0.f, gain2);
 		gain2 = pow(10, (gain2/20));
-
 
 		out2[i] = in2[i] * gain2 * (pow(10, (fMakeUpGain/20)));
 
