@@ -113,19 +113,19 @@ private:
     // -------------------------------------------------------------------
     // Parameters
 
-    float fCutOff;
+    float fCutOff   = 100.0;
     float fCutOffOld;    
 
-    float fRes;
+    float fRes      = 0.0;
     float fResOld;    
 
-    float fMode;
+    float fMode     = 4;
     int   iMode     = 4;
     int   iModeOld  = iMode;
  
-    float fWet; 
+    float fWet      = 0.0; 
     float fWetOld;
-    float fWetVol    = 0;
+    float fWetVol   = 0;
 
     uint32_t fSamplesFallCutOff = 0;
     bool     fCutOffFall        = false;
