@@ -190,7 +190,7 @@ void RobotBarkCompressorPlugin::activate()
 
 	state1 = state2 = 0;
     delay1 = delay2 = 0;
-    hz1 = hz2 = 0;
+    hz1    = hz2    = 0;
 }
 
 void RobotBarkCompressorPlugin::deactivate()
@@ -204,10 +204,10 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
     const float* in2  = inputs[1];
     float*       out1 = outputs[0];
     float*       out2 = outputs[1];
-	
-	float slope = 1 - 1 / fRatio;
+
+	float slope      = 1 - 1 / fRatio;
     int   sampleRate = (int)getSampleRate();
-    float halfCycle = (getSampleRate()/2);
+    float halfCycle  = getSampleRate()/2;
 
     // sample rates
     //
@@ -254,8 +254,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 	for (uint32_t i = 0; i < frames; ++i) {
 
 		//Left
-		
-        hz1         = halfCycle*(fabs(in1[i]-delay1)*0.5);     // The change/delta velocity in amplitude have a range from 0 to 2, Simple Nyquist frequency
+        hz1         = fabs(in1[i]*delay1)*halfCycle; 
         delay1      = in1[i];
 
         float sideInput1 = (13.0*atan(hz1/1315.8)
@@ -275,7 +274,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
         //Right
 
-        hz2         = halfCycle*(fabs(in2[i]-delay2)*0.5);
+        hz2         = fabs(in2[i]*delay2)*halfCycle;
         delay2      = in2[i];
 
         float sideInput2 = (13.0*atan(hz2/1315.8)
