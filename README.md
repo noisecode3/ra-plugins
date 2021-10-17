@@ -12,8 +12,6 @@ MIDI/audio triggered peak compressor, I now think like 2 modes, 1 normal that ge
  - To do: Tube gain emulation
  - To do: midi
 
- - To do in general: clean extra/src build files
-
 ## Hexed Filter
 Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
 

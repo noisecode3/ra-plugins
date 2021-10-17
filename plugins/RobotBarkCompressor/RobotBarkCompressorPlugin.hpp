@@ -22,7 +22,7 @@
 #define ROBOT_BARK_COMPRESSOR_PLUGIN_HPP_INCLUDED
 
 #include "DistrhoPlugin.hpp"
-//#include "fft.h"
+#include "fft.h"
 
 START_NAMESPACE_DISTRHO
 

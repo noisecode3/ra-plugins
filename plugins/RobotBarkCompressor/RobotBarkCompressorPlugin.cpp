@@ -32,8 +32,8 @@ RobotBarkCompressorPlugin::RobotBarkCompressorPlugin()
 {
     // set default values
     loadProgram(0);
-    //fft myfft;
-    //myfft.setup(512);
+    fft myfft;
+    myfft.setup(512);
 }
 
 // -----------------------------------------------------------------------
@@ -219,6 +219,8 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
     // 48000  = 59.36179537
     // 96000  = 60.82050573
     // 192000 = 61.39865212
+    //
+    // TO DO: calculate for possibale sample rates, no switch
 
     float sampleRateScaler;
 

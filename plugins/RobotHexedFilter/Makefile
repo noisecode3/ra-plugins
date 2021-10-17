@@ -13,7 +13,8 @@ NAME = RobotHexedFilter
 # Files to build
 
 FILES_DSP = \
-	RobotHexedFilterPlugin.cpp
+	RobotHexedFilterPlugin.cpp \
+	../lib/fft.cpp
 
 #FILES_UI  = \
 #	RobotDexedFilterArtwork.cpp \
@@ -23,6 +24,9 @@ FILES_DSP = \
 # Do some magic
 
 include ../../dpf/Makefile.plugins.mk
+
+BUILD_C_FLAGS   += -I. -I../../include
+BUILD_CXX_FLAGS += -I. -I$(DPF_PATH)/distrho -I$(DPF_PATH)/dgl -I../../include
 
 # --------------------------------------------------------------
 # Enable all possible plugin types

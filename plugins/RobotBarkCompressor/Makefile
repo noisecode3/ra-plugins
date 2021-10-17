@@ -13,8 +13,8 @@ NAME = RobotBarkCompressor
 # Files to build
 
 FILES_DSP = \
-	RobotBarkCompressorPlugin.cpp #\
-#	../../extra/src/fft.cpp
+	RobotBarkCompressorPlugin.cpp \
+	../lib/fft.cpp
 
 #FILES_UI  = \
 #	RobotBarkCompressorArtwork.cpp \
@@ -25,8 +25,8 @@ FILES_DSP = \
 
 include ../../dpf/Makefile.plugins.mk
 
-#BUILD_C_FLAGS   += -I. -I../../include
-#BUILD_CXX_FLAGS += -I. -I$(DPF_PATH)/distrho -I$(DPF_PATH)/dgl -I../../include
+BUILD_C_FLAGS   += -I. -I../../include
+BUILD_CXX_FLAGS += -I. -I$(DPF_PATH)/distrho -I$(DPF_PATH)/dgl -I../../include
 
 # --------------------------------------------------------------
 # Enable all possible plugin types
