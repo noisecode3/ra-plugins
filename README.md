@@ -5,31 +5,17 @@ Im will fix all the bugs I test them a lot usually in carla (or Ardour or Renois
 ![screenshot](https://raw.githubusercontent.com/noisecode3/ra-plugins/main/extra/RobotAudioLogoTransparent.png "Beta Logo")
 
 ## Bark Compressor
-MIDI/audio triggered peak compressor, I now think like 2 modes, 1 normal that get trigger by audio, 2 gets triggered by midi Note on and off and threshold
+MIDI/audio triggered peak compressor that filters the compressed signal with the Bark scale and control the compressed voltage with tube emulation
 
- - don't use in serious projects yet
+ - don't use in serious projects yet, I have not finished the calculations, parts of the plugin is missing
  - https://en.wikipedia.org/wiki/Bark_scale
- - To do: Tube gain emulation
- - To do: midi
+
 
 ## Hexed Filter
 Modified version of Dexed synth filter, low-pass filter with 1-4 pole modes
 
- - To do: make 5-8 presets to for quick demonstration
- - To do: make UI (I like big knobs and I can not lie)
- - To do: remove dsp instructions that are not needed (when parameters not changed)
- - To do: change parameter smooth strategy for bigger buffers and optimize parameter smoothing
- - To do: clean up
-
 ## Moog Filter
 Low-pass Moog like filter
-
- - To do: make 5-8 presets to for quick demonstration
- - To do: Make UI (I like big knobs and I can not lie)
- - To do: remove dsp instructions that are not needed (when parameters not changed)
- - To do: change parameter smooth strategy for bigger buffers and optimize parameter smoothing
- - To do: clean up
-
 
 # Prepare
 You need to have mesa headers and basic build tools and git from you're distribution(I don't have a GUI lol, dpf needs it).

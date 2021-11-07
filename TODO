@@ -1,0 +1,14 @@
+Finnish Bark's filter
+Add Bark tube gain emulation
+Add Bark Midi Programing
+Add Bark Side chain audio in
+Add Bark Midi Envelope parameters
+Add Bark Trigger Mode
+
+For Both Hexed and Moog
+
+make  5-8 presets to for quick demonstration
+make UI (I like big knobs and I can not lie)
+remove dsp instructions that are not needed (when parameters not changed)
+change parameter smooth strategy for bigger buffers and optimize parameter smoothing
+clean up
