@@ -5,7 +5,8 @@ Im will fix all the bugs I test them a lot usually in carla (or Ardour or Renois
 ![screenshot](https://raw.githubusercontent.com/noisecode3/ra-plugins/main/extra/RobotAudioLogoTransparent.png "Beta Logo")
 
 ## Bark Compressor
-MIDI/audio triggered peak compressor that filters the compressed signal with the Bark scale and control the compressed voltage with tube emulation
+Bark is a peak compressor that filters the compressed part of signal with the Bark scale and controls the compressed voltage with tube emulation.
+Bark has both MIDI and audio side chain modes and strive to be clean and flexible.
 
  - don't use in serious projects yet, I have not finished the calculations, parts of the plugin is missing
  - https://en.wikipedia.org/wiki/Bark_scale
