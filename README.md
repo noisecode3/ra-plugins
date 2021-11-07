@@ -6,7 +6,7 @@ Im will fix all the bugs I test them a lot usually in carla (or Ardour or Renois
 
 ## Bark Compressor
 Bark is a peak compressor that filters the compressed part of signal with the Bark scale and controls the compressed voltage with tube emulation.
-Bark has both MIDI and audio side chain modes and strive to be clean and flexible.
+Bark has both MIDI and audio side chain modes.
 
  - don't use in serious projects yet, I have not finished the calculations, parts of the plugin is missing
  - https://en.wikipedia.org/wiki/Bark_scale
