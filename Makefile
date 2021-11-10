@@ -35,9 +35,6 @@ dpf/utils/lv2_ttl_generator:
 # --------------------------------------------------------------
 
 clean:
-	rm -f build/lib/fft.cpp.d
-	rm -f build/lib/fft.cpp.o
-
 	$(MAKE) clean -C dpf/dgl
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 

@@ -32,8 +32,6 @@ RobotBarkCompressorPlugin::RobotBarkCompressorPlugin()
 {
     // set default values
     loadProgram(0);
-    fft myfft;
-    myfft.setup(512);
 }
 
 // -----------------------------------------------------------------------

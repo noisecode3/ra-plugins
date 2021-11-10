@@ -1,4 +1,10 @@
 Finnish Bark's filter
+
+ use this - https://github.com/lsp-plugins/lsp-dsp-units/blob/master/include/lsp-plug.in/dsp-units/util/Analyzer.h 
+ to analyse frequency for the filter scale. 
+
+Put edited .hpp and .cpp files in include dir
+
 Add Bark tube gain emulation
 Add Bark Midi Programing
 Add Bark Side chain audio in
@@ -7,6 +13,7 @@ Add Bark Trigger Mode
 
 For Both Hexed and Moog
 
+Add another parameter that lets the user change the scale of the res parameter to a smaller scale
 make  5-8 presets to for quick demonstration
 make UI (I like big knobs and I can not lie)
 remove dsp instructions that are not needed (when parameters not changed)
