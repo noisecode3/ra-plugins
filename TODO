@@ -19,3 +19,10 @@ make UI (I like big knobs and I can not lie)
 remove dsp instructions that are not needed (when parameters not changed)
 change parameter smooth strategy for bigger buffers and optimize parameter smoothing
 clean up
+
+Plugins Todo
+
+TVDistortion (dynamic distortion)
+Burn (saturation)
+LFO (MIDI CC controller LFO, inspired by Renoise LFO)
+RandomMIDICC (done, but need rework/review the code)

@@ -1,0 +1,34 @@
+# Changelog
+All notable changes for the user will be documented in this file.
+Types of changes listed and explained.
+
+# NewPlugin added plugin to ra-audio.
+# Subjective a change in the sound or in c math.
+# Added for new features.
+# Changed for changes in existing functionality.
+# Deprecated for soon-to-be removed features.
+# Removed for now removed features.
+# Fixed for any bug fixes.
+# Security in case of vulnerabilities.
+
+
+[1.0.0] sep 12 2021
+# NewPlugin Moog
+Algorithms for Mood https://github.com/electro-smith/DaisySP.
+# Subjective Moog
+Changed thermal value from 25 to 26.
+# Added Moog
+Smoothing parameters to avoid clicks.
+
+[1.0.0] sep 12 2021
+# NewPlugin Hexed
+Modified filter https://github.com/asb2m10/dexed.
+# Subjective Hexed
+Changed the "zero pole" frequency calculation done from sample rate, that was not controlled by the user
+but now partly changes when editing the cut off frequency and is scaled at much lower frequency.
+# Subjective Hexed
+Changed the dynamics of the resonance and filter, the balance of parameters volume.
+# Added Hexed
+Smoothing parameters to avoid clicks.
+
+

@@ -36,11 +36,3 @@ COPY and PASTE ME to install:
 
     git clone https://github.com/noisecode3/ra-plugins; cd ra-plugins; git submodule update --init; make; make install;
 
-## Plugins Todo
- - TVDistortion (dynamic distortion)
- - Burn (saturation)
- - LFO (MIDI CC controller LFO, inspired by Renoise LFO)
- - RandomMIDICC (done, but need rework/review the code)
-
-## Resources
- - https://www.dsprelated.com/freebooks/filters/
