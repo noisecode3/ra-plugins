@@ -25,10 +25,10 @@ Smoothing parameters to avoid clicks.
 Modified filter https://github.com/asb2m10/dexed.
 # Subjective Hexed
 Changed part of the 1:st pole frequency calculation done in cascade.
-Changes to the cut off frequency makes very small changes this part,
+Changes to the cut off frequency makes very small changes to this part,
 and are now scaled at much lower frequency.
-This part changes the first stage of the filters cut off frequency.
-I think of it as a component fo impulse response and filter design.
+This part changes the first stage of the filter cut off frequency.
+I think of it as a component of impulse response and filter design.
 # Subjective Hexed
 Changed the dynamics of the resonance and filter, the balance of parameters volume.
 # Added Hexed
