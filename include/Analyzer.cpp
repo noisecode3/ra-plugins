@@ -23,7 +23,9 @@
 #include "envelope.h"
 #include "windows.h"
 #include "units.h"
-#include <math.h>
+#include "math.h"
+#include "alloc.h"
+#include "dsp.h"
 
 namespace lsp
 {
