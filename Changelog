@@ -11,6 +11,16 @@ Types of changes listed and explained.
 # Fixed for any bug fixes.
 # Security in case of vulnerabilities.
 
+What versions number means [A.B.C]
+I will program so that you DAW distinguish every version change of A and B.
+So that you can use on old versions with a new ones in the same project.
+
+A = Significantly change of sound and/or added/removed functionality
+B = Small changes of sound and/or added/removed functionality
+C = Mostly unnoticeable changes like a small bug fix
+
+
+## START
 
 [1.0.0] sep 12 2021
 # NewPlugin Moog
@@ -24,11 +34,7 @@ Smoothing parameters to avoid clicks.
 # NewPlugin Hexed
 Modified filter https://github.com/asb2m10/dexed.
 # Subjective Hexed
-Changed part of the 1:st pole frequency calculation done in cascade.
-Changes to the cut off frequency makes very small changes to this part,
-and are now scaled at much lower frequency.
-This part changes the first stage of the filter cut off frequency.
-I think of it as a component of impulse response and filter design.
+Changed one part of the 1:st stage frequency calculation done in cascade with the cutoff frequency. Parameter changes to the cutoff frequency makes very small changes to this part, and are now scaled at much lower frequency. I think of this as a component of Impulse Response and filter design.
 # Subjective Hexed
 Changed the dynamics of the resonance and filter, the balance of parameters volume.
 # Added Hexed
