@@ -1,5 +1,5 @@
 # Changelog
-All notable changes for the user will be documented in this file.
+All noticeable changes for the user will be documented in this file.
 Types of changes listed and explained.
 
 # NewPlugin added plugin to ra-audio.
@@ -12,8 +12,8 @@ Types of changes listed and explained.
 # Security in case of vulnerabilities.
 
 What versions number means [A.B.C]
-I will program so that you DAW distinguish every version change of A and B.
-So that you can use on old versions with a new ones in the same project.
+I will code so that you're DAW distinguish every version change of A and B. So that you can use an old versions with a new ones in the same project.
+For example Ardour would let you have 1.0.0 and 1.0.1 loaded in the same project but not installed and detected at the same time. But 1.0.0 and 1.1.0 could be installed and used at the same time but would have the same binary name. Not A version number change would be named for example Moog2
 
 A = Significantly change of sound and/or added/removed functionality
 B = Small changes of sound and/or added/removed functionality
