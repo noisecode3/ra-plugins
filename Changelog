@@ -34,7 +34,7 @@ Smoothing parameters to avoid clicks.
 # NewPlugin Hexed
 Modified filter https://github.com/asb2m10/dexed.
 # Subjective Hexed
-Changed one part of the 1:st stage frequency calculation done in cascade with the cutoff frequency. Parameter changes to the cutoff frequency makes very small changes to this part, and are now scaled at much lower frequency. I think of this as a component of Impulse Response and filter design.
+Changed one part of the 1:st stage frequency calculation done in cascade with the cutoff frequency. Parameter changes to the cutoff frequency makes very small changes to this part, and are now scaled at much lower frequency. I think of this as a component of Frequency Response.
 # Subjective Hexed
 Changed the dynamics of the resonance and filter, the balance of parameters volume.
 # Added Hexed
