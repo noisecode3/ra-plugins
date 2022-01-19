@@ -14,7 +14,7 @@ NAME = RobotBarkCompressor
 
 FILES_DSP = \
 	RobotBarkCompressorPlugin.cpp \
-	#../../include/Analyzer.cpp
+	../../include/kissfft/kiss_fft.c
 
 #FILES_UI  = \
 #	RobotBarkCompressorArtwork.cpp \

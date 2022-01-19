@@ -90,14 +90,14 @@ protected:
     // Init
 
     void initParameter(uint32_t index, Parameter& parameter) override;
-    void initProgramName(uint32_t index, String& programName) override;
+    void initProgramName(uint32_t index, String& programName);
 
     // -------------------------------------------------------------------
     // Internal data
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index) override;
+    void  loadProgram(uint32_t index);
 
     // -------------------------------------------------------------------
     // Process
@@ -142,7 +142,7 @@ private:
     uint32_t fSamplesFallMode   = 0;
     bool     fModeFall          = false;
 
-    uint32_t fFrames, fFramesOld = 0;
+    uint32_t fFrames = 0;
 
     // -------------------------------------------------------------------
     // Dsp 

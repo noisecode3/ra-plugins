@@ -1,9 +1,5 @@
 Finnish Bark's filter
 
- use this - https://github.com/lsp-plugins/lsp-dsp-units/blob/master/include/lsp-plug.in/dsp-units/util/Analyzer.h 
- to analyse frequency for the filter scale. 
-
-Put edited .hpp and .cpp files in include dir
 
 Add Bark tube gain emulation
 Add Bark Midi Programing

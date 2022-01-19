@@ -83,14 +83,14 @@ protected:
     // Init
 
     void initParameter(uint32_t index, Parameter& parameter) override;
-    void initProgramName(uint32_t index, String& programName) override;
+    void initProgramName(uint32_t index, String& programName);
 
     // -------------------------------------------------------------------
     // Internal data
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index) override;
+    void  loadProgram(uint32_t index);
 
     // -------------------------------------------------------------------
     // Process
@@ -129,8 +129,8 @@ private:
 
     float fSampleRate, fAcr, fTune, fWetVol, fFreqOld, fResOld, fWetOld;
 
-    float fDelay[2][6]   = { 0 };
-    float fTanhstg[2][3] = { 0 };
+    float fDelay[2][6];
+    float fTanhstg[2][3];
 
     float logsc(float param, const float min, const float max, const float rolloff);
     float moog_tanh(float x);

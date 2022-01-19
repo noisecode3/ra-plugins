@@ -22,7 +22,7 @@
 #define ROBOT_BARK_COMPRESSOR_PLUGIN_HPP_INCLUDED
 
 #include "DistrhoPlugin.hpp"
-//#include "Analyzer.h"
+#include "kissfft/kiss_fft.h"
 
 START_NAMESPACE_DISTRHO
 
@@ -42,6 +42,8 @@ public:
     };
 
     RobotBarkCompressorPlugin();
+    ~RobotBarkCompressorPlugin();
+
 
 protected:
     // -------------------------------------------------------------------
@@ -86,22 +88,21 @@ protected:
     // Init
 
     void initParameter(uint32_t index, Parameter& parameter) override;
-    void initProgramName(uint32_t index, String& programName) override;
+    void initProgramName(uint32_t index, String& programName);
 
     // -------------------------------------------------------------------
     // Internal data
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index) override;
+    void  loadProgram(uint32_t index) ;
 
     // -------------------------------------------------------------------
     // Process
 
     void activate() override;
     void deactivate() override;
-    void run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* events, uint32_t eventCount) override;
-
+    void run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* midiEvents, uint32_t midiEventCount);
     // -------------------------------------------------------------------
 
 private:
@@ -119,11 +120,22 @@ private:
     // -------------------------------------------------------------------
     // Dsp 
 
-	float cAT;
-	float cRT;
-	float state1, state2;
-    float delay1, delay2;
+    float cAT;
+    float cRT;
+    float state1, state2;
+    float posts1, posts2;
     float hz1, hz2;
+
+    kiss_fft_cfg cfg1 = kiss_fft_alloc(2 ,0 ,NULL ,NULL);
+    kiss_fft_cfg cfg2 = kiss_fft_alloc(2 ,0 ,NULL ,NULL);
+
+    kiss_fft_cpx cx_in1[3], cx_out1[3], cx_in2[3], cx_out2[3];
+
+    // Juggle with k=3 and N=2
+    // frequency-domain data is stored from dc up to 2pi.
+    // so cx_out[0] is the dc bin of the FFT and cx_out[N/2] is the Nyquist bin.
+    // In this case cx_out[1]
+
     // -------------------------------------------------------------------
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotBarkCompressorPlugin)
