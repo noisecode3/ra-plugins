@@ -263,6 +263,10 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
             break;
     }
 
+//https://en.wikipedia.org/wiki/Goertzel_algorithm
+// lol this is so wrong, I think there should be a separet loop for fft
+// TODO: Detect frequinese for samples points in the signal
+
     for (uint32_t i = 0; i < frames; ++i) {
 
         //Left
@@ -281,6 +285,8 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
         float hz1 = cx_out1[1].r*(getSampleRate()/(4*PI_F)); // this is close to what a spectrum analyser would show but this is for individual samples
         hz1 = fabs(hz1); //TODO: this is not perfect at end and the beginning of the buffer
+
+        printf("hz1:%f\n", hz1);
 
 
         float sideInput1 = (13.0*atan(hz1/1315.8)
@@ -314,6 +320,8 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
         float hz2 = cx_out2[1].r*(getSampleRate()/(4*PI_F));
         hz2 = fabs(hz2);
+
+        printf("hz2:%f\n", hz2);
 
 
         float sideInput2 = (13.0*atan(hz2/1315.8)
