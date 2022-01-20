@@ -195,12 +195,13 @@ void RobotBarkCompressorPlugin::activate()
     cRT = exp(-1 * 1000 / fRelease / getSampleRate());
 
     //Put new fruit in them bins
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 1; i++)
     {
         cx_in1[i].r  = 0;
         cx_in1[i].r  = 0;
         cx_out1[i].r = 0;
         cx_out2[i].r = 0;
+        printf("JAckson was here!\n");
     }
 }
 void RobotBarkCompressorPlugin::deactivate()
@@ -263,30 +264,42 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
             break;
     }
 
-//https://en.wikipedia.org/wiki/Goertzel_algorithm
-// lol this is so wrong, I think there should be a separet loop for fft
+// https://en.wikipedia.org/wiki/Goertzel_algorithm
+// the DFT's overall N-point (or N-bin) frequency response to a real cosine of k cycles per sample interval!
 // TODO: Detect frequinese for samples points in the signal
 
     for (uint32_t i = 0; i < frames; ++i) {
 
         //Left
-        cx_in1[0].r = posts1;
         cx_in1[1].r = in1[i];
-
-        if ((i+1)==frames)
-            cx_in1[2].r = (posts1+in1[i])*0.5;
-
-        else cx_in1[2].r = in1[i+1];
-
-        posts1= in1[i];
+        cx_in1[0].r = posts1;
+        posts1      = in1[i];
 
         kiss_fft(cfg1, cx_in1, cx_out1);
 
 
-        float hz1 = cx_out1[1].r*(getSampleRate()/(4*PI_F)); // this is close to what a spectrum analyser would show but this is for individual samples
-        hz1 = fabs(hz1); //TODO: this is not perfect at end and the beginning of the buffer
+        float hz1 = cx_out1[1].r*(2*PI_F/sr);
+        //hz1 = fabs(hz1); //TODO: this is not perfect at end and the beginning of the buffer
 
-        printf("hz1:%f\n", hz1);
+        //printf("hz1:%f\n", hz1);
+
+
+
+        // this is right somhow I can se if I shift a sinewave
+        //hz1:0.000004		 hz2:0.000004
+        //hz1:0.000009		 hz2:0.000009
+        //hz1:0.000014		 hz2:0.000014
+        //hz1:0.000018		 hz2:0.000018
+        //hz1:0.000020		 hz2:0.000020
+        //hz1:0.000020		 hz2:0.000020
+        //hz1:0.000019		 hz2:0.000019
+        //hz1:0.000016		 hz2:0.000016
+        //hz1:0.000012		 hz2:0.000012
+        //hz1:0.000007		 hz2:0.000007
+        //hz1:0.000002		 hz2:0.000002
+
+        // this is the pattern of a 2 Khz sine wave repeting like this
+        // but still wrong scale ? if I just scale it up it brakes ?
 
 
         float sideInput1 = (13.0*atan(hz1/1315.8)
@@ -305,23 +318,17 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
 
 
         //Right
-        cx_in2[0].r = posts2;
         cx_in2[1].r = in2[i];
-
-        if ((i+1)==frames)
-            cx_in2[2].r = (posts2+in2[i])*0.5;
-
-        else cx_in2[2].r = in2[i+1];
-
-        posts2 = in1[i];
+        cx_in2[0].r = posts2;
+        posts2      = in1[i];
 
         kiss_fft(cfg2, cx_in2, cx_out2);
 
 
-        float hz2 = cx_out2[1].r*(getSampleRate()/(4*PI_F));
-        hz2 = fabs(hz2);
+        float hz2 = cx_out2[1].r*(2*PI_F/sr);
+        //hz2 = fabs(hz2);
 
-        printf("hz2:%f\n", hz2);
+        printf("hz1:%f\t\t hz2:%f\n", hz1, hz2);
 
 
         float sideInput2 = (13.0*atan(hz2/1315.8)

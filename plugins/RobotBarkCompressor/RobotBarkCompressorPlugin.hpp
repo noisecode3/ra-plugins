@@ -129,9 +129,9 @@ private:
     kiss_fft_cfg cfg1 = kiss_fft_alloc(2 ,0 ,NULL ,NULL);
     kiss_fft_cfg cfg2 = kiss_fft_alloc(2 ,0 ,NULL ,NULL);
 
-    kiss_fft_cpx cx_in1[3], cx_out1[3], cx_in2[3], cx_out2[3];
+    kiss_fft_cpx cx_in1[2], cx_out1[2], cx_in2[2], cx_out2[2];
 
-    // Juggle with k=3 and N=2
+    // Juggle with k=2 and N=2
     // frequency-domain data is stored from dc up to 2pi.
     // so cx_out[0] is the dc bin of the FFT and cx_out[N/2] is the Nyquist bin.
     // In this case cx_out[1]
