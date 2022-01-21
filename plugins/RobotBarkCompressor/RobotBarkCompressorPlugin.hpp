@@ -22,8 +22,7 @@
 #define ROBOT_BARK_COMPRESSOR_PLUGIN_HPP_INCLUDED
 
 #include "DistrhoPlugin.hpp"
-#include "kissfft/kiss_fft.h"
-
+#include "kissfft/kiss_fftr.h"
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
@@ -123,18 +122,18 @@ private:
     float cAT;
     float cRT;
     float state1, state2;
-    float posts1, posts2;
+    float posti1, posti2, postr1, postr2;
     float hz1, hz2;
 
-    kiss_fft_cfg cfg1 = kiss_fft_alloc(2 ,0 ,NULL ,NULL);
-    kiss_fft_cfg cfg2 = kiss_fft_alloc(2 ,0 ,NULL ,NULL);
+    kiss_fftr_cfg cfg1 = kiss_fftr_alloc(2 ,0 ,NULL ,NULL);
+    kiss_fftr_cfg cfg2 = kiss_fftr_alloc(2 ,0 ,NULL ,NULL);
 
-    kiss_fft_cpx cx_in1[2], cx_out1[2], cx_in2[2], cx_out2[2];
+    kiss_fft_cpx  cx_out1[2], cx_out2[2];
+    kiss_fft_scalar timedata1[2], timedata2[2];
 
-    // Juggle with k=2 and N=2
+    // k=2 and nttf=2
     // frequency-domain data is stored from dc up to 2pi.
     // so cx_out[0] is the dc bin of the FFT and cx_out[N/2] is the Nyquist bin.
-    // In this case cx_out[1]
 
     // -------------------------------------------------------------------
 
