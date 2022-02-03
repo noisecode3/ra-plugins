@@ -27,7 +27,7 @@ installation Guide:
 
     git clone https://github.com/noisecode3/ra-plugins
     cd ra-plugins
-    git submodule update --init
+    git submodule update --init --recursive
     make
     make install
 
