@@ -34,5 +34,5 @@ installation Guide:
 COPY and PASTE ME to install:
 =============
 
-    git clone https://github.com/noisecode3/ra-plugins; cd ra-plugins; git submodule update --init; make; make install;
+    git clone https://github.com/noisecode3/ra-plugins; cd ra-plugins; git submodule update --init --recursive; make; make install;
 
