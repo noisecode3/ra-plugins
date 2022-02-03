@@ -18,11 +18,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ROBOT_BARK_COMPRESSOR_PLUGIN_HPP_INCLUDED
-#define ROBOT_BARK_COMPRESSOR_PLUGIN_HPP_INCLUDED
+#pragma  once
 
 #include "DistrhoPlugin.hpp"
 #include "kissfft/kiss_fftr.h"
+
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
@@ -94,18 +94,19 @@ protected:
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index) ;
+    void  loadProgram(uint32_t index);
 
     // -------------------------------------------------------------------
     // Process
 
     void activate() override;
     void deactivate() override;
+    double goertzel(int size, float const *data, int sample_fq, int detect_fq);
     void run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* midiEvents, uint32_t midiEventCount);
     // -------------------------------------------------------------------
 
-private:
 
+private:
     // -------------------------------------------------------------------
     // Parameters
 
@@ -115,34 +116,34 @@ private:
     float fRatio      = 1.0f;
     float fMakeUpGain = 0.0f;
 
-
     // -------------------------------------------------------------------
-    // Dsp 
+    // Dsp
 
     float cAT;
     float cRT;
     float state1, state2;
-    float posti1, posti2, postr1, postr2;
-    float hz1, hz2;
+    float postFFTbuffer1[64];
+    float postFFTbuffer2[64];/*  if run get called with less then 64 samples
+                              *  we can move the buffer with new samples
+                              *  and get the new ones out but still calculated
+                              *  with the old values for the resulution
+                              *  if performance becomes a problem, smaller size
+                              *  kiss_fft can be activated
+                              */
 
-    kiss_fftr_cfg cfg1 = kiss_fftr_alloc(2 ,0 ,NULL ,NULL);
-    kiss_fftr_cfg cfg2 = kiss_fftr_alloc(2 ,0 ,NULL ,NULL);
+    kiss_fftr_cfg cfg1 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
+    kiss_fftr_cfg cfg2 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
 
-    kiss_fft_cpx  cx_out1[2], cx_out2[2];
-    kiss_fft_scalar timedata1[2], timedata2[2];
+    float hanningWindow[32];
+    float gaussWindow[32];
 
-    // k=2 and nttf=2
     // frequency-domain data is stored from dc up to 2pi.
-    // so cx_out[0] is the dc bin of the FFT and cx_out[N/2] is the Nyquist bin.
+    // so cx_out[0] is the dc bin of the FFT and cx_out[nttf/2] is the Nyquist bin.
 
     // -------------------------------------------------------------------
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotBarkCompressorPlugin)
 };
-
 // -----------------------------------------------------------------------
 
 END_NAMESPACE_DISTRHO
-
-#endif // ROBOT_MOOG_FILTER_PLUGIN_HPP_INCLUDED
- 

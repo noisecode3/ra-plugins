@@ -43,6 +43,9 @@ clean:
 	$(MAKE) clean -C plugins/RobotHexedFilter
 	$(MAKE) clean -C plugins/RobotBarkCompressor
 
+	# Include
+	rm include/kissfft/*.c.d
+
 # --------------------------------------------------------------
 
 install:
