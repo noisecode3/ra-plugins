@@ -21,7 +21,7 @@
 #pragma  once
 
 #include "DistrhoPlugin.hpp"
-#include "kissfft/kiss_fftr.h"
+#include "kiss-fft/kiss_fftr.h"
 
 START_NAMESPACE_DISTRHO
 
@@ -131,8 +131,8 @@ private:
                               *  kiss_fft can be activated
                               */
 
-    kiss_fftr_cfg cfg1 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
-    kiss_fftr_cfg cfg2 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
+    //kiss_fftr_cfg cfg1 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
+    //kiss_fftr_cfg cfg2 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
 
     float hanningWindow[32];
     float gaussWindow[32];

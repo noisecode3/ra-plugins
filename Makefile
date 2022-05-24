@@ -44,7 +44,7 @@ clean:
 	$(MAKE) clean -C plugins/RobotBarkCompressor
 
 	# Include
-	rm include/kissfft/*.c.d
+	rm -f include/kiss-fft/*.cpp.d
 
 # --------------------------------------------------------------
 

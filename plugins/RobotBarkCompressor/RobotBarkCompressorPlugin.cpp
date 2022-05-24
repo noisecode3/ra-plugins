@@ -44,9 +44,8 @@ RobotBarkCompressorPlugin::RobotBarkCompressorPlugin()
 
 RobotBarkCompressorPlugin::~RobotBarkCompressorPlugin()
 {
-    kiss_fftr_free(cfg1);
-    kiss_fftr_free(cfg2);
-    kiss_fft_cleanup();
+    //kiss_fftr_free(cfg1);
+    //kiss_fftr_free(cfg2);
 }
 
 // -------------------------------------------------------------------------------
@@ -242,91 +241,19 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
     float sampleRateScaler;
     uint32_t windows = frames / 64;
     uint32_t samples_left = frames % 64;
-    kiss_fft_scalar windowed1[64], inverted1[64], bark1_fft[64];
-    kiss_fft_scalar windowed2[64], inverted2[64], bark2_fft[64];
+
+    // This FFT is all wrong
 
     float bark1[frames];
     float bark2[frames];
 
-    /*  FFT has its own buffer bark and window bark1_fft
-     *  and it's own loop
-     *
-     *  sample rates
-     *
-     *  22050  = 54.56695791
-     *  32000  = 57.52123620
-     *  44100  = 59.06280878
-     *  48000  = 59.36179537
-     *  96000  = 60.82050573
-     *  192000 = 61.39865212
-     *
-     *  TO DO: calculate for possible sample rates in default, if it helps
-     *  they could be constents and we know the most used sample rates...
-     *  maybe remove 2 of them.. maybe use sampleRateChanged()
-     */
-
-
-    switch (sri)
-    {
-        case 22050:
-            sampleRateScaler = (54.56695791*24);
-            break;
-
-        case 32000:
-            sampleRateScaler = (57.52123620*24);
-            break;
-
-        case 44100:
-            sampleRateScaler = (59.06280878*24);
-            break;
-
-        case 48000:
-            sampleRateScaler = (59.36179537*24)*(2*PI_F);
-            break;
-
-        case 96000:
-            sampleRateScaler = (60.82050573*24);
-            break;
-
-        case 192000:
-            sampleRateScaler = (61.39865212*24);
-            break;
-
-        default:
-            sampleRateScaler = 0.0;
-            break;
-    }
-
-    /*************************************************************************************************************\
-     *  kiss_fftr_cfg KISS_FFT_API kiss_fftr_alloc(int nfft,int inverse_fft,void * mem, size_t * lenmem)         *
-     *      nfft must be even                                                                                    *
-     *      If you don't care to allocate space, use mem = lenmem = NULL                                         *
-     *                                                                                                           *
-     *  void KISS_FFT_API kiss_fftr(kiss_fftr_cfg cfg,const kiss_fft_scalar *timedata,kiss_fft_cpx *freqdata)    *
-     *      input timedata has nfft scalar points                                                                *
-     *      output freqdata has nfft/2+1 complex points                                                          *
-     *                                                                                                           *
-     *  void KISS_FFT_API kiss_fftri(kiss_fftr_cfg cfg,const kiss_fft_cpx *freqdata,kiss_fft_scalar *timedata)   *
-     *      input freqdata has  nfft/2+1 complex points                                                          *
-     *      output timedata has nfft scalar points                                                               *
-    \*************************************************************************************************************/
-
-    for (uint32_t i = 0; i < frames; ++i)
-    {
-        // (13.0*atan(Hz/1315.8) + 3.5*atan(pow((Hz/7500.0),2)))/sampleRateScaler
-    }
-
-    /*
-     * TODO Comment compression loop enough to see whats going on
-     *
-     */
 
     for (uint32_t i = 0; i < frames; ++i)
     {
         // -----------------------------------------------------------------------
         // Left
 
-        float sideInput1 = in1[i];//bark1[i];
+        float sideInput1 = in1[i];
 
         float c1 = sideInput1 >= state1 ? cAT : cRT;
         float env1 = sideInput1 + c1 * (state1 - sideInput1);
@@ -342,7 +269,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         // -----------------------------------------------------------------------
         // Right
 
-        float sideInput2 = in2[i];//bark2[i];
+        float sideInput2 = in2[i];
 
         float c2 = sideInput2 >= state2 ? cAT : cRT;
         float env2 = sideInput2 + c2 * (state2 - sideInput2);
