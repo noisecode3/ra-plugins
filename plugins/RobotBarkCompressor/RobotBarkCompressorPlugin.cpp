@@ -44,8 +44,7 @@ RobotBarkCompressorPlugin::RobotBarkCompressorPlugin()
 
 RobotBarkCompressorPlugin::~RobotBarkCompressorPlugin()
 {
-    //kiss_fftr_free(cfg1);
-    //kiss_fftr_free(cfg2);
+
 }
 
 // -------------------------------------------------------------------------------
@@ -235,17 +234,7 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
     float* out1 = outputs[0];
     float* out2 = outputs[1];
 
-    double sr    = getSampleRate();
-    int    sri   = (int)sr;
     float  slope = 1 - 1 / fRatio; // TODO Funny ideas
-    float sampleRateScaler;
-    uint32_t windows = frames / 64;
-    uint32_t samples_left = frames % 64;
-
-    // This FFT is all wrong
-
-    float bark1[frames];
-    float bark2[frames];
 
 
     for (uint32_t i = 0; i < frames; ++i)

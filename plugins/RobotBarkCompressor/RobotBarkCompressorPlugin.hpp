@@ -122,23 +122,11 @@ private:
     float cAT;
     float cRT;
     float state1, state2;
-    float postFFTbuffer1[64];
-    float postFFTbuffer2[64];/*  if run get called with less then 64 samples
-                              *  we can move the buffer with new samples
-                              *  and get the new ones out but still calculated
-                              *  with the old values for the resulution
-                              *  if performance becomes a problem, smaller size
-                              *  kiss_fft can be activated
-                              */
 
-    //kiss_fftr_cfg cfg1 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
-    //kiss_fftr_cfg cfg2 = kiss_fftr_alloc(64 , 0 ,NULL ,NULL);
 
     float hanningWindow[32];
     float gaussWindow[32];
 
-    // frequency-domain data is stored from dc up to 2pi.
-    // so cx_out[0] is the dc bin of the FFT and cx_out[nttf/2] is the Nyquist bin.
 
     // -------------------------------------------------------------------
 
