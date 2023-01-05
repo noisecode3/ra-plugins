@@ -194,7 +194,7 @@ void RobotHexedFilterPlugin::activate()
     fWetVol      = fWetVol + 0.367879*(0.01*fWet);
 
     s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
-    s1[0]=s2[0]=s3[0]=s4[0]=c[0]=d[0]=0;
+    s1[1]=s2[1]=s3[1]=s4[1]=c[1]=d[1]=0;
 
     R24=0;
 
