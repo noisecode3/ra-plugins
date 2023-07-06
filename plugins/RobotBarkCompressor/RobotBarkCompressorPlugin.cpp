@@ -33,13 +33,7 @@ RobotBarkCompressorPlugin::RobotBarkCompressorPlugin()
     // set default values
     loadProgram(0);
 
-    // make windows
 
-    for (int i=0; i<32; i++)
-    {
-        hanningWindow[i] = 0.5f*(1.0f-cosf((2.0f*M_PI*i)/(32.0f-1.0f)));
-        gaussWindow[i]   = powf(M_E,-0.5f*powf((i-(32-1)*0.5f)/(0.4f*(32-1)*0.5f),2.0f));
-    }
 }
 
 RobotBarkCompressorPlugin::~RobotBarkCompressorPlugin()
@@ -55,7 +49,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
     switch (index)
     {
     case paramAttack:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomatable;
         parameter.name       = "Attack";
         parameter.symbol     = "A";
         parameter.unit       = "ms";
@@ -65,7 +59,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramRelease:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomatable;
         parameter.name       = "Release";
         parameter.symbol     = "R";
         parameter.unit       = "ms";
@@ -75,7 +69,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramThreshold:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomatable;
         parameter.name       = "Threshold";
         parameter.symbol     = "T";
         parameter.unit       = "dB";
@@ -85,7 +79,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramRatio:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomatable;
         parameter.name       = "Ratio";
         parameter.symbol     = "r";
         parameter.unit       = ":1";
@@ -95,7 +89,7 @@ void RobotBarkCompressorPlugin::initParameter(uint32_t index, Parameter& paramet
         break;
 
     case paramMakeUpGain:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomatable;
         parameter.name       = "MakeUpGain";
         parameter.symbol     = "mug";
         parameter.unit       = "dB";
@@ -202,45 +196,34 @@ void RobotBarkCompressorPlugin::activate()
 }
 void RobotBarkCompressorPlugin::deactivate()
 {
+
 }
 
-double RobotBarkCompressorPlugin::goertzel(int size, float const *data, int sample_fq, int detect_fq)
-{
-    double omega = M_PI_2 * detect_fq / sample_fq;
-    double sine = sin(omega);
-    double cosine = cos(omega);
-    double coeff = cosine * 2;
-    double q0 = 0;
-    double q1 = 0;
-    double q2 = 0;
 
-    for (int i = 0; i < size; i++) {
-        q0 = coeff * q1 - q2 + data[i];
-        q2 = q1;
-        q1 = q0;
-    }
-
-    double real = (q1 - q2 * cosine) / (size / 2.0);
-    double imag = (q2 * sine) / (size / 2.0);
-
-    return sqrt(real * real + imag * imag);
-}
-
-void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* midiEvents, uint32_t midiEventCount)
+void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* Events, uint32_t EventCount)
 {
     const float* in1 = inputs[0];
     const float* in2 = inputs[1];
 
+
     float* out1 = outputs[0];
     float* out2 = outputs[1];
 
-    float  slope = 1 - 1 / fRatio; // TODO Funny ideas
+    //float  slope = 1 - 1 / fRatio; // TODO Funny ideas
+
+    for (uint32_t i=0; i<EventCount; ++i)
+    {
+         writeMidiEvent(Events[i]);
+
+    }
 
 
     for (uint32_t i = 0; i < frames; ++i)
     {
-        // -----------------------------------------------------------------------
-        // Left
+
+	  // -----------------------------------------------------------------------
+    // Left
+	  /*
 
         float sideInput1 = in1[i];
 
@@ -254,9 +237,11 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         gain1 = pow(10, (gain1/20));
 
         out1[i] = in1[i] * gain1 * (pow(10, (fMakeUpGain/20)));
+    */
 
         // -----------------------------------------------------------------------
         // Right
+    /*
 
         float sideInput2 = in2[i];
 
@@ -270,6 +255,10 @@ void RobotBarkCompressorPlugin::run(const float** inputs, float** outputs, uint3
         gain2 = pow(10, (gain2/20));
 
         out2[i] = in2[i] * gain2 * (pow(10, (fMakeUpGain/20)));
+	  */
+
+    out1[i] = in1[i];
+    out2[i] = in2[i];
     }
 }
 

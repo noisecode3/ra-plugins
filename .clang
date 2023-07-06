@@ -1,0 +1,6 @@
+-I./dpf/distrho
+-I./dpf/distrho/src
+-I./dpf/distrho/extra
+-I./dpf/dgl
+-I./dpf/dgl/src
+-I./include

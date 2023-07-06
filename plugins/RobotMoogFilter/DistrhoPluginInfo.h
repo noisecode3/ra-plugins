@@ -21,9 +21,10 @@
 #ifndef DISTRHO_PLUGIN_INFO_H_INCLUDED
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
-#define DISTRHO_PLUGIN_BRAND "Robot Audio"
-#define DISTRHO_PLUGIN_NAME  "Robot Moog Filter"
-#define DISTRHO_PLUGIN_URI   "https://github.com/noisecode3/ra-plugins#moog-filter"
+#define DISTRHO_PLUGIN_BRAND   "Robot Audio"
+#define DISTRHO_PLUGIN_NAME    "Robot Moog Filter"
+#define DISTRHO_PLUGIN_URI     "https://github.com/noisecode3/ra-plugins#moog-filter"
+#define DISTRHO_PLUGIN_CLAP_ID "robot.audio.Moog.Filter"
 
 #define DISTRHO_PLUGIN_HAS_UI        0
 #define DISTRHO_PLUGIN_IS_RT_SAFE    1
@@ -31,7 +32,9 @@
 #define DISTRHO_PLUGIN_NUM_OUTPUTS   2
 #define DISTRHO_PLUGIN_WANT_PROGRAMS 1
 
-#define DISTRHO_PLUGIN_LV2_CATEGORY "lv2:EQPlugin"
+#define DISTRHO_PLUGIN_CLAP_FEATURES   "audio-effect", "filter", "stereo"
+#define DISTRHO_PLUGIN_LV2_CATEGORY    "lv2:LowpassPlugin"
+#define DISTRHO_PLUGIN_VST3_CATEGORIES "Fx|Filter"
 
 #endif // DISTRHO_PLUGIN_INFO_H_INCLUDED
 

@@ -14,8 +14,9 @@ NAME = RobotBarkCompressor
 
 FILES_DSP = \
 	RobotBarkCompressorPlugin.cpp \
-	../../include/kiss-fft/kiss_fft.cpp \
-	../../include/kiss-fft/kiss_fftr.cpp
+	../../include/FFTConvolver/AudioFFT.cpp \
+	../../include/FFTConvolver/FFTConvolver.cpp \
+	../../include/FFTConvolver/Utilities.cpp
 
 #FILES_UI  = \
 #	RobotBarkCompressorArtwork.cpp \
@@ -26,8 +27,8 @@ FILES_DSP = \
 
 include ../../dpf/Makefile.plugins.mk
 
-BUILD_C_FLAGS   += -I. -I../../include
-BUILD_CXX_FLAGS += -I. -I$(DPF_PATH)/distrho -I$(DPF_PATH)/dgl -I../../include
+BUILD_C_FLAGS   += -I../../include
+BUILD_CXX_FLAGS += -I../../include
 
 # --------------------------------------------------------------
 # Enable all possible plugin types
@@ -36,7 +37,7 @@ ifeq ($(HAVE_JACK),true)
 #TARGETS += jack
 endif
 
-TARGETS += vst
+#TARGETS += vst3
 
 #ifeq ($(HAVE_DGL),true)
 #ifeq ($(HAVE_LIBLO),true)

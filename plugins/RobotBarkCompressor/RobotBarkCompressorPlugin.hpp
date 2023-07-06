@@ -21,7 +21,7 @@
 #pragma  once
 
 #include "DistrhoPlugin.hpp"
-#include "kiss-fft/kiss_fftr.h"
+#include "FFTConvolver/FFTConvolver.h"
 
 START_NAMESPACE_DISTRHO
 
@@ -102,7 +102,7 @@ protected:
     void activate() override;
     void deactivate() override;
     double goertzel(int size, float const *data, int sample_fq, int detect_fq);
-    void run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* midiEvents, uint32_t midiEventCount);
+    void run(const float** inputs, float** outputs, uint32_t frames, const MidiEvent* Events, uint32_t EventCount);
     // -------------------------------------------------------------------
 
 
@@ -124,8 +124,6 @@ private:
     float state1, state2;
 
 
-    float hanningWindow[32];
-    float gaussWindow[32];
 
 
     // -------------------------------------------------------------------

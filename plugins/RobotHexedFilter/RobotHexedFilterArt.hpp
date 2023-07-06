@@ -1,0 +1,22 @@
+#pragma once
+#include <string>
+std::string bg = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<svg width=\"100%\" height=\"100%\"\n"
+"	viewBox=\"-10 -15 410 430\"\n"
+"	xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n"
+"	<style type=\"text/css\"><![CDATA[\n"
+"		.numbers {fill:#999;font-size:10px;}\n"
+"	]]>\n"
+"	</style>\n"
+"	<g stroke=\"royalblue\" stroke-width=\"400\">\n"
+"		<path d=\"M0,200L400,200\" stroke-dasharray=\"0.2,9.6,0.2,0\"/>\n"
+"		<path d=\"M200,0L200,400\" stroke-dasharray=\"0.2,9.6,0.2,0\"/>\n"
+"		<path d=\"M0,200L400,200\" stroke-dasharray=\"0.5,99,0.5,0\"/>\n"
+"		<path d=\"M200,0L200,400\" stroke-dasharray=\"0.5,99,0.5,0\" />\n"
+"	</g>\n"
+"	<g transform=\"translate(0,-5)\" class=\"numbers\" text-anchor=\"middle\">\n"
+"		<text x=\"100\">100</text> <text x=\"200\"> 200</text> <text x=\"300\">300</text> </g>\n"
+"	<g transform=\"translate(-3,4)\" class=\"numbers\" text-anchor=\"end\"> \n"
+"		<text y=\"100\">100</text> <text y=\"200\">200</text> <text y=\"300\">300</text> </g>\n"
+"	<circle r=\"10\" fill=\"#008\"/>\n"
+"</svg>\0\n";
