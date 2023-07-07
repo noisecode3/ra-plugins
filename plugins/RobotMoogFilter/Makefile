@@ -15,38 +15,20 @@ NAME = RobotMoogFilter
 FILES_DSP = \
 	RobotMoogFilterPlugin.cpp
 
-#FILES_UI  = \
-#	RobotMoogFilterArtwork.cpp \
-#	RobotMoogFilterUI.cpp
 
 # --------------------------------------------------------------
 # Do some magic
 
 include ../../dpf/Makefile.plugins.mk
 
+BUILD_FLAGS_ALL = \
+        -I../../include
+
+BUILD_C_FLAGS   += $(BUILD_FLAGS_ALL)
+BUILD_CXX_FLAGS += $(BUILD_FLAGS_ALL)
 # --------------------------------------------------------------
 # Enable all possible plugin types
 
-#ifeq ($(HAVE_JACK),true)
-#TARGETS += jack
-#endif
-
-TARGETS += ladspa
-TARGETS += vst
-
-#ifeq ($(HAVE_DGL),true)
-#ifeq ($(HAVE_LIBLO),true)
-#TARGETS += dssi
-#endif
-#endif
-
-#ifeq ($(HAVE_DGL),true)
-#TARGETS += lv2_sep
-#else
-TARGETS += lv2_dsp
-#endif
-
+TARGETS = lv2_dsp clap vst2 vst3 ladspa
 all: $(TARGETS)
-
 # --------------------------------------------------------------
-

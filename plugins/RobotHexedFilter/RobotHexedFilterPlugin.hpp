@@ -1,12 +1,7 @@
 /*
  *  Robot Audio Plugins
- *  
- *  Copyright (C) 2021      Martin Bångens
- *  Copyright (c) 2013-2014 Pascal Gauthier
- *  Copyright (c) 2013-2014 Filatov Vadim
  *
- *  Filter taken from the Obxd project :
- *    https://github.com/asb2m10/dexed
+ *  Copyright (C) 2023      Martin Bångens
  *
  *  Programing style originally from https://github.com/DISTRHO/DPF-Plugins
  *
@@ -28,6 +23,10 @@
 #define ROBOT_HEXED_FILTER_PLUGIN_HPP_INCLUDED
 
 #include "DistrhoPlugin.hpp"
+#include "RobotHexedFilterDSP.hpp"
+#include "wet.hpp"
+#include "smooth.hpp"
+#include "samplePlayer.hpp"
 
 START_NAMESPACE_DISTRHO
 
@@ -35,16 +34,17 @@ START_NAMESPACE_DISTRHO
 
 class RobotHexedFilterPlugin : public Plugin
 {
-public:
     enum Parameters
     {
         paramCutOff = 0,
-        paramRes,
+        paramResonance,
         paramMode,
         paramWet,
         paramCount
     };
 
+
+public:
     RobotHexedFilterPlugin();
 
 protected:
@@ -53,7 +53,7 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "Robot Hexed Filter";
+        return "RobotHexedFilter";
     }
 
     const char* getDescription() const override
@@ -78,7 +78,7 @@ protected:
 
     uint32_t getVersion() const noexcept override
     {
-        return d_version(1, 0, 0);
+        return d_version(1, 0, 1);
     }
 
     int64_t getUniqueId() const noexcept override
@@ -89,15 +89,16 @@ protected:
     // -------------------------------------------------------------------
     // Init
 
+    void initAudioPort(bool input, uint32_t index, AudioPort& port) override;
     void initParameter(uint32_t index, Parameter& parameter) override;
-    void initProgramName(uint32_t index, String& programName);
+    void initProgramName(uint32_t index, String& programName) override;
 
     // -------------------------------------------------------------------
     // Internal data
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index);
+    void  loadProgram(uint32_t index) override;
 
     // -------------------------------------------------------------------
     // Process
@@ -109,69 +110,34 @@ protected:
     // -------------------------------------------------------------------
 
 private:
-
     // -------------------------------------------------------------------
     // Parameters
 
+    LPFSmooth CutOffLPF    = LPFSmooth(21.32f,getSampleRate());
+    LISmooth  CutOffLI     = LISmooth(21.34f,getSampleRate());
+    LPFSmooth ResonanceLPF = LPFSmooth(21.32f,getSampleRate());
+    LISmooth  ResonanceLI  = LISmooth(21.34f,getSampleRate());
+    LISmooth  ModeLI       = LISmooth(21.34f,getSampleRate());
+    LISmooth  WetLI        = LISmooth(21.34f,getSampleRate());
+
     float fCutOff   = 100.0;
-    float fCutOffOld;    
-
-    float fRes      = 0.0;
-    float fResOld;    
-
+    float cutoff    = fCutOff*0.01;
+    float fResonance = 0.0;
+    float resonance = 0.0;
     float fMode     = 4;
-    int   iMode     = 4;
-    int   iModeOld  = iMode;
- 
     float fWet      = 0.0; 
-    float fWetOld;
-    float fWetVol   = 0;
+    float wet      = 0.0; 
 
-    uint32_t fSamplesFallCutOff = 0;
-    bool     fCutOffFall        = false;
-    float    fChangeCutOff      = 0.0f;
-
-    uint32_t fSamplesFallRes    = 0;
-    bool     fResFall           = false;
-    float    fChangeRes         = 0.0f;
-
-    uint32_t fSamplesFallWet    = 0;
-    bool     fWetFall           = false;
-    float    fChangeWet         = 0.0f;
-
-    uint32_t fSamplesFallMode   = 0;
-    bool     fModeFall          = false;
-
-    uint32_t fFrames = 0;
-
+    RobotBufferPlayer sCutOff = RobotBufferPlayer(getSampleRate(), 45, 1.0f);
+    RobotBufferPlayer sResonance = RobotBufferPlayer(getSampleRate(), 45, 0.0f);
+    RobotBufferPlayer sMode = RobotBufferPlayer(getSampleRate(), 24, 4.0f);
+    RobotBufferPlayer sWet = RobotBufferPlayer(getSampleRate(), 24, 0.0f);
     // -------------------------------------------------------------------
     // Dsp 
-
-    float s1[2],s2[2],s3[2],s4[2];
-    float fSampleRate;
-    float fSampleRateInv;
-    float d[2], c[2];
-    float R24;
-    float rcor24,rcor24Inv;
-    float bright;
-    float mm_balancer = 0.7578;
-
-    // 24 db multimode
-
-    float mmt_y1, mmt_y2, mmt_y3, mmt_y4;
-    int   mmch;
-
-    float uiCutoff, uiReso;
-
-    float dc_tmp[2];
-    float dc_r;
-
-    float logsc(float param, const float min, const float max, const float rolloff);
-    float tptpc(float& state, float inp, float cutoff);
-    float tptlpupw(float& state , float inp, float cutoff, float srInv);
-    float NR24(float sample, float g, float lpc, bool chan );
-    float hexed_filter_process(float x, bool chan);
-
+    RobotHexedFilterDSP left;
+    RobotHexedFilterDSP right;
+    RobotWet wetLeft;
+    RobotWet wetRight;
     // -------------------------------------------------------------------
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RobotHexedFilterPlugin)

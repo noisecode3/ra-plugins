@@ -44,7 +44,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
     switch (index)
     {
     case paramFreq:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomatable | kParameterIsLogarithmic;
         parameter.name       = "CutOff";
         parameter.symbol     = "freq";
         parameter.unit       = "%";
@@ -54,7 +54,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramRes:
-        parameter.hints      = kParameterIsAutomable;
+        parameter.hints      = kParameterIsAutomatable;
         parameter.name       = "Resonance";
         parameter.symbol     = "res";
         parameter.unit       = "%";
@@ -64,7 +64,7 @@ void RobotMoogFilterPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
 
     case paramWet:
-        parameter.hints      = kParameterIsAutomable | kParameterIsLogarithmic;
+        parameter.hints      = kParameterIsAutomatable | kParameterIsLogarithmic;
         parameter.name       = "Wet";
         parameter.symbol     = "percent";
         parameter.unit       = "%";

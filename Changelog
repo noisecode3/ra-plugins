@@ -40,4 +40,9 @@ Changed the dynamics of the resonance and filter, the balance of parameters volu
 # Added Hexed
 Smoothing parameters to avoid clicks.
 
+[1.0.1] jul 7 2023
+# Fixed inconsistent parameter delays
+Cutoff and resonance now have fix 44 ms
+its mostly 23 ms but it has a long last
+step tail, mode and wet is 23 ms
 
